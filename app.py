@@ -335,11 +335,8 @@ FLAG_ISO = {
 }
 
 def flag_img(equipo: str, size: int = 48) -> str:
-    """Devuelve un tag <img> con la bandera del país desde flagcdn.com"""
     iso = FLAG_ISO.get(equipo, "un")
-    return (f'<img src="https://flagcdn.com/w{size}/{iso}.png" '
-'            width="{size}" style="border-radius:4px;margin-bottom:4px" '
-'            alt="{equipo}">')
+    return f'<img src="https://flagcdn.com/w{size}/{iso}.png" width="{size}" style="border-radius:4px;margin-bottom:4px" alt="{equipo}">'  
 
 def flag(t): return BANDERAS.get(t, "🏳️")
 
