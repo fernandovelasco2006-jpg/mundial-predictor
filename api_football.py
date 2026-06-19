@@ -278,14 +278,8 @@ def mostrar_status_api(api_key: str):
             timeout=5
         )
         if r.status_code == 200:
-            st.success("🟢 API conectada — datos en tiempo real activos")
             return True
-        elif r.status_code == 429:
-            st.info("⚪ Límite mensual de API alcanzado — usando datos manuales (se renueva el 1ro del mes)")
-            return False
         else:
-            st.info(f"⚪ API en modo offline — usando datos manuales")
             return False
     except Exception:
-        st.info("⚪ Modo offline — usando datos manuales")
         return False
