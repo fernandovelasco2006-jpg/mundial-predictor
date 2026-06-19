@@ -290,13 +290,13 @@ PARTIDOS = [
     ("Australia",       "Turquia",                "D", "Kansas City",   (2, 0),  None),
     ("Alemania",        "Curazao",                "E", "Houston",       (7, 1),  None),
     ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 0),  None),
-    ("Paises Bajos",    "Japon",                  "F", "Dallas",        (2, 2),  None),
+    ("Paises Bajos",    "Japon",                  "F", "Dallas",        (2, 2),  "Danny Makkelie"),
     ("Suecia",          "Tunez",                  "F", "Monterrey",     (5, 1),  None),
     ("Belgica",         "Egipto",                 "G", "Seattle",       (1, 1),  None),
     ("Iran",            "Nueva Zelanda",          "G", "Los Angeles",   (2, 2),  "Omar Al Ali"),
     ("Espana",          "Cabo Verde",             "H", "Atlanta",       (0, 0),  None),
     ("Arabia Saudi",    "Uruguay",                "H", "Miami",         (1, 1),  None),
-    ("Francia",         "Senegal",                "I", "Nueva York",    (3, 1),  None),
+    ("Francia",         "Senegal",                "I", "Nueva York",    (3, 1),  "Francois Letexier"),
     ("Irak",            "Noruega",                "I", "Boston",        (1, 4),  None),
     ("Argentina",       "Algeria",                "J", "Kansas City",   (3, 0),  "Szymon Marciniak"),
     ("Austria",         "Jordania",               "J", "San Francisco", (3, 1),  None),
@@ -307,16 +307,16 @@ PARTIDOS = [
 
     # ── JORNADA 2 ──────────────────────────────────────────────────────────
     ("Chequia",         "Sudafrica",              "A", "Atlanta",       (1, 1),  "Tori Penso"),
-    ("Mexico",          "Corea del Sur",          "A", "Guadalajara",   None,    "Gustavo Tejera"),
-    ("Suiza",           "Bosnia y Herzegovina",   "B", "Los Angeles",   None,    "Joao Pinheiro"),
-    ("Canada",          "Catar",                  "B", "Vancouver",     None,    "Cristian Garay"),
+    ("Mexico",          "Corea del Sur",          "A", "Guadalajara",   (1, 0),  "Gustavo Tejera"),
+    ("Suiza",           "Bosnia y Herzegovina",   "B", "Los Angeles",   (4, 1),  "Joao Pinheiro"),
+    ("Canada",          "Catar",                  "B", "Vancouver",     (6, 0),  "Cristian Garay"),
     ("Escocia",         "Marruecos",              "C", "Boston",        None,    "Ilgiz Tantashev"),
     ("Brasil",          "Haiti",                  "C", "Philadelphia",  None,    "Raphael Claus"),
     ("Estados Unidos",  "Australia",              "D", "Seattle",       None,    "Felix Zwayer"),
     ("Turquia",         "Paraguay",               "D", "San Francisco", None,    "Szymon Marciniak"),
-    ("Alemania",        "Costa de Marfil",        "E", "Toronto",       None,    None),
-    ("Ecuador",         "Curazao",                "E", "Kansas City",   None,    "Ma Ning"),
-    ("Paises Bajos",    "Suecia",                 "F", "Houston",       None,    None),
+    ("Alemania",        "Costa de Marfil",        "E", "Toronto",       None,    "Dario Herrera"),
+    ("Ecuador",         "Curazao",                "E", "Kansas City",   None,    "Raphael Claus"),
+    ("Paises Bajos",    "Suecia",                 "F", "Houston",       None,    "Cesar Arturo Ramos"),
     ("Tunez",           "Japon",                  "F", "Monterrey",     None,    "Istvan Kovacs"),
     ("Belgica",         "Iran",                   "G", "Boston",        None,    None),
     ("Nueva Zelanda",   "Egipto",                 "G", "Seattle",       None,    None),
@@ -371,7 +371,7 @@ H2H = {
     # Pares sin enfrentamientos 2015-2025 confirmados por Perplexity se omiten
 
     # GRUPO A — verificados
-    ("Corea del Sur", "Mexico"):     [(2022, 2, 3, 6, 1), (2018, 1, 2, 4, 0)],
+    ("Corea del Sur", "Mexico"):     [(2026, 0, 1, 2, 0), (2022, 2, 3, 6, 1), (2018, 1, 2, 4, 0)],
     # 2022: Copa del Mundo Qatar, Corea 2-3 México (fuente: ESPN)
     # 2018: Copa del Mundo Rusia, Corea 1-2 México, 4 am Corea 0 Mex (fuente: ESPN)
 
@@ -503,6 +503,7 @@ ARBITROS = {
     "Michael Oliver":             (3.70, 0.12),  # UEFA
     "Clement Turpin":             (3.60, 0.22),  # UEFA
     "Danny Makkelie":             (3.45, 0.15),  # UEFA
+    "Dario Herrera":              (5.40, 0.35),  # CONMEBOL ARG - debut Mundial 2026
     "Kevin Ortega":               (5.05, 0.33),  # CONMEBOL
     "Wilton Sampaio":             (5.08, 0.28),  # CONMEBOL - 3 rojas en inaugural
     "Andres Matonte":             (5.10, 0.31),  # CONMEBOL
@@ -510,7 +511,7 @@ ARBITROS = {
     "Facundo Tello":              (5.02, 0.32),  # CONMEBOL
     "Piero Maza":                 (4.95, 0.27),  # CONMEBOL
     "Cristian Garay":             (4.90, 0.25),  # CONMEBOL
-    "Raphael Claus":              (4.85, 0.26),  # CONMEBOL
+    "Raphael Claus":              (4.80, 0.29),  # CONMEBOL - actualizado
     "Andres Rojas":               (4.80, 0.28),  # CONMEBOL
     "Yael Falcon Perez":          (4.75, 0.24),  # CONMEBOL
     "Juan Benitez":               (4.70, 0.26),  # CONMEBOL
@@ -519,7 +520,7 @@ ARBITROS = {
     "Said Martinez":              (4.60, 0.22),  # CONCACAF
     "Ismail Elfath":              (4.45, 0.20),  # CONCACAF
     "Juan Calderon":              (4.40, 0.19),  # CONCACAF
-    "Cesar Arturo Ramos":         (4.30, 0.18),  # CONCACAF
+    "Cesar Arturo Ramos":         (4.30, 0.22),  # CONCACAF - actualizado
     "Oshane Nation":              (4.25, 0.21),  # CONCACAF
     "Katia Itzel Garcia":         (4.15, 0.15),  # CONCACAF
     "Drew Fischer":               (3.90, 0.14),  # CONCACAF
@@ -551,15 +552,15 @@ ARBITRO_DEFAULT = (3.80, 0.12)  # cuando no hay árbitro asignado
 # ─────────────────────────────────────────────────────────────────────────────
 FORMA_MUNDIAL = {
     # Grupo A
-    "Mexico":                (2, 0, 1),   # 2-0 vs Sudáfrica
-    "Sudafrica":             (0, 2, 1),   # 0-2 vs México
-    "Corea del Sur":         (2, 1, 1),   # 2-1 vs Chequia
-    "Chequia":               (1, 2, 1),   # 1-2 vs Corea del Sur
+    "Mexico":                (3, 0, 2),   # J1: 2-0 + J2: 1-0   # 2-0 vs Sudáfrica
+    "Sudafrica":             (1, 3, 2),   # J1: 0-2 + J2: 1-1   # 0-2 vs México
+    "Corea del Sur":         (2, 2, 2),   # J1: 2-1 + J2: 0-1   # 2-1 vs Chequia
+    "Chequia":               (2, 3, 2),   # J1: 1-2 + J2: 1-1   # 1-2 vs Corea del Sur
     # Grupo B
-    "Canada":                (1, 1, 1),
-    "Bosnia y Herzegovina":  (1, 1, 1),
-    "Catar":                 (1, 1, 1),
-    "Suiza":                 (1, 1, 1),
+    "Canada":                (7, 1, 2),   # J1: 1-1 + J2: 6-0
+    "Bosnia y Herzegovina":  (2, 5, 2),   # J1: 1-1 + J2: 1-4
+    "Catar":                 (1, 7, 2),   # J1: 1-1 + J2: 0-6
+    "Suiza":                 (5, 2, 2),   # J1: 1-1 + J2: 4-1
     # Grupo C
     "Brasil":                (1, 1, 1),
     "Marruecos":             (1, 1, 1),
@@ -737,8 +738,8 @@ def calcular_lambdas(ea: str, eb: str, sede: str):
     elo_b = ELO.get(eb, 1500)
     diff = elo_a - elo_b
     ajuste = (1 / (1 + 10 ** (-diff / 400))) * 2 - 1
-    lam_a = 1.30 * (1.0 + ajuste * 0.20)
-    lam_b = 1.30 * (1.0 - ajuste * 0.20)
+    lam_a = 1.55 * (1.0 + ajuste * 0.35)
+    lam_b = 1.55 * (1.0 - ajuste * 0.35)
 
     # Ajuste por forma en este Mundial (goles reales del torneo)
     # Peso pequeño (±8% máx) para no sobreponderar 1 partido
@@ -800,8 +801,18 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     rng = np.random.default_rng()
     lam_a, lam_b = calcular_lambdas(ea, eb, sede)
 
-    ga = rng.poisson(lam_a, n)
-    gb = rng.poisson(lam_b, n)
+    # Modelo de goles mixto:
+    # - Poisson para el equipo con mayor lambda (favorito) → captura goleadas
+    # - Negativa binomial r=4 para el equipo menor → más varianza en underdog
+    # Esto reproduce bien tanto el 0-0 de España-Cabo Verde como el 7-1 de Alemania
+    if lam_a >= lam_b:
+        ga = rng.poisson(lam_a, n)
+        p_b = 4 / (4 + lam_b)
+        gb = rng.negative_binomial(4, p_b, n)
+    else:
+        p_a = 4 / (4 + lam_a)
+        ga = rng.negative_binomial(4, p_a, n)
+        gb = rng.poisson(lam_b, n)
 
     prob_a   = float(np.sum(ga > gb)) / n * 100
     prob_b   = float(np.sum(gb > ga)) / n * 100
@@ -843,6 +854,136 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     }
 
 
+
+def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
+    """
+    Genera sugerencias de apuestas conservadoras basadas en la simulación.
+    Solo recomienda cuando la confianza supera umbrales mínimos.
+    Retorna lista de dicts con: mercado, seleccion, confianza, casa, nota
+    """
+    apuestas = []
+    pa, pd, pb = r["prob_a"], r["prob_emp"], r["prob_b"]
+    ga_esp, gb_esp = r["goles_a"], r["goles_b"]
+    goles_tot = r["goles_totales_esperados"] if "goles_totales_esperados" in r else ga_esp + gb_esp
+    amarillas = r["amarillas"]
+    rojas = r["rojas"]
+
+    # ── RESULTADO (Moneyline / 1X2) ──────────────────────────────────────────
+    # Solo recomendar si hay ventaja clara (>58%)
+    if pa >= 58:
+        apuestas.append({
+            "mercado": "Resultado (Moneyline)",
+            "seleccion": f"✅ {ea} gana",
+            "confianza": pa,
+            "nivel": "ALTA" if pa >= 65 else "MEDIA",
+            "nota": f"Modelo da {pa:.1f}% de probabilidad",
+            "donde": "Playdoit / Draftea → 1X2 → '1'"
+        })
+    elif pb >= 58:
+        apuestas.append({
+            "mercado": "Resultado (Moneyline)",
+            "seleccion": f"✅ {eb} gana",
+            "confianza": pb,
+            "nivel": "ALTA" if pb >= 65 else "MEDIA",
+            "nota": f"Modelo da {pb:.1f}% de probabilidad",
+            "donde": "Playdoit / Draftea → 1X2 → '2'"
+        })
+
+    # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
+    # Si hay un favorito moderado, la doble oportunidad es más segura
+    if 52 <= pa < 58:
+        apuestas.append({
+            "mercado": "Doble Oportunidad",
+            "seleccion": f"✅ {ea} o Empate (1X)",
+            "confianza": pa + pd,
+            "nivel": "MEDIA",
+            "nota": f"Cubre victoria + empate: {pa+pd:.1f}% probabilidad combinada",
+            "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
+        })
+    elif 52 <= pb < 58:
+        apuestas.append({
+            "mercado": "Doble Oportunidad",
+            "seleccion": f"✅ {eb} o Empate (X2)",
+            "confianza": pb + pd,
+            "nivel": "MEDIA",
+            "nota": f"Cubre victoria + empate: {pb+pd:.1f}% probabilidad combinada",
+            "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
+        })
+
+    # ── TOTAL DE GOLES Over/Under ────────────────────────────────────────────
+    # Solo recomendar si la señal es clara (>60% en una dirección)
+    if goles_tot >= 2.8:
+        apuestas.append({
+            "mercado": "Total de Goles",
+            "seleccion": f"✅ Más de 2.5 goles",
+            "confianza": min(goles_tot / 3.5 * 100, 72),
+            "nivel": "MEDIA" if goles_tot < 3.2 else "ALTA",
+            "nota": f"Modelo espera {goles_tot:.2f} goles totales en el partido",
+            "donde": "Playdoit / Draftea → Total Goles → 'Over 2.5'"
+        })
+    elif goles_tot <= 2.0:
+        apuestas.append({
+            "mercado": "Total de Goles",
+            "seleccion": f"✅ Menos de 2.5 goles",
+            "confianza": min((3.0 - goles_tot) / 2.0 * 100, 68),
+            "nivel": "MEDIA",
+            "nota": f"Modelo espera solo {goles_tot:.2f} goles totales",
+            "donde": "Playdoit / Draftea → Total Goles → 'Under 2.5'"
+        })
+
+    # ── TARJETAS AMARILLAS Over/Under ────────────────────────────────────────
+    # Muy conservador — solo si la señal es muy clara
+    linea_tarj = round(amarillas * 2) / 2  # redondear al .5 más cercano
+    if amarillas >= 5.2:
+        apuestas.append({
+            "mercado": "Total Tarjetas Amarillas",
+            "seleccion": f"✅ Más de {linea_tarj - 0.5:.1f} amarillas",
+            "confianza": min(amarillas / 6.0 * 100, 68),
+            "nivel": "MEDIA",
+            "nota": f"Árbitro estricto + historial H2H: {amarillas:.1f} esperadas. Conservador.",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Over {:.1f}'".format(linea_tarj - 0.5)
+        })
+    elif amarillas <= 3.2:
+        apuestas.append({
+            "mercado": "Total Tarjetas Amarillas",
+            "seleccion": f"✅ Menos de {linea_tarj + 0.5:.1f} amarillas",
+            "confianza": min((4.0 - amarillas) / 2.0 * 100, 65),
+            "nivel": "MEDIA",
+            "nota": f"Árbitro permisivo: solo {amarillas:.1f} esperadas",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Under {:.1f}'".format(linea_tarj + 0.5)
+        })
+
+    # ── AMBOS EQUIPOS MARCAN ─────────────────────────────────────────────────
+    # Calculamos probabilidad de que ambos marquen al menos 1
+    # P(ga>=1 y gb>=1) ≈ P(ga>=1) * P(gb>=1) con Poisson
+    import math
+    p_ga0 = math.exp(-ga_esp)   # P(ga=0) con Poisson
+    p_gb0 = math.exp(-gb_esp)
+    p_ambos = (1 - p_ga0) * (1 - p_gb0) * 100
+
+    if p_ambos >= 55:
+        apuestas.append({
+            "mercado": "Ambos Equipos Marcan",
+            "seleccion": "✅ Sí — ambos marcan",
+            "confianza": p_ambos,
+            "nivel": "MEDIA" if p_ambos < 62 else "ALTA",
+            "nota": f"{p_ambos:.1f}% de probabilidad basado en goles esperados",
+            "donde": "Playdoit / Draftea → Ambos Marcan → 'Sí'"
+        })
+    elif p_ambos <= 38:
+        apuestas.append({
+            "mercado": "Ambos Equipos Marcan",
+            "seleccion": "✅ No — al menos un equipo no marca",
+            "confianza": 100 - p_ambos,
+            "nivel": "MEDIA",
+            "nota": f"Solo {p_ambos:.1f}% de prob. de que ambos marquen",
+            "donde": "Playdoit / Draftea → Ambos Marcan → 'No'"
+        })
+
+    # Ordenar por confianza (más seguro primero)
+    apuestas.sort(key=lambda x: x["confianza"], reverse=True)
+    return apuestas
+
 # ─────────────────────────────────────────────────────────────────────────────
 # HELPERS DE UI
 # ─────────────────────────────────────────────────────────────────────────────
@@ -860,7 +1001,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-tab_pred, tab_res, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "⚙️ Modelo"])
+tab_pred, tab_res, tab_apuestas, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "⚙️ Modelo"])
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1088,7 +1229,100 @@ with tab_res:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 3 — CÓMO FUNCIONA
+# TAB 3 — APUESTAS SUGERIDAS
+# ══════════════════════════════════════════════════════════════════════════════
+with tab_apuestas:
+    st.markdown("#### 🎰 Análisis de apuestas — Playdoit & Draftea")
+    st.caption("Selecciona un partido en el Predictor y simúlalo primero. Las sugerencias aparecerán aquí.")
+
+    st.markdown("""
+    <div style="background:#1a1500;border:1px solid #5a3a00;border-radius:10px;
+    padding:0.8rem 1rem;margin-bottom:1.5rem;font-size:0.8rem;color:#f0c040">
+    ⚠️ <b>Solo informativo.</b> Este análisis es estadístico, no garantiza resultados.
+    Apuesta solo lo que puedas permitirte perder. El modelo es conservador — 
+    si no hay señal clara, no sugiere nada.
+    </div>
+    """, unsafe_allow_html=True)
+
+    if idx_sel is None or not (btn or resultado_real):
+        st.markdown("""
+        <div style="text-align:center;padding:3rem;color:#4a5568">
+          <div style="font-size:2.5rem">🎰</div>
+          <div style="margin-top:0.5rem;font-size:0.9rem">
+            Ve al tab Predictor, selecciona un partido y simúlalo primero
+          </div>
+        </div>""", unsafe_allow_html=True)
+    else:
+        ea2, eb2, grupo2, sede2, res2, arb2 = PARTIDOS[idx_sel]
+
+        # Necesitamos el resultado de la simulación — correrla de nuevo
+        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=10_000)
+        # Agregar goles totales al resultado
+        r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
+
+        sugerencias = analizar_apuestas(ea2, eb2, r2)
+
+        if not sugerencias:
+            st.info("El modelo no encontró señales suficientemente claras para este partido. "
+                    "Partido demasiado equilibrado — mejor no arriesgar.")
+        else:
+            st.markdown(f"##### {flag(ea2)} {ea2} vs {flag(eb2)} {eb2} — {len(sugerencias)} apuesta(s) sugerida(s)")
+
+            # Mostrar cada apuesta
+            for ap in sugerencias:
+                nivel_cls = "apuesta-alta" if ap["nivel"] == "ALTA" else "apuesta-media"
+                badge_cls = "badge-alta" if ap["nivel"] == "ALTA" else "badge-media"
+                conf_pct = min(ap["confianza"], 99)
+                st.markdown(f"""
+                <div class="{nivel_cls}">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+                    <span class="apuesta-mercado">{ap["mercado"]}</span>
+                    <span class="{badge_cls}">CONFIANZA {nivel_cls.split("-")[1].upper()}</span>
+                  </div>
+                  <div class="apuesta-titulo">{ap["seleccion"]}</div>
+                  <div class="confianza-bar">
+                    <div class="confianza-fill" style="width:{conf_pct:.0f}%"></div>
+                  </div>
+                  <div style="font-size:0.72rem;color:#8899bb;margin-top:0.2rem">{ap["nota"]}</div>
+                  <div style="font-size:0.65rem;color:#4a5568;margin-top:0.3rem">📱 {ap["donde"]}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # PARLAY sugerido — solo con las de confianza ALTA
+            altas = [a for a in sugerencias if a["nivel"] == "ALTA"]
+            if len(altas) >= 2:
+                prob_parlay = 1.0
+                for a in altas:
+                    prob_parlay *= (a["confianza"] / 100)
+                prob_parlay *= 100
+                selecciones = " + ".join([a["seleccion"].replace("✅ ", "") for a in altas])
+                st.markdown(f"""
+                <div class="parlay-box">
+                  <div style="font-size:0.65rem;color:#f0c040;letter-spacing:2px;margin-bottom:0.3rem">
+                    💛 PARLAY SUGERIDO — SOLO APUESTAS DE CONFIANZA ALTA
+                  </div>
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#f0c040;margin-bottom:0.4rem">
+                    {selecciones}
+                  </div>
+                  <div style="font-size:0.75rem;color:#8899bb">
+                    Probabilidad combinada estimada: <b style="color:#f0c040">{prob_parlay:.1f}%</b>
+                    &nbsp;·&nbsp; Recuerda que en parlay todas las selecciones deben ganar
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("""
+            <div style="font-size:0.72rem;color:#4a5568;margin-top:1rem;padding:0.5rem;
+            border-top:1px solid #1e2d45">
+            📊 Basado en: ELO FIFA + forma en el Mundial + altitud + árbitro + historial H2H.
+            El modelo es deliberadamente conservador — si la señal no es clara, no aparece aquí.
+            Tiros de esquina no incluidos (requieren datos de estadísticas de córners por equipo).
+            </div>
+            """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TAB 4 — CÓMO FUNCIONA
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_info:
     st.markdown("#### ¿Cómo funciona el modelo?")
