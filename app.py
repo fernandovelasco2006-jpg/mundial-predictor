@@ -1,6 +1,17 @@
 import streamlit as st
 import numpy as np
 from collections import Counter
+import os
+
+# Módulo de API en tiempo real (importación condicional)
+try:
+    from api_football import (
+        sincronizar_resultados, calcular_corners_promedio,
+        mostrar_status_api, obtener_fixtures_mundial
+    )
+    API_DISPONIBLE = True
+except ImportError:
+    API_DISPONIBLE = False
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIGURACIÓN DE PÁGINA
@@ -998,8 +1009,44 @@ st.markdown("""
 <div class="hero">
   <div class="hero-title">Mundial 2026 · Predictor</div>
   <div class="hero-sub">Monte Carlo · 10,000 simulaciones · ELO + H2H + Clima + Altitud + Árbitro</div>
+</div>""", unsafe_allow_html=True)
+
+if API_KEY and API_DISPONIBLE:
+    mostrar_status_api(API_KEY)
+else:
+    st.markdown('<div style="font-size:0.7rem;color:#4a5568;padding:0.3rem 0">⚪ Modo offline — datos manuales</div>', unsafe_allow_html=True)
+
+st.markdown("""<div style="display:none">
 </div>
 """, unsafe_allow_html=True)
+
+# ── API KEY (desde Streamlit secrets o variable de entorno) ───────────────────
+API_KEY = None
+try:
+    API_KEY = st.secrets["RAPIDAPI_KEY"]
+except Exception:
+    API_KEY = os.environ.get("RAPIDAPI_KEY", None)
+
+# ── SINCRONIZACIÓN AUTOMÁTICA DE RESULTADOS ───────────────────────────────────
+if API_KEY and API_DISPONIBLE:
+    try:
+        with st.spinner("🔄 Sincronizando resultados en tiempo real..."):
+            actualizaciones = sincronizar_resultados(API_KEY, PARTIDOS)
+            if actualizaciones:
+                # Actualizar PARTIDOS con resultados de la API
+                PARTIDOS_ACTUALIZADOS = []
+                for p in PARTIDOS:
+                    ea, eb = p[0], p[1]
+                    if (ea, eb) in actualizaciones and p[4] is None:
+                        resultado_api = actualizaciones[(ea, eb)]
+                        PARTIDOS_ACTUALIZADOS.append(
+                            (ea, eb, p[2], p[3], resultado_api, p[5])
+                        )
+                    else:
+                        PARTIDOS_ACTUALIZADOS.append(p)
+                PARTIDOS = PARTIDOS_ACTUALIZADOS
+    except Exception as e:
+        pass  # Si falla la API, seguimos con datos manuales
 
 # ── APUESTAS DEL DÍA ──────────────────────────────────────────────────────────
 from datetime import date as _date
