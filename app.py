@@ -1001,6 +1001,72 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# ── APUESTAS DEL DÍA ──────────────────────────────────────────────────────────
+from datetime import date as _date
+hoy = _date.today()
+
+# Partidos de hoy = los que no tienen resultado aún y están en jornada próxima
+partidos_hoy = [p for p in PARTIDOS if p[4] is None][:6]  # máx 6 partidos
+
+if partidos_hoy:
+    with st.expander("🎰 APUESTAS MÁS FUERTES DE HOY — Click para ver", expanded=True):
+        st.markdown("""
+        <div style="font-size:0.7rem;color:#f0c040;letter-spacing:1px;margin-bottom:1rem">
+        Simulación automática de los próximos partidos · Solo se muestran señales con confianza ALTA
+        </div>""", unsafe_allow_html=True)
+
+        mejores = []  # (confianza, partido_label, apuesta)
+        for p in partidos_hoy:
+            ea_d, eb_d, gr_d, sede_d, _, arb_d = p
+            try:
+                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=10_000)
+                r_d["goles_totales_esperados"] = r_d["goles_a"] + r_d["goles_b"]
+                sugs_d = analizar_apuestas(ea_d, eb_d, r_d)
+                for s in sugs_d:
+                    if s["nivel"] == "ALTA":
+                        mejores.append({
+                            "partido": f"{flag(ea_d)} {ea_d} vs {flag(eb_d)} {eb_d}",
+                            "grupo": gr_d,
+                            **s
+                        })
+            except Exception:
+                continue
+
+        # Ordenar por confianza y mostrar top 6
+        mejores.sort(key=lambda x: x["confianza"], reverse=True)
+
+        if not mejores:
+            st.info("Hoy no hay señales de confianza ALTA en ningún partido. "
+                    "El modelo es conservador — si no está claro, no sugiere.")
+        else:
+            cols_d = st.columns(min(len(mejores), 3))
+            for i_d, ap_d in enumerate(mejores[:6]):
+                with cols_d[i_d % 3]:
+                    conf_d = min(ap_d["confianza"], 99)
+                    st.markdown(f"""
+                    <div style="background:#0d2818;border:1px solid #2d6b45;
+                    border-radius:10px;padding:0.9rem;margin-bottom:0.75rem">
+                      <div style="font-size:0.6rem;color:#4ade80;letter-spacing:1px">
+                      Grupo {ap_d["grupo"]} · {ap_d["partido"]}</div>
+                      <div style="font-size:0.6rem;color:#6677aa;letter-spacing:2px;
+                      text-transform:uppercase;margin-top:0.3rem">{ap_d["mercado"]}</div>
+                      <div style="font-size:0.95rem;color:#e8eaf0;margin:0.3rem 0;
+                      font-weight:600">{ap_d["seleccion"]}</div>
+                      <div style="background:#1e2d45;border-radius:3px;height:5px;margin:0.3rem 0">
+                        <div style="width:{conf_d:.0f}%;height:5px;border-radius:3px;
+                        background:linear-gradient(90deg,#3b82f6,#4ade80)"></div>
+                      </div>
+                      <div style="font-size:0.65rem;color:#4ade80">{conf_d:.0f}% confianza</div>
+                      <div style="font-size:0.6rem;color:#4a5568;margin-top:0.2rem">
+                      📱 {ap_d["donde"]}</div>
+                    </div>""", unsafe_allow_html=True)
+
+        st.markdown("""<div style="font-size:0.65rem;color:#4a5568;padding-top:0.5rem;
+        border-top:1px solid #1e2d45">
+        ⚠️ Solo informativo · Basado en simulación Monte Carlo ·
+        Apuesta responsablemente · No garantiza resultados
+        </div>""", unsafe_allow_html=True)
+
 tab_pred, tab_res, tab_apuestas, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "⚙️ Modelo"])
 
 
@@ -1186,6 +1252,65 @@ with tab_pred:
                     + (f' · ⚠️ Bajas: {", ".join([e for e in [ea, eb] if e in BAJAS])}' if any(e in BAJAS for e in [ea, eb]) else '')
                     + '</div>',
                     unsafe_allow_html=True)
+
+                # ── APUESTAS INLINE ────────────────────────────────────────
+                st.markdown("<br>", unsafe_allow_html=True)
+                r["goles_totales_esperados"] = r["goles_a"] + r["goles_b"]
+                sugs = analizar_apuestas(ea, eb, r)
+                if sugs:
+                    st.markdown("""
+                    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;
+                    letter-spacing:2px;color:#f0c040;margin-bottom:0.75rem">
+                    🎰 APUESTAS SUGERIDAS — PLAYDOIT / DRAFTEA
+                    </div>""", unsafe_allow_html=True)
+                    cols_ap = st.columns(len(sugs) if len(sugs) <= 3 else 3)
+                    for i_ap, ap in enumerate(sugs[:3]):
+                        with cols_ap[i_ap]:
+                            color_bg = "#0d2818" if ap["nivel"] == "ALTA" else "#0d1827"
+                            color_br = "#2d6b45" if ap["nivel"] == "ALTA" else "#1e3a5f"
+                            conf = min(ap["confianza"], 99)
+                            st.markdown(f"""
+                            <div style="background:{color_bg};border:1px solid {color_br};
+                            border-radius:10px;padding:0.9rem;height:100%">
+                              <div style="font-size:0.6rem;color:#6677aa;letter-spacing:2px;
+                              text-transform:uppercase">{ap["mercado"]}</div>
+                              <div style="font-size:0.95rem;color:#e8eaf0;margin:0.3rem 0;
+                              font-weight:600">{ap["seleccion"]}</div>
+                              <div style="background:#1e2d45;border-radius:3px;height:5px;margin:0.3rem 0">
+                                <div style="width:{conf:.0f}%;height:5px;border-radius:3px;
+                                background:linear-gradient(90deg,#3b82f6,#4ade80)"></div>
+                              </div>
+                              <div style="font-size:0.65rem;color:#4ade80">{conf:.0f}% confianza</div>
+                              <div style="font-size:0.6rem;color:#4a5568;margin-top:0.3rem">
+                              {ap["nota"]}</div>
+                            </div>""", unsafe_allow_html=True)
+                    # Parlay si hay 2+ altas
+                    altas_i = [a for a in sugs if a["nivel"] == "ALTA"]
+                    if len(altas_i) >= 2:
+                        prob_p = 1.0
+                        for a in altas_i: prob_p *= a["confianza"] / 100
+                        sels = " + ".join([a["seleccion"].replace("✅ ","") for a in altas_i])
+                        st.markdown(f"""
+                        <div style="background:linear-gradient(135deg,#1a1500,#2a2000);
+                        border:1px solid #f0c040;border-radius:10px;padding:0.8rem 1rem;
+                        margin-top:0.75rem">
+                          <span style="font-size:0.6rem;color:#f0c040;letter-spacing:2px">
+                          💛 PARLAY SUGERIDO</span>
+                          <div style="font-size:0.85rem;color:#f0c040;margin:0.2rem 0">{sels}</div>
+                          <div style="font-size:0.65rem;color:#8899bb">
+                          Prob. combinada: <b style="color:#f0c040">{prob_p*100:.1f}%</b>
+                          </div>
+                        </div>""", unsafe_allow_html=True)
+                else:
+                    st.markdown("""
+                    <div style="background:#111827;border:1px solid #1e2d45;border-radius:8px;
+                    padding:0.6rem 1rem;font-size:0.8rem;color:#6677aa;margin-top:0.5rem">
+                    🎰 Sin señales claras de apuesta para este partido — demasiado equilibrado.
+                    </div>""", unsafe_allow_html=True)
+                st.markdown("""<div style="font-size:0.65rem;color:#4a5568;margin-top:0.4rem">
+                ⚠️ Solo informativo. Apuesta responsablemente.</div>""",
+                unsafe_allow_html=True)
+
 
             elif not resultado_real:
                 st.markdown("""
