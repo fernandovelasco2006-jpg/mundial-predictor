@@ -1116,7 +1116,7 @@ if partidos_hoy:
         for p in partidos_hoy:
             ea_d, eb_d, gr_d, sede_d, _, arb_d = p
             try:
-                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=10_000)
+                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=100_000)
                 r_d["goles_totales_esperados"] = r_d["goles_a"] + r_d["goles_b"]
                 sugs_d = analizar_apuestas(ea_d, eb_d, r_d)
                 for s in sugs_d:
@@ -1176,19 +1176,39 @@ with tab_pred:
     with col_izq:
         st.markdown("#### Elige el partido")
 
+        # Botón rápido "Partidos de hoy"
+        partidos_pendientes = [p for p in PARTIDOS if p[4] is None]
+        if partidos_pendientes:
+            if st.button("📅 Partidos de hoy", use_container_width=True):
+                st.session_state["filtro_hoy"] = True
+            else:
+                if "filtro_hoy" not in st.session_state:
+                    st.session_state["filtro_hoy"] = False
+        else:
+            st.session_state["filtro_hoy"] = False
+
+        # Filtros normales
         grupos = sorted(set(p[2] for p in PARTIDOS))
         grupo_sel = st.selectbox("Grupo", ["Todos"] + [f"Grupo {g}" for g in grupos])
         estado_sel = st.radio("Mostrar", ["Todos", "Por jugarse", "Ya jugados"],
                               horizontal=True, label_visibility="collapsed")
 
         filtrados = PARTIDOS
-        if grupo_sel != "Todos":
-            letra = grupo_sel.replace("Grupo ", "")
-            filtrados = [p for p in filtrados if p[2] == letra]
-        if estado_sel == "Por jugarse":
-            filtrados = [p for p in filtrados if p[4] is None]
-        elif estado_sel == "Ya jugados":
-            filtrados = [p for p in filtrados if p[4] is not None]
+
+        # Si se activó "Partidos de hoy", mostrar solo pendientes
+        if st.session_state.get("filtro_hoy", False):
+            filtrados = partidos_pendientes
+            st.markdown('<div style="font-size:0.7rem;color:#f0c040;margin:0.3rem 0 0.5rem">'
+                        '📅 Mostrando partidos pendientes · <a href="#" style="color:#6677aa" '
+                        'onclick="">Ver todos</a></div>', unsafe_allow_html=True)
+        else:
+            if grupo_sel != "Todos":
+                letra = grupo_sel.replace("Grupo ", "")
+                filtrados = [p for p in filtrados if p[2] == letra]
+            if estado_sel == "Por jugarse":
+                filtrados = [p for p in filtrados if p[4] is None]
+            elif estado_sel == "Ya jugados":
+                filtrados = [p for p in filtrados if p[4] is not None]
 
         if not filtrados:
             st.info("Sin partidos en este filtro.")
@@ -1203,10 +1223,11 @@ with tab_pred:
             idx_sel = opciones[lbl_sel]
 
         st.markdown("---")
-        n_sims = st.select_slider("Simulaciones",
-                                  options=[1_000, 5_000, 10_000, 50_000],
-                                  value=10_000,
-                                  format_func=lambda x: f"{x:,}")
+        # Simulaciones fijas en 100k — vectorizado con numpy, corre en <500ms
+        n_sims = 100_000
+        st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;'
+                    'margin-bottom:0.5rem">⚡ 100,000 simulaciones automáticas</div>',
+                    unsafe_allow_html=True)
         btn = st.button("▶ Simular partido")
 
     # ── Panel derecho ──────────────────────────────────────────────────────
@@ -1317,13 +1338,22 @@ with tab_pred:
                     st.markdown('<div style="font-size:0.6rem;color:#6677aa;letter-spacing:2px;'
                                 'text-transform:uppercase;margin-bottom:0.5rem">Top 5 marcadores</div>',
                                 unsafe_allow_html=True)
+                    # Grid horizontal — todos en una sola fila
+                    badges = ""
                     for i, (marcador, cnt) in enumerate(r["top5"]):
                         pct = cnt / n_sims * 100
-                        cls = "score-top" if i == 0 else "score-badge"
-                        st.markdown(
-                            f'<span class="{cls}">{marcador[0]}–{marcador[1]}</span>'
-                            f'<span style="color:#6677aa;font-size:0.8rem;margin-left:6px">{pct:.1f}%</span>',
-                            unsafe_allow_html=True)
+                        bg = "#1a1800" if i == 0 else "#1e2d45"
+                        border = "#f0c040" if i == 0 else "#2a4060"
+                        color = "#f0c040" if i == 0 else "#e8eaf0"
+                        badges += (
+                            f'<div style="display:inline-block;background:{bg};border:1px solid {border};'
+                            f'border-radius:8px;padding:0.3rem 0.6rem;margin:0.15rem;text-align:center">'
+                            f'<div style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;color:{color}">'
+                            f'{marcador[0]}–{marcador[1]}</div>'
+                            f'<div style="font-size:0.6rem;color:#6677aa">{pct:.1f}%</div></div>'
+                        )
+                    st.markdown(f'<div style="display:flex;flex-wrap:wrap;gap:0.1rem">{badges}</div>',
+                                unsafe_allow_html=True)
                 with cm2:
                     st.markdown('<div style="font-size:0.6rem;color:#6677aa;letter-spacing:2px;'
                                 'text-transform:uppercase;margin-bottom:0.5rem">Tarjetas esperadas</div>',
@@ -1478,7 +1508,7 @@ with tab_apuestas:
         ea2, eb2, grupo2, sede2, res2, arb2 = PARTIDOS[idx_sel]
 
         # Necesitamos el resultado de la simulación — correrla de nuevo
-        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=10_000)
+        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=100_000)
         # Agregar goles totales al resultado
         r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
 
