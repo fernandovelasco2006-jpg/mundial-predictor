@@ -364,36 +364,36 @@ PARTIDOS = [
     ("Ecuador",         "Curazao",                "E", "Kansas City",   None,    "Raphael Claus"),
     ("Paises Bajos",    "Suecia",                 "F", "Houston",       None,    "Cesar Arturo Ramos"),
     ("Tunez",           "Japon",                  "F", "Monterrey",     None,    "Istvan Kovacs"),
-    ("Belgica",         "Iran",                   "G", "Boston",        None,    None),
+    ("Belgica",         "Iran",                   "G", "Los Angeles",   None,    None),
     ("Nueva Zelanda",   "Egipto",                 "G", "Seattle",       None,    None),
     ("Espana",          "Arabia Saudita",         "H", "Azteca",        None,    "Felix Zwayer"),
     ("Cabo Verde",      "Uruguay",                "H", "Atlanta",       None,    None),
     ("Francia",         "Irak",                   "I", "Boston",        None,    None),
-    ("Senegal",         "Noruega",                "I", "Kansas City",   None,    None),
+    ("Senegal",         "Noruega",                "I", "Nueva York",    None,    None),
     ("Argentina",       "Austria",                "J", "Dallas",        None,    "Szymon Marciniak"),
     ("Algeria",         "Jordania",               "J", "Dallas",        None,    None),
     ("Portugal",        "Uzbekistan",             "K", "Houston",       None,    None),
-    ("Colombia",        "RD Congo",               "K", "Miami",         None,    None),
-    ("Inglaterra",      "Ghana",                  "L", "Dallas",        None,    None),
+    ("Colombia",        "RD Congo",               "K", "Guadalajara",   None,    None),
+    ("Inglaterra",      "Ghana",                  "L", "Boston",        None,    None),
     ("Croacia",         "Panama",                 "L", "Toronto",       None,    None),
 
     # ── JORNADA 3 ──────────────────────────────────────────────────────────
-    ("Chequia",              "Mexico",            "A", "Guadalajara",   None,    None),
-    ("Sudafrica",            "Corea del Sur",     "A", "Guadalajara",   None,    None),
+    ("Chequia",              "Mexico",            "A", "Azteca",        None,    None),
+    ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     None,    None),
     ("Suiza",                "Canada",            "B", "Vancouver",     None,    None),
-    ("Bosnia y Herzegovina", "Catar",             "B", "Toronto",       None,    None),
-    ("Escocia",              "Brasil",            "C", "Los Angeles",   None,    None),
+    ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       None,    None),
+    ("Escocia",              "Brasil",            "C", "Miami",         None,    None),
     ("Marruecos",            "Haiti",             "C", "Philadelphia",  None,    None),
     ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    None),
     ("Paraguay",             "Australia",         "D", "San Francisco", None,    None),
-    ("Ecuador",              "Alemania",          "E", "Toronto",       None,    None),
+    ("Ecuador",              "Alemania",          "E", "Nueva York",    None,    None),
     ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   None,    None),
     ("Tunez",                "Paises Bajos",      "F", "Houston",       None,    None),
-    ("Japon",                "Suecia",            "F", "Monterrey",     None,    None),
-    ("Nueva Zelanda",        "Belgica",           "G", "Seattle",       None,    None),
+    ("Japon",                "Suecia",            "F", "Dallas",        None,    None),
+    ("Nueva Zelanda",        "Belgica",           "G", "Vancouver",     None,    None),
     ("Egipto",               "Iran",              "G", "Boston",        None,    None),
     ("Cabo Verde",           "Arabia Saudita",    "H", "Atlanta",       None,    None),
-    ("Uruguay",              "Espana",            "H", "Miami",         None,    None),
+    ("Uruguay",              "Espana",            "H", "Guadalajara",   None,    None),
     ("Senegal",              "Irak",              "I", "Kansas City",   None,    None),
     ("Noruega",              "Francia",           "I", "Nueva York",    None,    None),
     ("Algeria",              "Austria",           "J", "Dallas",        None,    None),
@@ -1335,13 +1335,13 @@ with tab_pred:
                   </div>
                   <div style="display:flex;align-items:center;justify-content:center;gap:2rem">
                     <div style="text-align:right">
-                      <div style="font-size:1.8rem">{flag(ea)}</div>
-                      <div style="font-size:0.75rem;color:#aabbcc">{ea}</div>
+                      <div style="font-size:3rem;line-height:1">{flag(ea)}</div>
+                      <div style="font-size:0.75rem;color:#aabbcc;margin-top:0.2rem">{ea}</div>
                     </div>
                     <div class="real-score">{ga_r} – {gb_r}</div>
                     <div style="text-align:left">
-                      <div style="font-size:1.8rem">{flag(eb)}</div>
-                      <div style="font-size:0.75rem;color:#aabbcc">{eb}</div>
+                      <div style="font-size:3rem;line-height:1">{flag(eb)}</div>
+                      <div style="font-size:0.75rem;color:#aabbcc;margin-top:0.2rem">{eb}</div>
                     </div>
                   </div>
                   <div style="font-size:0.75rem;color:#4ade80;margin-top:0.4rem">{ganador_txt}</div>
@@ -1371,7 +1371,9 @@ with tab_pred:
                 with c1:
                     st.markdown(f"""
                     <div class="result-box">
-                      <div style="font-size:3.5rem;line-height:1.1">{flag(ea)}</div>
+                      <div style="font-size:4rem;line-height:1">{flag(ea)}</div>
+                      <div style="font-size:0.65rem;color:#6677aa;letter-spacing:2px;
+                      text-transform:uppercase;margin:0.1rem 0 0.3rem">{ea[:3].upper()}</div>
                       <div class="team-name">{ea}</div>
                       <div class="prob-pct">{pa:.1f}%</div>
                       <div class="prob-lbl">victoria</div>
@@ -1389,7 +1391,9 @@ with tab_pred:
                 with c3:
                     st.markdown(f"""
                     <div class="result-box result-box-b">
-                      <div style="font-size:3.5rem;line-height:1.1">{flag(eb)}</div>
+                      <div style="font-size:4rem;line-height:1">{flag(eb)}</div>
+                      <div style="font-size:0.65rem;color:#6677aa;letter-spacing:2px;
+                      text-transform:uppercase;margin:0.1rem 0 0.3rem">{eb[:3].upper()}</div>
                       <div class="team-name">{eb}</div>
                       <div class="prob-pct prob-pct-b">{pb:.1f}%</div>
                       <div class="prob-lbl">victoria</div>
