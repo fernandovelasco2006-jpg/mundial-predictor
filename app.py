@@ -1136,12 +1136,7 @@ except Exception:
     API_KEY = os.environ.get("RAPIDAPI_KEY", None)
 
 # ── STATUS BADGE API ─────────────────────────────────────────────────────────
-if API_KEY and API_DISPONIBLE:
-    mostrar_status_api(API_KEY)
-else:
-    st.markdown('<div style="font-size:0.7rem;color:#4a5568;padding:0.3rem 0">'
-                '⚪ Modo offline — datos manuales</div>',
-                unsafe_allow_html=True)
+# API status silencioso — sin badge visible
 
 
 # ── SINCRONIZACIÓN AUTOMÁTICA DE RESULTADOS ───────────────────────────────────
