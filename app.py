@@ -132,6 +132,7 @@ h1, h2, h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
 }
 .stButton > button {
     background: linear-gradient(135deg,#1a4a7f,#2a6abf) !important;
+    font-size:1.1rem !important;
     color:white !important; border:none !important; border-radius:8px !important;
     font-family:'Bebas Neue', sans-serif !important; font-size:1rem !important;
     letter-spacing:2px !important; padding:0.6rem 2rem !important; width:100% !important;
@@ -964,216 +965,150 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
 def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     """
-    Sugerencias de apuestas conservadoras.
-    Umbral mínimo: 70% para ALTA, 65% para MEDIA.
-    Usa probabilidades reales de 100k simulaciones — no aproximaciones.
-    Incluye: resultado, doble oportunidad, goles, tarjetas y córners.
+    Muestra TODAS las apuestas con probabilidad >= 70% desde las 100k simulaciones.
+    Sin elif — cada mercado se evalúa independientemente.
     """
     apuestas = []
+    UMBRAL = 70.0  # único umbral para todo
+
     pa  = r["prob_a"]
     pd_ = r["prob_emp"]
     pb  = r["prob_b"]
     amarillas = r["amarillas"]
 
     # Goles
-    p_over15   = r.get("prob_over15",  50.0)
-    p_over25   = r.get("prob_over25",  35.0)
+    p_over05   = r.get("prob_over05",   95.0)
+    p_over15   = r.get("prob_over15",   70.0)
+    p_over25   = r.get("prob_over25",   45.0)
+    p_over35_g = r.get("prob_over35_goles", 25.0)
     p_under25  = 100 - p_over25
-    p_btts     = r.get("prob_btts",    40.0)
-    p_no_btts  = 100 - p_btts
+    p_under15  = 100 - p_over15
 
-    # Tarjetas (desde simulación real)
+    # Ambos marcan
+    p_btts    = r.get("prob_btts",    40.0)
+    p_no_btts = 100 - p_btts
+
+    # Tarjetas
     p_am_over25  = r.get("prob_am_over25",  60.0)
     p_am_over35  = r.get("prob_am_over35",  40.0)
     p_am_over45  = r.get("prob_am_over45",  20.0)
     p_am_under35 = r.get("prob_am_under35", 60.0)
     p_am_under25 = r.get("prob_am_under25", 40.0)
 
-    # Córners (desde simulación real)
+    # Córners
     p_c_over85  = r.get("prob_corners_over85",  50.0)
     p_c_over95  = r.get("prob_corners_over95",  35.0)
     p_c_under85 = r.get("prob_corners_under85", 50.0)
     p_c_under75 = r.get("prob_corners_under75", 30.0)
     corners_esp = r.get("corners_esp", 8.0)
 
-    ALTA  = 70.0   # umbral para nivel ALTA
-    MEDIA = 65.0   # umbral para nivel MEDIA
+    def ap(mercado, seleccion, confianza, nota, donde):
+        apuestas.append({
+            "mercado": mercado,
+            "seleccion": seleccion,
+            "confianza": confianza,
+            "nivel": "ALTA" if confianza >= 78 else "MEDIA",
+            "nota": nota,
+            "donde": donde
+        })
 
     # ── RESULTADO (1X2) ──────────────────────────────────────────────────────
-    if pa >= ALTA:
-        apuestas.append({
-            "mercado": "Resultado (1X2)",
-            "seleccion": f"✅ Gana {ea}",
-            "confianza": pa,
-            "nivel": "ALTA",
-            "nota": f"{pa:.1f}% de 100k simulaciones — favorito claro",
-            "donde": "Playdoit / Draftea → 1X2 → '1'"
-        })
-    elif pb >= ALTA:
-        apuestas.append({
-            "mercado": "Resultado (1X2)",
-            "seleccion": f"✅ Gana {eb}",
-            "confianza": pb,
-            "nivel": "ALTA",
-            "nota": f"{pb:.1f}% de 100k simulaciones — favorito claro",
-            "donde": "Playdoit / Draftea → 1X2 → '2'"
-        })
+    if pa >= UMBRAL:
+        ap("Resultado (1X2)", f"✅ Gana {ea}", pa,
+           f"{pa:.1f}% de 100k simulaciones",
+           "Playdoit / Draftea → 1X2 → '1'")
+    if pb >= UMBRAL:
+        ap("Resultado (1X2)", f"✅ Gana {eb}", pb,
+           f"{pb:.1f}% de 100k simulaciones",
+           "Playdoit / Draftea → 1X2 → '2'")
 
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
-    # Lógica correcta: evaluar la confianza COMBINADA, no el equipo solo
-    # Ej: México 57.8% + Empate 21.7% = 79.5% → sí recomendar 1X
-    conf_1x = min(pa + pd_, 99)   # equipo A o empate
-    conf_x2 = min(pb + pd_, 99)   # equipo B o empate
+    conf_1x = min(pa + pd_, 99)
+    conf_x2 = min(pb + pd_, 99)
+    if conf_1x >= UMBRAL and pa < UMBRAL:
+        ap("Doble Oportunidad", f"✅ {ea} o Empate (1X)", conf_1x,
+           f"{ea} {pa:.1f}% + Empate {pd_:.1f}% = {conf_1x:.1f}% cubierto",
+           "Playdoit / Draftea → Doble Oportunidad → '1X'")
+    if conf_x2 >= UMBRAL and pb < UMBRAL:
+        ap("Doble Oportunidad", f"✅ {eb} o Empate (X2)", conf_x2,
+           f"{eb} {pb:.1f}% + Empate {pd_:.1f}% = {conf_x2:.1f}% cubierto",
+           "Playdoit / Draftea → Doble Oportunidad → 'X2'")
 
-    # Solo recomendar el lado que tenga mayor confianza combinada
-    # y que no sea ya cubierto por el Moneyline directo
-    if conf_1x >= ALTA and pa < ALTA and conf_1x > conf_x2:
-        apuestas.append({
-            "mercado": "Doble Oportunidad",
-            "seleccion": f"✅ {ea} o Empate (1X)",
-            "confianza": conf_1x,
-            "nivel": "ALTA" if conf_1x >= 78 else "MEDIA",
-            "nota": f"{ea} {pa:.1f}% + Empate {pd_:.1f}% = {conf_1x:.1f}% cubierto",
-            "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
-        })
-    elif conf_x2 >= ALTA and pb < ALTA and conf_x2 > conf_1x:
-        apuestas.append({
-            "mercado": "Doble Oportunidad",
-            "seleccion": f"✅ {eb} o Empate (X2)",
-            "confianza": conf_x2,
-            "nivel": "ALTA" if conf_x2 >= 78 else "MEDIA",
-            "nota": f"{eb} {pb:.1f}% + Empate {pd_:.1f}% = {conf_x2:.1f}% cubierto",
-            "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
-        })
+    # ── TOTAL DE GOLES — todos los mercados independientes ───────────────────
+    if p_over05 >= UMBRAL:
+        ap("Total Goles", "✅ Over 0.5 (al menos 1 gol)", p_over05,
+           f"{p_over05:.1f}% de simulaciones: el partido tiene goles",
+           "Playdoit / Draftea → Totales → 'Más/Menos 0.5' → Over")
+    if p_over15 >= UMBRAL:
+        ap("Total Goles", "✅ Over 1.5 (2+ goles)", p_over15,
+           f"{p_over15:.1f}% de simulaciones terminaron con 2+ goles",
+           "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Over")
+    if p_over25 >= UMBRAL:
+        ap("Total Goles", "✅ Over 2.5 (3+ goles)", p_over25,
+           f"{p_over25:.1f}% de simulaciones terminaron con 3+ goles",
+           "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Over")
+    if p_over35_g >= UMBRAL:
+        ap("Total Goles", "✅ Over 3.5 (4+ goles)", p_over35_g,
+           f"{p_over35_g:.1f}% de simulaciones terminaron con 4+ goles",
+           "Playdoit / Draftea → Totales → 'Más/Menos 3.5' → Over")
+    if p_under15 >= UMBRAL:
+        ap("Total Goles", "✅ Under 1.5 (0 o 1 gol — partido muy cerrado)", p_under15,
+           f"{p_under15:.1f}% de simulaciones: máximo 1 gol en el partido",
+           "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Under")
+    if p_under25 >= UMBRAL:
+        ap("Total Goles", "✅ Under 2.5 (0, 1 o 2 goles)", p_under25,
+           f"{p_under25:.1f}% de simulaciones: el partido no llega a 3 goles",
+           "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Under")
 
-    # ── TOTAL DE GOLES ───────────────────────────────────────────────────────
-    if p_over15 >= 80:
-        apuestas.append({
-            "mercado": "Total Goles",
-            "seleccion": "✅ Over 1.5 (2+ goles en el partido)",
-            "confianza": p_over15,
-            "nivel": "ALTA" if p_over15 >= 82 else "MEDIA",
-            "nota": f"{p_over15:.1f}% de 100k simulaciones terminaron con 2+ goles",
-            "donde": "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Over"
-        })
-    if p_over25 >= ALTA:
-        apuestas.append({
-            "mercado": "Total Goles",
-            "seleccion": "✅ Over 2.5 (3+ goles en el partido)",
-            "confianza": p_over25,
-            "nivel": "ALTA" if p_over25 >= 75 else "MEDIA",
-            "nota": f"{p_over25:.1f}% de 100k simulaciones terminaron con 3+ goles",
-            "donde": "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Over"
-        })
-    if p_under25 >= ALTA:
-        apuestas.append({
-            "mercado": "Total Goles",
-            "seleccion": "✅ Under 2.5 (0, 1 o 2 goles — partido cerrado)",
-            "confianza": p_under25,
-            "nivel": "ALTA" if p_under25 >= 75 else "MEDIA",
-            "nota": f"{p_under25:.1f}% de 100k simulaciones: el partido no llega a 3 goles",
-            "donde": "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Under"
-        })
+    # ── AMBOS MARCAN ─────────────────────────────────────────────────────────
+    if p_btts >= UMBRAL:
+        ap("Ambos Marcan", "✅ Sí — ambos anotan", p_btts,
+           f"{p_btts:.1f}% de simulaciones: gol de ambos equipos",
+           "Playdoit / Draftea → Ambos Marcan → 'Sí'")
+    if p_no_btts >= UMBRAL:
+        ap("Ambos Marcan", "✅ No — al menos uno no anota", p_no_btts,
+           f"{p_no_btts:.1f}% de simulaciones: al menos un equipo no marcó",
+           "Playdoit / Draftea → Ambos Marcan → 'No'")
 
-    # ── AMBOS MARCAN ────────────────────────────────────────────────────────
-    if p_btts >= ALTA:
-        apuestas.append({
-            "mercado": "Ambos Marcan",
-            "seleccion": "✅ Sí — ambos anotan",
-            "confianza": p_btts,
-            "nivel": "ALTA" if p_btts >= 75 else "MEDIA",
-            "nota": f"{p_btts:.1f}% de simulaciones: gol de ambos equipos",
-            "donde": "Playdoit / Draftea → Ambos Marcan → 'Sí'"
-        })
-    elif p_no_btts >= ALTA:
-        apuestas.append({
-            "mercado": "Ambos Marcan",
-            "seleccion": "✅ No — al menos uno no anota",
-            "confianza": p_no_btts,
-            "nivel": "ALTA" if p_no_btts >= 75 else "MEDIA",
-            "nota": f"{p_no_btts:.1f}% de simulaciones: al menos un equipo no marcó",
-            "donde": "Playdoit / Draftea → Ambos Marcan → 'No'"
-        })
+    # ── TARJETAS AMARILLAS — todos los mercados independientes ───────────────
+    if p_am_over25 >= UMBRAL:
+        ap("Tarjetas Amarillas", "✅ Over 2.5 amarillas (3+ tarjetas)", p_am_over25,
+           f"{p_am_over25:.1f}% de simulaciones: 3+ amarillas · {amarillas:.1f} esp.",
+           "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Over")
+    if p_am_over35 >= UMBRAL:
+        ap("Tarjetas Amarillas", "✅ Over 3.5 amarillas (4+ tarjetas)", p_am_over35,
+           f"{p_am_over35:.1f}% de simulaciones: 4+ amarillas · {amarillas:.1f} esp.",
+           "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Over")
+    if p_am_over45 >= UMBRAL:
+        ap("Tarjetas Amarillas", "✅ Over 4.5 amarillas (5+ tarjetas)", p_am_over45,
+           f"{p_am_over45:.1f}% de simulaciones: 5+ amarillas · {amarillas:.1f} esp.",
+           "Playdoit / Draftea → Tarjetas → 'Más/Menos 4.5' → Over")
+    if p_am_under25 >= UMBRAL:
+        ap("Tarjetas Amarillas", "✅ Under 2.5 amarillas (máx 2 tarjetas)", p_am_under25,
+           f"{p_am_under25:.1f}% de simulaciones: 2 amarillas o menos",
+           "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Under")
+    if p_am_under35 >= UMBRAL:
+        ap("Tarjetas Amarillas", "✅ Under 3.5 amarillas (máx 3 tarjetas)", p_am_under35,
+           f"{p_am_under35:.1f}% de simulaciones: 3 amarillas o menos",
+           "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Under")
 
-    # ── TARJETAS AMARILLAS ───────────────────────────────────────────────────
-    # Over 4.5
-    if p_am_over45 >= ALTA:
-        apuestas.append({
-            "mercado": "Tarjetas Amarillas",
-            "seleccion": "✅ Over 4.5 amarillas (5+ tarjetas)",
-            "confianza": p_am_over45,
-            "nivel": "ALTA" if p_am_over45 >= 75 else "MEDIA",
-            "nota": f"{p_am_over45:.1f}% de simulaciones: 5+ amarillas · Árbitro: {amarillas:.1f} esp.",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 4.5' → Over"
-        })
-    # Over 3.5
-    elif p_am_over35 >= ALTA:
-        apuestas.append({
-            "mercado": "Tarjetas Amarillas",
-            "seleccion": "✅ Over 3.5 amarillas (4+ tarjetas)",
-            "confianza": p_am_over35,
-            "nivel": "ALTA" if p_am_over35 >= 75 else "MEDIA",
-            "nota": f"{p_am_over35:.1f}% de simulaciones: 4+ amarillas · Árbitro: {amarillas:.1f} esp.",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Over"
-        })
-    # Under 2.5
-    if p_am_under25 >= ALTA:
-        apuestas.append({
-            "mercado": "Tarjetas Amarillas",
-            "seleccion": "✅ Under 2.5 amarillas (0, 1 o 2 tarjetas)",
-            "confianza": p_am_under25,
-            "nivel": "ALTA" if p_am_under25 >= 75 else "MEDIA",
-            "nota": f"{p_am_under25:.1f}% de simulaciones: partido muy limpio · Árbitro permisivo",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Under"
-        })
-    # Under 3.5
-    elif p_am_under35 >= ALTA:
-        apuestas.append({
-            "mercado": "Tarjetas Amarillas",
-            "seleccion": "✅ Under 3.5 amarillas (máx 3 tarjetas)",
-            "confianza": p_am_under35,
-            "nivel": "ALTA" if p_am_under35 >= 75 else "MEDIA",
-            "nota": f"{p_am_under35:.1f}% de simulaciones: 3 amarillas o menos · Árbitro: {amarillas:.1f} esp.",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Under"
-        })
-
-    # ── TIROS DE ESQUINA (CÓRNERS) ───────────────────────────────────────────
-    if p_c_over95 >= ALTA:
-        apuestas.append({
-            "mercado": "Tiros de Esquina",
-            "seleccion": f"✅ Over 9.5 córners (10+ en el partido)",
-            "confianza": p_c_over95,
-            "nivel": "ALTA" if p_c_over95 >= 75 else "MEDIA",
-            "nota": f"{p_c_over95:.1f}% de simulaciones: 10+ córners · Estimado: {corners_esp:.1f} totales",
-            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 9.5' → Over"
-        })
-    elif p_c_over85 >= ALTA:
-        apuestas.append({
-            "mercado": "Tiros de Esquina",
-            "seleccion": f"✅ Over 8.5 córners (9+ en el partido)",
-            "confianza": p_c_over85,
-            "nivel": "ALTA" if p_c_over85 >= 75 else "MEDIA",
-            "nota": f"{p_c_over85:.1f}% de simulaciones: 9+ córners · Estimado: {corners_esp:.1f} totales",
-            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Over"
-        })
-    if p_c_under75 >= ALTA:
-        apuestas.append({
-            "mercado": "Tiros de Esquina",
-            "seleccion": f"✅ Under 7.5 córners (7 o menos)",
-            "confianza": p_c_under75,
-            "nivel": "ALTA" if p_c_under75 >= 75 else "MEDIA",
-            "nota": f"{p_c_under75:.1f}% de simulaciones: 7 córners o menos · Estimado: {corners_esp:.1f}",
-            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under"
-        })
-    elif p_c_under85 >= ALTA:
-        apuestas.append({
-            "mercado": "Tiros de Esquina",
-            "seleccion": f"✅ Under 8.5 córners (8 o menos)",
-            "confianza": p_c_under85,
-            "nivel": "ALTA" if p_c_under85 >= 75 else "MEDIA",
-            "nota": f"{p_c_under85:.1f}% de simulaciones: 8 córners o menos · Estimado: {corners_esp:.1f}",
-            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Under"
-        })
+    # ── TIROS DE ESQUINA — todos los mercados independientes ─────────────────
+    if p_c_over85 >= UMBRAL:
+        ap("Córners", f"✅ Over 8.5 córners (9+)", p_c_over85,
+           f"{p_c_over85:.1f}% de simulaciones: 9+ córners · {corners_esp:.1f} esp.",
+           "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Over")
+    if p_c_over95 >= UMBRAL:
+        ap("Córners", f"✅ Over 9.5 córners (10+)", p_c_over95,
+           f"{p_c_over95:.1f}% de simulaciones: 10+ córners · {corners_esp:.1f} esp.",
+           "Playdoit / Draftea → Esquinas → 'Más/Menos 9.5' → Over")
+    if p_c_under85 >= UMBRAL:
+        ap("Córners", f"✅ Under 8.5 córners (máx 8)", p_c_under85,
+           f"{p_c_under85:.1f}% de simulaciones: 8 córners o menos · {corners_esp:.1f} esp.",
+           "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Under")
+    if p_c_under75 >= UMBRAL:
+        ap("Córners", f"✅ Under 7.5 córners (máx 7)", p_c_under75,
+           f"{p_c_under75:.1f}% de simulaciones: 7 córners o menos · {corners_esp:.1f} esp.",
+           "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under")
 
     apuestas.sort(key=lambda x: x["confianza"], reverse=True)
     return apuestas
@@ -1360,7 +1295,7 @@ with tab_pred:
         st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;'
                     'margin-bottom:0.5rem">⚡ 100,000 simulaciones automáticas</div>',
                     unsafe_allow_html=True)
-        btn = st.button("▶ Simular partido")
+        btn = st.button("⚽ Simular partido")
 
     # ── Panel derecho ──────────────────────────────────────────────────────
     with col_der:
@@ -1436,7 +1371,7 @@ with tab_pred:
                 with c1:
                     st.markdown(f"""
                     <div class="result-box">
-                      <div class="team-flag">{flag(ea)}</div>
+                      <div style="font-size:3.5rem;line-height:1.1">{flag(ea)}</div>
                       <div class="team-name">{ea}</div>
                       <div class="prob-pct">{pa:.1f}%</div>
                       <div class="prob-lbl">victoria</div>
@@ -1446,7 +1381,7 @@ with tab_pred:
                 with c2:
                     st.markdown(f"""
                     <div class="result-box result-box-draw">
-                      <div class="team-flag">🤝</div>
+                      <div style="font-size:3.5rem;line-height:1.1">🤝</div>
                       <div class="team-name" style="color:#9ca3af">Empate</div>
                       <div class="prob-pct prob-pct-draw">{pd_:.1f}%</div>
                       <div class="prob-lbl">probabilidad</div>
@@ -1454,7 +1389,7 @@ with tab_pred:
                 with c3:
                     st.markdown(f"""
                     <div class="result-box result-box-b">
-                      <div class="team-flag">{flag(eb)}</div>
+                      <div style="font-size:3.5rem;line-height:1.1">{flag(eb)}</div>
                       <div class="team-name">{eb}</div>
                       <div class="prob-pct prob-pct-b">{pb:.1f}%</div>
                       <div class="prob-lbl">victoria</div>
