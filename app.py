@@ -1020,28 +1020,31 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
         })
 
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
-    if MEDIA <= pa < ALTA:
-        conf = min(pa + pd_, 99)
-        if conf >= ALTA:
-            apuestas.append({
-                "mercado": "Doble Oportunidad",
-                "seleccion": f"✅ {ea} o Empate (1X)",
-                "confianza": conf,
-                "nivel": "ALTA" if conf >= 78 else "MEDIA",
-                "nota": f"Victoria + empate cubre el {conf:.1f}% de los escenarios",
-                "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
-            })
-    elif MEDIA <= pb < ALTA:
-        conf = min(pb + pd_, 99)
-        if conf >= ALTA:
-            apuestas.append({
-                "mercado": "Doble Oportunidad",
-                "seleccion": f"✅ {eb} o Empate (X2)",
-                "confianza": conf,
-                "nivel": "ALTA" if conf >= 78 else "MEDIA",
-                "nota": f"Victoria + empate cubre el {conf:.1f}% de los escenarios",
-                "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
-            })
+    # Lógica correcta: evaluar la confianza COMBINADA, no el equipo solo
+    # Ej: México 57.8% + Empate 21.7% = 79.5% → sí recomendar 1X
+    conf_1x = min(pa + pd_, 99)   # equipo A o empate
+    conf_x2 = min(pb + pd_, 99)   # equipo B o empate
+
+    # Solo recomendar el lado que tenga mayor confianza combinada
+    # y que no sea ya cubierto por el Moneyline directo
+    if conf_1x >= ALTA and pa < ALTA and conf_1x > conf_x2:
+        apuestas.append({
+            "mercado": "Doble Oportunidad",
+            "seleccion": f"✅ {ea} o Empate (1X)",
+            "confianza": conf_1x,
+            "nivel": "ALTA" if conf_1x >= 78 else "MEDIA",
+            "nota": f"{ea} {pa:.1f}% + Empate {pd_:.1f}% = {conf_1x:.1f}% cubierto",
+            "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
+        })
+    elif conf_x2 >= ALTA and pb < ALTA and conf_x2 > conf_1x:
+        apuestas.append({
+            "mercado": "Doble Oportunidad",
+            "seleccion": f"✅ {eb} o Empate (X2)",
+            "confianza": conf_x2,
+            "nivel": "ALTA" if conf_x2 >= 78 else "MEDIA",
+            "nota": f"{eb} {pb:.1f}% + Empate {pd_:.1f}% = {conf_x2:.1f}% cubierto",
+            "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
+        })
 
     # ── TOTAL DE GOLES ───────────────────────────────────────────────────────
     if p_over15 >= 80:
