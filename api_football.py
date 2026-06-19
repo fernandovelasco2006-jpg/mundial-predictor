@@ -104,9 +104,10 @@ def _get(endpoint: str, params: dict, api_key: str) -> dict | None:
         )
         if r.status_code == 200:
             return r.json()
+        elif r.status_code == 429:
+            return None  # límite de requests alcanzado — modo silencioso
         else:
-            st.warning(f"API error {r.status_code}: {r.text[:100]}")
-            return None
+            return None  # cualquier error → fallback silencioso
     except Exception as e:
         st.warning(f"Error conectando a la API: {e}")
         return None
@@ -279,9 +280,12 @@ def mostrar_status_api(api_key: str):
         if r.status_code == 200:
             st.success("🟢 API conectada — datos en tiempo real activos")
             return True
+        elif r.status_code == 429:
+            st.info("⚪ Límite mensual de API alcanzado — usando datos manuales (se renueva el 1ro del mes)")
+            return False
         else:
-            st.warning(f"🟡 API respondió con error {r.status_code}")
+            st.info(f"⚪ API en modo offline — usando datos manuales")
             return False
     except Exception:
-        st.error("🔴 API no disponible — usando datos manuales")
+        st.info("⚪ Modo offline — usando datos manuales")
         return False
