@@ -315,6 +315,32 @@ BANDERAS = {
     "Inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "Croacia": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦",
     "Arabia Saudi": "🇸🇦",
 }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CÓDIGOS ISO para banderas (flagcdn.com)
+# ─────────────────────────────────────────────────────────────────────────────
+FLAG_ISO = {
+    "Mexico":"mx","Sudafrica":"za","Corea del Sur":"kr","Chequia":"cz",
+    "Canada":"ca","Bosnia y Herzegovina":"ba","Catar":"qa","Suiza":"ch",
+    "Brasil":"br","Marruecos":"ma","Haiti":"ht","Escocia":"gb-sct",
+    "Estados Unidos":"us","Paraguay":"py","Australia":"au","Turquia":"tr",
+    "Alemania":"de","Curazao":"cw","Costa de Marfil":"ci","Ecuador":"ec",
+    "Paises Bajos":"nl","Japon":"jp","Suecia":"se","Tunez":"tn",
+    "Belgica":"be","Egipto":"eg","Iran":"ir","Nueva Zelanda":"nz",
+    "Espana":"es","Cabo Verde":"cv","Arabia Saudi":"sa","Arabia Saudita":"sa",
+    "Uruguay":"uy","Francia":"fr","Senegal":"sn","Irak":"iq","Noruega":"no",
+    "Argentina":"ar","Algeria":"dz","Argelia":"dz","Austria":"at","Jordania":"jo",
+    "Portugal":"pt","RD Congo":"cd","Uzbekistan":"uz","Colombia":"co",
+    "Inglaterra":"gb-eng","Croacia":"hr","Ghana":"gh","Panama":"pa",
+}
+
+def flag_img(equipo: str, size: int = 48) -> str:
+    """Devuelve un tag <img> con la bandera del país desde flagcdn.com"""
+    iso = FLAG_ISO.get(equipo, "un")
+    return (f'<img src="https://flagcdn.com/w{size}/{iso}.png" '
+'            width="{size}" style="border-radius:4px;margin-bottom:4px" '
+'            alt="{equipo}">')
+
 def flag(t): return BANDERAS.get(t, "🏳️")
 
 
@@ -969,7 +995,8 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     Sin elif — cada mercado se evalúa independientemente.
     """
     apuestas = []
-    UMBRAL = 70.0  # único umbral para todo
+    UMBRAL_RESULTADO = 75.0   # para ganador y doble oportunidad
+    UMBRAL_MERCADOS  = 80.0   # para goles, tarjetas y córners
 
     pa  = r["prob_a"]
     pd_ = r["prob_emp"]
@@ -1007,17 +1034,17 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             "mercado": mercado,
             "seleccion": seleccion,
             "confianza": confianza,
-            "nivel": "ALTA" if confianza >= 78 else "MEDIA",
+            "nivel": "ALTA" if confianza >= 82 else "MEDIA",
             "nota": nota,
             "donde": donde
         })
 
     # ── RESULTADO (1X2) ──────────────────────────────────────────────────────
-    if pa >= UMBRAL:
+    if pa >= UMBRAL_RESULTADO:
         ap("Resultado (1X2)", f"✅ Gana {ea}", pa,
            f"{pa:.1f}% de 100k simulaciones",
            "Playdoit / Draftea → 1X2 → '1'")
-    if pb >= UMBRAL:
+    if pb >= UMBRAL_RESULTADO:
         ap("Resultado (1X2)", f"✅ Gana {eb}", pb,
            f"{pb:.1f}% de 100k simulaciones",
            "Playdoit / Draftea → 1X2 → '2'")
@@ -1025,87 +1052,87 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
     conf_1x = min(pa + pd_, 99)
     conf_x2 = min(pb + pd_, 99)
-    if conf_1x >= UMBRAL and pa < UMBRAL:
+    if conf_1x >= UMBRAL_RESULTADO and pa < UMBRAL_RESULTADO:
         ap("Doble Oportunidad", f"✅ {ea} o Empate (1X)", conf_1x,
            f"{ea} {pa:.1f}% + Empate {pd_:.1f}% = {conf_1x:.1f}% cubierto",
            "Playdoit / Draftea → Doble Oportunidad → '1X'")
-    if conf_x2 >= UMBRAL and pb < UMBRAL:
+    if conf_x2 >= UMBRAL_RESULTADO and pb < UMBRAL_RESULTADO:
         ap("Doble Oportunidad", f"✅ {eb} o Empate (X2)", conf_x2,
            f"{eb} {pb:.1f}% + Empate {pd_:.1f}% = {conf_x2:.1f}% cubierto",
            "Playdoit / Draftea → Doble Oportunidad → 'X2'")
 
     # ── TOTAL DE GOLES — todos los mercados independientes ───────────────────
-    if p_over05 >= UMBRAL:
+    if p_over05 >= UMBRAL_MERCADOS:
         ap("Total Goles", "✅ Over 0.5 (al menos 1 gol)", p_over05,
            f"{p_over05:.1f}% de simulaciones: el partido tiene goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 0.5' → Over")
-    if p_over15 >= UMBRAL:
+    if p_over15 >= UMBRAL_MERCADOS:
         ap("Total Goles", "✅ Over 1.5 (2+ goles)", p_over15,
            f"{p_over15:.1f}% de simulaciones terminaron con 2+ goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Over")
-    if p_over25 >= UMBRAL:
+    if p_over25 >= UMBRAL_MERCADOS:
         ap("Total Goles", "✅ Over 2.5 (3+ goles)", p_over25,
            f"{p_over25:.1f}% de simulaciones terminaron con 3+ goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Over")
-    if p_over35_g >= UMBRAL:
+    if p_over35_g >= UMBRAL_MERCADOS:
         ap("Total Goles", "✅ Over 3.5 (4+ goles)", p_over35_g,
            f"{p_over35_g:.1f}% de simulaciones terminaron con 4+ goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 3.5' → Over")
-    if p_under15 >= UMBRAL:
+    if p_under15 >= UMBRAL_MERCADOS:
         ap("Total Goles", "✅ Under 1.5 (0 o 1 gol — partido muy cerrado)", p_under15,
            f"{p_under15:.1f}% de simulaciones: máximo 1 gol en el partido",
            "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Under")
-    if p_under25 >= UMBRAL:
+    if p_under25 >= UMBRAL_MERCADOS:
         ap("Total Goles", "✅ Under 2.5 (0, 1 o 2 goles)", p_under25,
            f"{p_under25:.1f}% de simulaciones: el partido no llega a 3 goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Under")
 
     # ── AMBOS MARCAN ─────────────────────────────────────────────────────────
-    if p_btts >= UMBRAL:
+    if p_btts >= UMBRAL_MERCADOS:
         ap("Ambos Marcan", "✅ Sí — ambos anotan", p_btts,
            f"{p_btts:.1f}% de simulaciones: gol de ambos equipos",
            "Playdoit / Draftea → Ambos Marcan → 'Sí'")
-    if p_no_btts >= UMBRAL:
+    if p_no_btts >= UMBRAL_MERCADOS:
         ap("Ambos Marcan", "✅ No — al menos uno no anota", p_no_btts,
            f"{p_no_btts:.1f}% de simulaciones: al menos un equipo no marcó",
            "Playdoit / Draftea → Ambos Marcan → 'No'")
 
     # ── TARJETAS AMARILLAS — todos los mercados independientes ───────────────
-    if p_am_over25 >= UMBRAL:
+    if p_am_over25 >= UMBRAL_MERCADOS:
         ap("Tarjetas Amarillas", "✅ Over 2.5 amarillas (3+ tarjetas)", p_am_over25,
            f"{p_am_over25:.1f}% de simulaciones: 3+ amarillas · {amarillas:.1f} esp.",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Over")
-    if p_am_over35 >= UMBRAL:
+    if p_am_over35 >= UMBRAL_MERCADOS:
         ap("Tarjetas Amarillas", "✅ Over 3.5 amarillas (4+ tarjetas)", p_am_over35,
            f"{p_am_over35:.1f}% de simulaciones: 4+ amarillas · {amarillas:.1f} esp.",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Over")
-    if p_am_over45 >= UMBRAL:
+    if p_am_over45 >= UMBRAL_MERCADOS:
         ap("Tarjetas Amarillas", "✅ Over 4.5 amarillas (5+ tarjetas)", p_am_over45,
            f"{p_am_over45:.1f}% de simulaciones: 5+ amarillas · {amarillas:.1f} esp.",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 4.5' → Over")
-    if p_am_under25 >= UMBRAL:
+    if p_am_under25 >= UMBRAL_MERCADOS:
         ap("Tarjetas Amarillas", "✅ Under 2.5 amarillas (máx 2 tarjetas)", p_am_under25,
            f"{p_am_under25:.1f}% de simulaciones: 2 amarillas o menos",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Under")
-    if p_am_under35 >= UMBRAL:
+    if p_am_under35 >= UMBRAL_MERCADOS:
         ap("Tarjetas Amarillas", "✅ Under 3.5 amarillas (máx 3 tarjetas)", p_am_under35,
            f"{p_am_under35:.1f}% de simulaciones: 3 amarillas o menos",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Under")
 
     # ── TIROS DE ESQUINA — todos los mercados independientes ─────────────────
-    if p_c_over85 >= UMBRAL:
+    if p_c_over85 >= UMBRAL_MERCADOS:
         ap("Córners", f"✅ Over 8.5 córners (9+)", p_c_over85,
            f"{p_c_over85:.1f}% de simulaciones: 9+ córners · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Over")
-    if p_c_over95 >= UMBRAL:
+    if p_c_over95 >= UMBRAL_MERCADOS:
         ap("Córners", f"✅ Over 9.5 córners (10+)", p_c_over95,
            f"{p_c_over95:.1f}% de simulaciones: 10+ córners · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 9.5' → Over")
-    if p_c_under85 >= UMBRAL:
+    if p_c_under85 >= UMBRAL_MERCADOS:
         ap("Córners", f"✅ Under 8.5 córners (máx 8)", p_c_under85,
            f"{p_c_under85:.1f}% de simulaciones: 8 córners o menos · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Under")
-    if p_c_under75 >= UMBRAL:
+    if p_c_under75 >= UMBRAL_MERCADOS:
         ap("Córners", f"✅ Under 7.5 córners (máx 7)", p_c_under75,
            f"{p_c_under75:.1f}% de simulaciones: 7 córners o menos · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under")
@@ -1330,12 +1357,12 @@ with tab_pred:
                   </div>
                   <div style="display:flex;align-items:center;justify-content:center;gap:2rem">
                     <div style="text-align:right">
-                      <div style="font-size:3rem;line-height:1">{flag(ea)}</div>
+                      {flag_img(ea, 48)}
                       <div style="font-size:0.75rem;color:#aabbcc;margin-top:0.2rem">{ea}</div>
                     </div>
                     <div class="real-score">{ga_r} – {gb_r}</div>
                     <div style="text-align:left">
-                      <div style="font-size:3rem;line-height:1">{flag(eb)}</div>
+                      {flag_img(eb, 48)}
                       <div style="font-size:0.75rem;color:#aabbcc;margin-top:0.2rem">{eb}</div>
                     </div>
                   </div>
@@ -1366,9 +1393,7 @@ with tab_pred:
                 with c1:
                     st.markdown(f"""
                     <div class="result-box">
-                      <div style="font-size:4rem;line-height:1">{flag(ea)}</div>
-                      <div style="font-size:0.65rem;color:#6677aa;letter-spacing:2px;
-                      text-transform:uppercase;margin:0.1rem 0 0.3rem">{ea[:3].upper()}</div>
+                      {flag_img(ea, 64)}
                       <div class="team-name">{ea}</div>
                       <div class="prob-pct">{pa:.1f}%</div>
                       <div class="prob-lbl">victoria</div>
@@ -1386,9 +1411,7 @@ with tab_pred:
                 with c3:
                     st.markdown(f"""
                     <div class="result-box result-box-b">
-                      <div style="font-size:4rem;line-height:1">{flag(eb)}</div>
-                      <div style="font-size:0.65rem;color:#6677aa;letter-spacing:2px;
-                      text-transform:uppercase;margin:0.1rem 0 0.3rem">{eb[:3].upper()}</div>
+                      {flag_img(eb, 64)}
                       <div class="team-name">{eb}</div>
                       <div class="prob-pct prob-pct-b">{pb:.1f}%</div>
                       <div class="prob-lbl">victoria</div>
@@ -1538,7 +1561,7 @@ with tab_res:
                 st.markdown(
                     f'<div style="background:{color};border-radius:8px;padding:0.5rem 1rem;'
                     f'margin-bottom:0.35rem;font-size:0.88rem">'
-                    f'{flag(ea)} {ea} '
+                    f'{flag_img(ea,24)} {ea} '
                     f'<b style="font-size:1.1rem;color:#4ade80;margin:0 0.4rem">{ga}–{gb}</b>'
                     f'{eb} {flag(eb)}'
                     f'<span style="color:#6677aa;font-size:0.72rem;margin-left:0.8rem">'
