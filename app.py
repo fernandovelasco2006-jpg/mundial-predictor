@@ -3,6 +3,13 @@ import numpy as np
 from collections import Counter
 import os
 
+# Módulo ML — XGBoost (importación condicional)
+try:
+    from modelo_ml import calcular_lambdas_xgb, disponible as ml_disponible
+    ML_DISPONIBLE = ml_disponible()
+except Exception:
+    ML_DISPONIBLE = False
+
 # Módulo de API en tiempo real (importación condicional)
 try:
     from api_football import (
@@ -810,7 +817,49 @@ def calcular_lambdas(ea: str, eb: str, sede: str):
 
 def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -> dict:
     rng = np.random.default_rng()
-    lam_a, lam_b = calcular_lambdas(ea, eb, sede)
+
+    # Intentar usar XGBoost primero, fallback a fórmula manual
+    xgb_usado = False
+    if ML_DISPONIBLE:
+        try:
+            # Mapear nombres de la app → nombres del dataset de entrenamiento
+            NOMBRES_DATASET = {
+                "Mexico":"Mexico","Sudafrica":"South Africa",
+                "Corea del Sur":"South Korea","Chequia":"Czech Republic",
+                "Canada":"Canada","Bosnia y Herzegovina":"Bosnia and Herzegovina",
+                "Catar":"Qatar","Suiza":"Switzerland","Brasil":"Brazil",
+                "Marruecos":"Morocco","Haiti":"Haiti","Escocia":"Scotland",
+                "Estados Unidos":"United States","Paraguay":"Paraguay",
+                "Australia":"Australia","Turquia":"Turkey","Alemania":"Germany",
+                "Curazao":"Curaçao","Costa de Marfil":"Ivory Coast","Ecuador":"Ecuador",
+                "Paises Bajos":"Netherlands","Japon":"Japan","Suecia":"Sweden",
+                "Tunez":"Tunisia","Belgica":"Belgium","Egipto":"Egypt","Iran":"Iran",
+                "Nueva Zelanda":"New Zealand","Espana":"Spain","Cabo Verde":"Cape Verde",
+                "Arabia Saudi":"Saudi Arabia","Arabia Saudita":"Saudi Arabia",
+                "Uruguay":"Uruguay","Francia":"France","Senegal":"Senegal","Irak":"Iraq",
+                "Noruega":"Norway","Argentina":"Argentina","Algeria":"Algeria",
+                "Argelia":"Algeria","Austria":"Austria","Jordania":"Jordan",
+                "Portugal":"Portugal","RD Congo":"DR Congo","Uzbekistan":"Uzbekistan",
+                "Colombia":"Colombia","Inglaterra":"England","Croacia":"Croatia",
+                "Ghana":"Ghana","Panama":"Panama",
+            }
+            baja_a = BAJAS.get(ea, 1.0)
+            baja_b = BAJAS.get(eb, 1.0)
+            ea_ds = NOMBRES_DATASET.get(ea, ea)
+            eb_ds = NOMBRES_DATASET.get(eb, eb)
+            lam_a_xgb, lam_b_xgb, info_xgb = calcular_lambdas_xgb(
+                ea_ds, eb_ds, sede, es_neutral=True,
+                torneo='FIFA World Cup', mes=6,
+                bajas_a=baja_a, bajas_b=baja_b
+            )
+            if lam_a_xgb and lam_b_xgb:
+                lam_a, lam_b = lam_a_xgb, lam_b_xgb
+                xgb_usado = True
+        except Exception:
+            pass
+
+    if not xgb_usado:
+        lam_a, lam_b = calcular_lambdas(ea, eb, sede)
 
     # Modelo de goles mixto:
     # - Poisson para el equipo con mayor lambda (favorito) → captura goleadas
@@ -862,6 +911,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "tarj_h2h": tarj_h2h,
         "fuente_tarj": fuente_tarj,
         "h2h_desc": desc_h2h,
+        "modelo": "XGBoost 🤖" if xgb_usado else "Monte Carlo 📊",
     }
 
 
@@ -1292,7 +1342,7 @@ with tab_pred:
 
                 # Nota del modelo
                 st.markdown(
-                    f'<div class="model-note">📐 ELO: {r["elo_a"]} ({ea}) vs {r["elo_b"]} ({eb})'
+                    f'<div class="model-note">{r["modelo"]} · ELO: {r["elo_a"]} ({ea}) vs {r["elo_b"]} ({eb})'
                     f' · λ_a={r["lam_a"]} · λ_b={r["lam_b"]} · Altitud: {r["alt"]:,} m'
                     f' · Árbitro: {r["arbitro"]} ({r["arbitro_am"]} T.A. / {r["arbitro_ro"]} T.R.)'
                     f' · H2H: {r["h2h_desc"]}'  
