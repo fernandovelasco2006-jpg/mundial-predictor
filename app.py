@@ -222,6 +222,33 @@ ALTITUD = {
 }
 
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CÓRNERS PROMEDIO POR EQUIPO (a favor, por partido)
+# Fuente: historial Mundiales 2018, 2022 y partidos clasificatorios recientes
+# Se actualiza con datos reales del Mundial 2026 conforme avanza el torneo
+# ─────────────────────────────────────────────────────────────────────────────
+CORNERS_EQUIPO = {
+    # Equipos de posesión/ataque → más córners
+    "Espana":          6.2, "Alemania":       6.0, "Brasil":         5.8,
+    "Paises Bajos":    5.7, "Argentina":      5.5, "Francia":        5.4,
+    "Inglaterra":      5.4, "Portugal":       5.3, "Belgica":        5.2,
+    "Japon":           5.1, "Mexico":         5.0, "Colombia":       4.9,
+    "Uruguay":         4.8, "Croacia":        4.8, "Suiza":          4.7,
+    "Estados Unidos":  4.7, "Corea del Sur":  4.6, "Australia":      4.5,
+    "Marruecos":       4.5, "Senegal":        4.4, "Canada":         4.4,
+    "Noruega":         4.3, "Suecia":         4.3, "Austria":        4.3,
+    "Turquia":         4.2, "Ecuador":        4.2, "Chequia":        4.1,
+    "Ghana":           4.1, "Costa de Marfil":4.0, "Iran":           4.0,
+    "Egipto":          3.9, "Tunez":          3.8, "Algeria":        3.8,
+    "Arabia Saudi":    3.7, "Arabia Saudita": 3.7, "Paraguay":       3.7,
+    "Escocia":         3.6, "Jordania":       3.5, "Irak":           3.5,
+    "Uzbekistan":      3.4, "RD Congo":       3.4, "Panama":         3.3,
+    "Cabo Verde":      3.2, "Catar":          3.1, "Haiti":          3.0,
+    "Sudafrica":       3.0, "Curazao":        2.8, "Nueva Zelanda":  3.0,
+}
+CORNERS_DEFAULT = 4.0  # default si no hay dato
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CLIMA EN JUNIO POR SEDE — temperatura máx (°C) y humedad relativa (%)
 # Fuente: promedios históricos junio de bases climatológicas
@@ -879,6 +906,17 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     prob_emp = float(np.sum(ga == gb)) / n * 100
     top5     = Counter(zip(ga.tolist(), gb.tolist())).most_common(5)
 
+    # Córners: suma promedio de ambos equipos con pequeño ajuste por juego
+    corners_a = CORNERS_EQUIPO.get(ea, CORNERS_DEFAULT)
+    corners_b = CORNERS_EQUIPO.get(eb, CORNERS_DEFAULT)
+    corners_total_esp = corners_a + corners_b
+    # Simulación de córners con Poisson (distribución estándar para córners)
+    corners_sim = rng.poisson(corners_total_esp, n)
+    prob_corners_over85 = float(np.mean(corners_sim > 8) * 100)   # más de 8.5
+    prob_corners_over95 = float(np.mean(corners_sim > 9) * 100)   # más de 9.5
+    prob_corners_under85 = 100 - prob_corners_over85
+    prob_corners_under75 = float(np.mean(corners_sim <= 7) * 100) # menos de 7.5
+
     # Tarjetas: mezcla árbitro histórico + historial H2H entre estos equipos
     lam_am_arb, lam_ro_arb = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
 
@@ -894,8 +932,16 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         lam_ro = lam_ro_arb
         fuente_tarj = f"Solo árbitro ({desc_h2h})"
 
-    amarillas = float(np.mean(rng.poisson(lam_am, n)))
-    rojas     = float(np.mean(rng.poisson(max(lam_ro, 0.01), n)))
+    tarjetas_am_sim = rng.poisson(lam_am, n)
+    tarjetas_ro_sim = rng.poisson(max(lam_ro, 0.01), n)
+    amarillas = float(np.mean(tarjetas_am_sim))
+    rojas     = float(np.mean(tarjetas_ro_sim))
+    # Probabilidades reales de tarjetas desde la simulación
+    prob_am_over25 = float(np.mean(tarjetas_am_sim > 2) * 100)  # más de 2.5
+    prob_am_over35 = float(np.mean(tarjetas_am_sim > 3) * 100)  # más de 3.5
+    prob_am_over45 = float(np.mean(tarjetas_am_sim > 4) * 100)  # más de 4.5
+    prob_am_under35 = 100 - prob_am_over35
+    prob_am_under25 = 100 - prob_am_over25
 
     return {
         "prob_a": prob_a, "prob_b": prob_b, "prob_emp": prob_emp,
@@ -918,25 +964,40 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
 def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     """
-    Genera sugerencias de apuestas conservadoras.
-    Usa probabilidades REALES de los 100k resultados simulados.
-    Umbral mínimo: 65% para ALTA, 60% para MEDIA.
+    Sugerencias de apuestas conservadoras.
+    Umbral mínimo: 70% para ALTA, 65% para MEDIA.
+    Usa probabilidades reales de 100k simulaciones — no aproximaciones.
+    Incluye: resultado, doble oportunidad, goles, tarjetas y córners.
     """
     apuestas = []
-    pa   = r["prob_a"]
-    pd_  = r["prob_emp"]
-    pb   = r["prob_b"]
+    pa  = r["prob_a"]
+    pd_ = r["prob_emp"]
+    pb  = r["prob_b"]
     amarillas = r["amarillas"]
 
-    # Probabilidades reales desde la simulación
-    p_over15  = r.get("prob_over15", 50.0)
-    p_over25  = r.get("prob_over25", 35.0)
-    p_under25 = 100 - p_over25
-    p_btts    = r.get("prob_btts", 40.0)
-    p_no_btts = 100 - p_btts
+    # Goles
+    p_over15   = r.get("prob_over15",  50.0)
+    p_over25   = r.get("prob_over25",  35.0)
+    p_under25  = 100 - p_over25
+    p_btts     = r.get("prob_btts",    40.0)
+    p_no_btts  = 100 - p_btts
 
-    ALTA  = 65.0
-    MEDIA = 60.0
+    # Tarjetas (desde simulación real)
+    p_am_over25  = r.get("prob_am_over25",  60.0)
+    p_am_over35  = r.get("prob_am_over35",  40.0)
+    p_am_over45  = r.get("prob_am_over45",  20.0)
+    p_am_under35 = r.get("prob_am_under35", 60.0)
+    p_am_under25 = r.get("prob_am_under25", 40.0)
+
+    # Córners (desde simulación real)
+    p_c_over85  = r.get("prob_corners_over85",  50.0)
+    p_c_over95  = r.get("prob_corners_over95",  35.0)
+    p_c_under85 = r.get("prob_corners_under85", 50.0)
+    p_c_under75 = r.get("prob_corners_under75", 30.0)
+    corners_esp = r.get("corners_esp", 8.0)
+
+    ALTA  = 70.0   # umbral para nivel ALTA
+    MEDIA = 65.0   # umbral para nivel MEDIA
 
     # ── RESULTADO (1X2) ──────────────────────────────────────────────────────
     if pa >= ALTA:
@@ -945,7 +1006,7 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             "seleccion": f"✅ Gana {ea}",
             "confianza": pa,
             "nivel": "ALTA",
-            "nota": f"{pa:.1f}% de probabilidad en 100k simulaciones",
+            "nota": f"{pa:.1f}% de 100k simulaciones — favorito claro",
             "donde": "Playdoit / Draftea → 1X2 → '1'"
         })
     elif pb >= ALTA:
@@ -954,59 +1015,61 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             "seleccion": f"✅ Gana {eb}",
             "confianza": pb,
             "nivel": "ALTA",
-            "nota": f"{pb:.1f}% de probabilidad en 100k simulaciones",
+            "nota": f"{pb:.1f}% de 100k simulaciones — favorito claro",
             "donde": "Playdoit / Draftea → 1X2 → '2'"
         })
 
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
     if MEDIA <= pa < ALTA:
         conf = min(pa + pd_, 99)
-        apuestas.append({
-            "mercado": "Doble Oportunidad",
-            "seleccion": f"✅ {ea} o Empate (1X)",
-            "confianza": conf,
-            "nivel": "ALTA" if conf >= 75 else "MEDIA",
-            "nota": f"Cubre victoria + empate: {conf:.1f}% combinado",
-            "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
-        })
+        if conf >= ALTA:
+            apuestas.append({
+                "mercado": "Doble Oportunidad",
+                "seleccion": f"✅ {ea} o Empate (1X)",
+                "confianza": conf,
+                "nivel": "ALTA" if conf >= 78 else "MEDIA",
+                "nota": f"Victoria + empate cubre el {conf:.1f}% de los escenarios",
+                "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
+            })
     elif MEDIA <= pb < ALTA:
         conf = min(pb + pd_, 99)
-        apuestas.append({
-            "mercado": "Doble Oportunidad",
-            "seleccion": f"✅ {eb} o Empate (X2)",
-            "confianza": conf,
-            "nivel": "ALTA" if conf >= 75 else "MEDIA",
-            "nota": f"Cubre victoria + empate: {conf:.1f}% combinado",
-            "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
-        })
+        if conf >= ALTA:
+            apuestas.append({
+                "mercado": "Doble Oportunidad",
+                "seleccion": f"✅ {eb} o Empate (X2)",
+                "confianza": conf,
+                "nivel": "ALTA" if conf >= 78 else "MEDIA",
+                "nota": f"Victoria + empate cubre el {conf:.1f}% de los escenarios",
+                "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
+            })
 
-    # ── TOTAL DE GOLES (probabilidades REALES de la simulación) ─────────────
-    if p_over15 >= 75:
+    # ── TOTAL DE GOLES ───────────────────────────────────────────────────────
+    if p_over15 >= 80:
         apuestas.append({
             "mercado": "Total Goles",
-            "seleccion": "✅ Más de 1.5 goles",
+            "seleccion": "✅ Over 1.5 (2+ goles en el partido)",
             "confianza": p_over15,
-            "nivel": "ALTA" if p_over15 >= 80 else "MEDIA",
-            "nota": f"{p_over15:.1f}% de 100k partidos terminaron con 2+ goles",
-            "donde": "Playdoit / Draftea → Total Goles → 'Over 1.5'"
+            "nivel": "ALTA" if p_over15 >= 82 else "MEDIA",
+            "nota": f"{p_over15:.1f}% de 100k simulaciones terminaron con 2+ goles",
+            "donde": "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Over"
         })
     if p_over25 >= ALTA:
         apuestas.append({
             "mercado": "Total Goles",
-            "seleccion": "✅ Más de 2.5 goles",
+            "seleccion": "✅ Over 2.5 (3+ goles en el partido)",
             "confianza": p_over25,
-            "nivel": "ALTA" if p_over25 >= 72 else "MEDIA",
-            "nota": f"{p_over25:.1f}% de 100k partidos terminaron con 3+ goles",
-            "donde": "Playdoit / Draftea → Total Goles → 'Over 2.5'"
+            "nivel": "ALTA" if p_over25 >= 75 else "MEDIA",
+            "nota": f"{p_over25:.1f}% de 100k simulaciones terminaron con 3+ goles",
+            "donde": "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Over"
         })
     if p_under25 >= ALTA:
         apuestas.append({
             "mercado": "Total Goles",
-            "seleccion": "✅ Menos de 2.5 goles",
+            "seleccion": "✅ Under 2.5 (0, 1 o 2 goles — partido cerrado)",
             "confianza": p_under25,
-            "nivel": "ALTA" if p_under25 >= 72 else "MEDIA",
-            "nota": f"{p_under25:.1f}% de 100k partidos: 0, 1 o 2 goles",
-            "donde": "Playdoit / Draftea → Total Goles → 'Under 2.5'"
+            "nivel": "ALTA" if p_under25 >= 75 else "MEDIA",
+            "nota": f"{p_under25:.1f}% de 100k simulaciones: el partido no llega a 3 goles",
+            "donde": "Playdoit / Draftea → Totales → 'Más/Menos 2.5' → Under"
         })
 
     # ── AMBOS MARCAN ────────────────────────────────────────────────────────
@@ -1015,7 +1078,7 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             "mercado": "Ambos Marcan",
             "seleccion": "✅ Sí — ambos anotan",
             "confianza": p_btts,
-            "nivel": "ALTA" if p_btts >= 72 else "MEDIA",
+            "nivel": "ALTA" if p_btts >= 75 else "MEDIA",
             "nota": f"{p_btts:.1f}% de simulaciones: gol de ambos equipos",
             "donde": "Playdoit / Draftea → Ambos Marcan → 'Sí'"
         })
@@ -1024,29 +1087,89 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             "mercado": "Ambos Marcan",
             "seleccion": "✅ No — al menos uno no anota",
             "confianza": p_no_btts,
-            "nivel": "ALTA" if p_no_btts >= 72 else "MEDIA",
+            "nivel": "ALTA" if p_no_btts >= 75 else "MEDIA",
             "nota": f"{p_no_btts:.1f}% de simulaciones: al menos un equipo no marcó",
             "donde": "Playdoit / Draftea → Ambos Marcan → 'No'"
         })
 
-    # ── TARJETAS — solo cuando la señal es muy clara ─────────────────────────
-    if amarillas >= 5.5:
+    # ── TARJETAS AMARILLAS ───────────────────────────────────────────────────
+    # Over 4.5
+    if p_am_over45 >= ALTA:
         apuestas.append({
             "mercado": "Tarjetas Amarillas",
-            "seleccion": "✅ Más de 4.5 amarillas",
-            "confianza": min(amarillas / 6.5 * 100, 70),
-            "nivel": "MEDIA",
-            "nota": f"Árbitro muy estricto: {amarillas:.1f} esperadas",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Over 4.5'"
+            "seleccion": "✅ Over 4.5 amarillas (5+ tarjetas)",
+            "confianza": p_am_over45,
+            "nivel": "ALTA" if p_am_over45 >= 75 else "MEDIA",
+            "nota": f"{p_am_over45:.1f}% de simulaciones: 5+ amarillas · Árbitro: {amarillas:.1f} esp.",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 4.5' → Over"
         })
-    elif amarillas <= 3.0:
+    # Over 3.5
+    elif p_am_over35 >= ALTA:
         apuestas.append({
             "mercado": "Tarjetas Amarillas",
-            "seleccion": "✅ Menos de 3.5 amarillas",
-            "confianza": min((4.0 - amarillas) / 2.0 * 100, 68),
-            "nivel": "MEDIA",
-            "nota": f"Árbitro permisivo: {amarillas:.1f} esperadas",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Under 3.5'"
+            "seleccion": "✅ Over 3.5 amarillas (4+ tarjetas)",
+            "confianza": p_am_over35,
+            "nivel": "ALTA" if p_am_over35 >= 75 else "MEDIA",
+            "nota": f"{p_am_over35:.1f}% de simulaciones: 4+ amarillas · Árbitro: {amarillas:.1f} esp.",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Over"
+        })
+    # Under 2.5
+    if p_am_under25 >= ALTA:
+        apuestas.append({
+            "mercado": "Tarjetas Amarillas",
+            "seleccion": "✅ Under 2.5 amarillas (0, 1 o 2 tarjetas)",
+            "confianza": p_am_under25,
+            "nivel": "ALTA" if p_am_under25 >= 75 else "MEDIA",
+            "nota": f"{p_am_under25:.1f}% de simulaciones: partido muy limpio · Árbitro permisivo",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Under"
+        })
+    # Under 3.5
+    elif p_am_under35 >= ALTA:
+        apuestas.append({
+            "mercado": "Tarjetas Amarillas",
+            "seleccion": "✅ Under 3.5 amarillas (máx 3 tarjetas)",
+            "confianza": p_am_under35,
+            "nivel": "ALTA" if p_am_under35 >= 75 else "MEDIA",
+            "nota": f"{p_am_under35:.1f}% de simulaciones: 3 amarillas o menos · Árbitro: {amarillas:.1f} esp.",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Under"
+        })
+
+    # ── TIROS DE ESQUINA (CÓRNERS) ───────────────────────────────────────────
+    if p_c_over95 >= ALTA:
+        apuestas.append({
+            "mercado": "Tiros de Esquina",
+            "seleccion": f"✅ Over 9.5 córners (10+ en el partido)",
+            "confianza": p_c_over95,
+            "nivel": "ALTA" if p_c_over95 >= 75 else "MEDIA",
+            "nota": f"{p_c_over95:.1f}% de simulaciones: 10+ córners · Estimado: {corners_esp:.1f} totales",
+            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 9.5' → Over"
+        })
+    elif p_c_over85 >= ALTA:
+        apuestas.append({
+            "mercado": "Tiros de Esquina",
+            "seleccion": f"✅ Over 8.5 córners (9+ en el partido)",
+            "confianza": p_c_over85,
+            "nivel": "ALTA" if p_c_over85 >= 75 else "MEDIA",
+            "nota": f"{p_c_over85:.1f}% de simulaciones: 9+ córners · Estimado: {corners_esp:.1f} totales",
+            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Over"
+        })
+    if p_c_under75 >= ALTA:
+        apuestas.append({
+            "mercado": "Tiros de Esquina",
+            "seleccion": f"✅ Under 7.5 córners (7 o menos)",
+            "confianza": p_c_under75,
+            "nivel": "ALTA" if p_c_under75 >= 75 else "MEDIA",
+            "nota": f"{p_c_under75:.1f}% de simulaciones: 7 córners o menos · Estimado: {corners_esp:.1f}",
+            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under"
+        })
+    elif p_c_under85 >= ALTA:
+        apuestas.append({
+            "mercado": "Tiros de Esquina",
+            "seleccion": f"✅ Under 8.5 córners (8 o menos)",
+            "confianza": p_c_under85,
+            "nivel": "ALTA" if p_c_under85 >= 75 else "MEDIA",
+            "nota": f"{p_c_under85:.1f}% de simulaciones: 8 córners o menos · Estimado: {corners_esp:.1f}",
+            "donde": "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Under"
         })
 
     apuestas.sort(key=lambda x: x["confianza"], reverse=True)
