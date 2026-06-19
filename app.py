@@ -918,134 +918,140 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
 def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     """
-    Genera sugerencias de apuestas conservadoras basadas en la simulación.
-    Solo recomienda cuando la confianza supera umbrales mínimos.
-    Retorna lista de dicts con: mercado, seleccion, confianza, casa, nota
+    Genera sugerencias de apuestas conservadoras.
+    Usa probabilidades REALES de los 100k resultados simulados.
+    Umbral mínimo: 65% para ALTA, 60% para MEDIA.
     """
     apuestas = []
-    pa, pd, pb = r["prob_a"], r["prob_emp"], r["prob_b"]
-    ga_esp, gb_esp = r["goles_a"], r["goles_b"]
-    goles_tot = r["goles_totales_esperados"] if "goles_totales_esperados" in r else ga_esp + gb_esp
+    pa   = r["prob_a"]
+    pd_  = r["prob_emp"]
+    pb   = r["prob_b"]
     amarillas = r["amarillas"]
-    rojas = r["rojas"]
 
-    # ── RESULTADO (Moneyline / 1X2) ──────────────────────────────────────────
-    # Solo recomendar si hay ventaja clara (>58%)
-    if pa >= 58:
+    # Probabilidades reales desde la simulación
+    p_over15  = r.get("prob_over15", 50.0)
+    p_over25  = r.get("prob_over25", 35.0)
+    p_under25 = 100 - p_over25
+    p_btts    = r.get("prob_btts", 40.0)
+    p_no_btts = 100 - p_btts
+
+    ALTA  = 65.0
+    MEDIA = 60.0
+
+    # ── RESULTADO (1X2) ──────────────────────────────────────────────────────
+    if pa >= ALTA:
         apuestas.append({
-            "mercado": "Resultado (Moneyline)",
-            "seleccion": f"✅ {ea} gana",
+            "mercado": "Resultado (1X2)",
+            "seleccion": f"✅ Gana {ea}",
             "confianza": pa,
-            "nivel": "ALTA" if pa >= 65 else "MEDIA",
-            "nota": f"Modelo da {pa:.1f}% de probabilidad",
+            "nivel": "ALTA",
+            "nota": f"{pa:.1f}% de probabilidad en 100k simulaciones",
             "donde": "Playdoit / Draftea → 1X2 → '1'"
         })
-    elif pb >= 58:
+    elif pb >= ALTA:
         apuestas.append({
-            "mercado": "Resultado (Moneyline)",
-            "seleccion": f"✅ {eb} gana",
+            "mercado": "Resultado (1X2)",
+            "seleccion": f"✅ Gana {eb}",
             "confianza": pb,
-            "nivel": "ALTA" if pb >= 65 else "MEDIA",
-            "nota": f"Modelo da {pb:.1f}% de probabilidad",
+            "nivel": "ALTA",
+            "nota": f"{pb:.1f}% de probabilidad en 100k simulaciones",
             "donde": "Playdoit / Draftea → 1X2 → '2'"
         })
 
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
-    # Si hay un favorito moderado, la doble oportunidad es más segura
-    if 52 <= pa < 58:
+    if MEDIA <= pa < ALTA:
+        conf = min(pa + pd_, 99)
         apuestas.append({
             "mercado": "Doble Oportunidad",
             "seleccion": f"✅ {ea} o Empate (1X)",
-            "confianza": pa + pd,
-            "nivel": "MEDIA",
-            "nota": f"Cubre victoria + empate: {pa+pd:.1f}% probabilidad combinada",
+            "confianza": conf,
+            "nivel": "ALTA" if conf >= 75 else "MEDIA",
+            "nota": f"Cubre victoria + empate: {conf:.1f}% combinado",
             "donde": "Playdoit / Draftea → Doble Oportunidad → '1X'"
         })
-    elif 52 <= pb < 58:
+    elif MEDIA <= pb < ALTA:
+        conf = min(pb + pd_, 99)
         apuestas.append({
             "mercado": "Doble Oportunidad",
             "seleccion": f"✅ {eb} o Empate (X2)",
-            "confianza": pb + pd,
-            "nivel": "MEDIA",
-            "nota": f"Cubre victoria + empate: {pb+pd:.1f}% probabilidad combinada",
+            "confianza": conf,
+            "nivel": "ALTA" if conf >= 75 else "MEDIA",
+            "nota": f"Cubre victoria + empate: {conf:.1f}% combinado",
             "donde": "Playdoit / Draftea → Doble Oportunidad → 'X2'"
         })
 
-    # ── TOTAL DE GOLES Over/Under ────────────────────────────────────────────
-    # Solo recomendar si la señal es clara (>60% en una dirección)
-    if goles_tot >= 2.8:
+    # ── TOTAL DE GOLES (probabilidades REALES de la simulación) ─────────────
+    if p_over15 >= 75:
         apuestas.append({
-            "mercado": "Total de Goles",
-            "seleccion": f"✅ Más de 2.5 goles",
-            "confianza": min(goles_tot / 3.5 * 100, 72),
-            "nivel": "MEDIA" if goles_tot < 3.2 else "ALTA",
-            "nota": f"Modelo espera {goles_tot:.2f} goles totales en el partido",
+            "mercado": "Total Goles",
+            "seleccion": "✅ Más de 1.5 goles",
+            "confianza": p_over15,
+            "nivel": "ALTA" if p_over15 >= 80 else "MEDIA",
+            "nota": f"{p_over15:.1f}% de 100k partidos terminaron con 2+ goles",
+            "donde": "Playdoit / Draftea → Total Goles → 'Over 1.5'"
+        })
+    if p_over25 >= ALTA:
+        apuestas.append({
+            "mercado": "Total Goles",
+            "seleccion": "✅ Más de 2.5 goles",
+            "confianza": p_over25,
+            "nivel": "ALTA" if p_over25 >= 72 else "MEDIA",
+            "nota": f"{p_over25:.1f}% de 100k partidos terminaron con 3+ goles",
             "donde": "Playdoit / Draftea → Total Goles → 'Over 2.5'"
         })
-    elif goles_tot <= 2.0:
+    if p_under25 >= ALTA:
         apuestas.append({
-            "mercado": "Total de Goles",
-            "seleccion": f"✅ Menos de 2.5 goles",
-            "confianza": min((3.0 - goles_tot) / 2.0 * 100, 68),
-            "nivel": "MEDIA",
-            "nota": f"Modelo espera solo {goles_tot:.2f} goles totales",
+            "mercado": "Total Goles",
+            "seleccion": "✅ Menos de 2.5 goles",
+            "confianza": p_under25,
+            "nivel": "ALTA" if p_under25 >= 72 else "MEDIA",
+            "nota": f"{p_under25:.1f}% de 100k partidos: 0, 1 o 2 goles",
             "donde": "Playdoit / Draftea → Total Goles → 'Under 2.5'"
         })
 
-    # ── TARJETAS AMARILLAS Over/Under ────────────────────────────────────────
-    # Muy conservador — solo si la señal es muy clara
-    linea_tarj = round(amarillas * 2) / 2  # redondear al .5 más cercano
-    if amarillas >= 5.2:
+    # ── AMBOS MARCAN ────────────────────────────────────────────────────────
+    if p_btts >= ALTA:
         apuestas.append({
-            "mercado": "Total Tarjetas Amarillas",
-            "seleccion": f"✅ Más de {linea_tarj - 0.5:.1f} amarillas",
-            "confianza": min(amarillas / 6.0 * 100, 68),
-            "nivel": "MEDIA",
-            "nota": f"Árbitro estricto + historial H2H: {amarillas:.1f} esperadas. Conservador.",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Over {:.1f}'".format(linea_tarj - 0.5)
-        })
-    elif amarillas <= 3.2:
-        apuestas.append({
-            "mercado": "Total Tarjetas Amarillas",
-            "seleccion": f"✅ Menos de {linea_tarj + 0.5:.1f} amarillas",
-            "confianza": min((4.0 - amarillas) / 2.0 * 100, 65),
-            "nivel": "MEDIA",
-            "nota": f"Árbitro permisivo: solo {amarillas:.1f} esperadas",
-            "donde": "Playdoit / Draftea → Tarjetas → 'Under {:.1f}'".format(linea_tarj + 0.5)
-        })
-
-    # ── AMBOS EQUIPOS MARCAN ─────────────────────────────────────────────────
-    # Calculamos probabilidad de que ambos marquen al menos 1
-    # P(ga>=1 y gb>=1) ≈ P(ga>=1) * P(gb>=1) con Poisson
-    import math
-    p_ga0 = math.exp(-ga_esp)   # P(ga=0) con Poisson
-    p_gb0 = math.exp(-gb_esp)
-    p_ambos = (1 - p_ga0) * (1 - p_gb0) * 100
-
-    if p_ambos >= 55:
-        apuestas.append({
-            "mercado": "Ambos Equipos Marcan",
-            "seleccion": "✅ Sí — ambos marcan",
-            "confianza": p_ambos,
-            "nivel": "MEDIA" if p_ambos < 62 else "ALTA",
-            "nota": f"{p_ambos:.1f}% de probabilidad basado en goles esperados",
+            "mercado": "Ambos Marcan",
+            "seleccion": "✅ Sí — ambos anotan",
+            "confianza": p_btts,
+            "nivel": "ALTA" if p_btts >= 72 else "MEDIA",
+            "nota": f"{p_btts:.1f}% de simulaciones: gol de ambos equipos",
             "donde": "Playdoit / Draftea → Ambos Marcan → 'Sí'"
         })
-    elif p_ambos <= 38:
+    elif p_no_btts >= ALTA:
         apuestas.append({
-            "mercado": "Ambos Equipos Marcan",
-            "seleccion": "✅ No — al menos un equipo no marca",
-            "confianza": 100 - p_ambos,
-            "nivel": "MEDIA",
-            "nota": f"Solo {p_ambos:.1f}% de prob. de que ambos marquen",
+            "mercado": "Ambos Marcan",
+            "seleccion": "✅ No — al menos uno no anota",
+            "confianza": p_no_btts,
+            "nivel": "ALTA" if p_no_btts >= 72 else "MEDIA",
+            "nota": f"{p_no_btts:.1f}% de simulaciones: al menos un equipo no marcó",
             "donde": "Playdoit / Draftea → Ambos Marcan → 'No'"
         })
 
-    # Ordenar por confianza (más seguro primero)
+    # ── TARJETAS — solo cuando la señal es muy clara ─────────────────────────
+    if amarillas >= 5.5:
+        apuestas.append({
+            "mercado": "Tarjetas Amarillas",
+            "seleccion": "✅ Más de 4.5 amarillas",
+            "confianza": min(amarillas / 6.5 * 100, 70),
+            "nivel": "MEDIA",
+            "nota": f"Árbitro muy estricto: {amarillas:.1f} esperadas",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Over 4.5'"
+        })
+    elif amarillas <= 3.0:
+        apuestas.append({
+            "mercado": "Tarjetas Amarillas",
+            "seleccion": "✅ Menos de 3.5 amarillas",
+            "confianza": min((4.0 - amarillas) / 2.0 * 100, 68),
+            "nivel": "MEDIA",
+            "nota": f"Árbitro permisivo: {amarillas:.1f} esperadas",
+            "donde": "Playdoit / Draftea → Tarjetas → 'Under 3.5'"
+        })
+
     apuestas.sort(key=lambda x: x["confianza"], reverse=True)
     return apuestas
 
-# ─────────────────────────────────────────────────────────────────────────────
 # HELPERS DE UI
 # ─────────────────────────────────────────────────────────────────────────────
 def tag(cls, txt):
