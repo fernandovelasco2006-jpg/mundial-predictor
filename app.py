@@ -1011,21 +1011,21 @@ st.markdown("""
   <div class="hero-sub">Monte Carlo · 10,000 simulaciones · ELO + H2H + Clima + Altitud + Árbitro</div>
 </div>""", unsafe_allow_html=True)
 
-if API_KEY and API_DISPONIBLE:
-    mostrar_status_api(API_KEY)
-else:
-    st.markdown('<div style="font-size:0.7rem;color:#4a5568;padding:0.3rem 0">⚪ Modo offline — datos manuales</div>', unsafe_allow_html=True)
-
-st.markdown("""<div style="display:none">
-</div>
-""", unsafe_allow_html=True)
-
 # ── API KEY (desde Streamlit secrets o variable de entorno) ───────────────────
 API_KEY = None
 try:
     API_KEY = st.secrets["RAPIDAPI_KEY"]
 except Exception:
     API_KEY = os.environ.get("RAPIDAPI_KEY", None)
+
+# ── STATUS BADGE API ─────────────────────────────────────────────────────────
+if API_KEY and API_DISPONIBLE:
+    mostrar_status_api(API_KEY)
+else:
+    st.markdown('<div style="font-size:0.7rem;color:#4a5568;padding:0.3rem 0">'
+                '⚪ Modo offline — datos manuales</div>',
+                unsafe_allow_html=True)
+
 
 # ── SINCRONIZACIÓN AUTOMÁTICA DE RESULTADOS ───────────────────────────────────
 if API_KEY and API_DISPONIBLE:
