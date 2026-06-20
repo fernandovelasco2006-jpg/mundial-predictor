@@ -928,6 +928,14 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     prob_a   = float(np.sum(ga > gb)) / n * 100
     prob_b   = float(np.sum(gb > ga)) / n * 100
     prob_emp = float(np.sum(ga == gb)) / n * 100
+
+    # Probabilidades reales de total de goles
+    goles_tot = ga + gb
+    prob_over05   = float(np.mean(goles_tot > 0) * 100)
+    prob_over15   = float(np.mean(goles_tot > 1) * 100)
+    prob_over25   = float(np.mean(goles_tot > 2) * 100)
+    prob_over35   = float(np.mean(goles_tot > 3) * 100)
+    prob_btts     = float(np.mean((ga > 0) & (gb > 0)) * 100)
     top5     = Counter(zip(ga.tolist(), gb.tolist())).most_common(5)
 
     # Córners: suma promedio de ambos equipos con pequeño ajuste por juego
@@ -969,6 +977,9 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
     return {
         "prob_a": prob_a, "prob_b": prob_b, "prob_emp": prob_emp,
+        "prob_over05": prob_over05, "prob_over15": prob_over15,
+        "prob_over25": prob_over25, "prob_over35_goles": prob_over35,
+        "prob_btts": prob_btts,
         "goles_a": float(np.mean(ga)), "goles_b": float(np.mean(gb)),
         "top5": top5,
         "amarillas": round(amarillas, 1),
@@ -988,7 +999,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
 def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     """
-    Muestra TODAS las apuestas con probabilidad >= 70% desde las 100k simulaciones.
+    Muestra TODAS las apuestas con probabilidad >= 70% desde las 1M simulaciones.
     Sin elif — cada mercado se evalúa independientemente.
     """
     apuestas = []
@@ -1039,11 +1050,11 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     # ── RESULTADO (1X2) ──────────────────────────────────────────────────────
     if pa >= UMBRAL_RESULTADO:
         ap("Resultado (1X2)", f"✅ Gana {ea}", pa,
-           f"{pa:.1f}% de 100k simulaciones",
+           f"{pa:.1f}% de 1M simulaciones",
            "Playdoit / Draftea → 1X2 → '1'")
     if pb >= UMBRAL_RESULTADO:
         ap("Resultado (1X2)", f"✅ Gana {eb}", pb,
-           f"{pb:.1f}% de 100k simulaciones",
+           f"{pb:.1f}% de 1M simulaciones",
            "Playdoit / Draftea → 1X2 → '2'")
 
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
@@ -1202,7 +1213,7 @@ if partidos_hoy:
         for p in partidos_hoy:
             ea_d, eb_d, gr_d, sede_d, _, arb_d = p
             try:
-                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=100_000)
+                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=1_000_000)
                 r_d["goles_totales_esperados"] = r_d["goles_a"] + r_d["goles_b"]
                 sugs_d = analizar_apuestas(ea_d, eb_d, r_d)
                 for s in sugs_d:
@@ -1310,9 +1321,9 @@ with tab_pred:
 
         st.markdown("---")
         # Simulaciones fijas en 100k — vectorizado con numpy, corre en <500ms
-        n_sims = 100_000
+        n_sims = 1_000_000
         st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;'
-                    'margin-bottom:0.5rem">⚡ 100,000 simulaciones automáticas</div>',
+                    'margin-bottom:0.5rem">⚡ 1,000,000 simulaciones automáticas</div>',
                     unsafe_allow_html=True)
         btn = st.button("⚽ Simular partido")
 
@@ -1594,7 +1605,7 @@ with tab_apuestas:
         ea2, eb2, grupo2, sede2, res2, arb2 = PARTIDOS[idx_sel]
 
         # Necesitamos el resultado de la simulación — correrla de nuevo
-        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=100_000)
+        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=1_000_000)
         # Agregar goles totales al resultado
         r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
 
