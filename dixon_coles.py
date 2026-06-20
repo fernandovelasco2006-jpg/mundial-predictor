@@ -157,21 +157,73 @@ def calcular_lambdas_dc(
     lam_a = np.exp(mu + at_a - df_b + (0 if es_neutral else ventaja))
     lam_b = np.exp(mu + at_b - df_a)
 
-    # Ajuste por forma en el Mundial (pesos progresivos)
-    if forma_mundial_a and forma_mundial_a.get('pj', 0) > 0:
-        pj = forma_mundial_a['pj']
-        gf_prom = forma_mundial_a['gf'] / pj
-        factor_forma = 0.10 * pj  # 10% por partido jugado, máx 30%
-        factor_forma = min(factor_forma, 0.30)
-        ratio = gf_prom / max(lam_a, 0.5)
-        lam_a = lam_a * (1 - factor_forma) + lam_a * ratio * factor_forma
+    # ── Ajuste dinámico por forma en el Mundial ─────────────────────────────
+    # La clave: el peso del ajuste depende de la DIFERENCIA DE NIVEL
+    # entre el equipo y sus rivales anteriores.
+    # Alemania 7-1 Curazao → ajuste BAJO (rival muy débil, era esperado)
+    # Alemania 7-1 Francia → ajuste ALTO (rival de nivel, señal real)
 
-    if forma_mundial_b and forma_mundial_b.get('pj', 0) > 0:
-        pj = forma_mundial_b['pj']
-        gf_prom = forma_mundial_b['gf'] / pj
-        factor_forma = min(0.10 * pj, 0.30)
-        ratio = gf_prom / max(lam_b, 0.5)
-        lam_b = lam_b * (1 - factor_forma) + lam_b * ratio * factor_forma
+    # Cargar parámetros para calcular diferencia de nivel
+    _at  = _params['ataque_media']
+    _df  = _params['defensa_media']
+    _eqs = _eq_idx
+
+    def _credibilidad_goleada(equipo_nombre, gf_pj, lam_rival_prom):
+        """
+        Qué tan creíble es el rendimiento ofensivo considerando
+        la calidad del rival. Devuelve factor 0-1.
+        Si el rival era muy débil (lam_rival baja) → menos credibilidad
+        Si el rival era fuerte → más credibilidad
+        """
+        # Calidad del rival: si el rival tiene lambda alta como visitante
+        # es un rival difícil → el rendimiento es más valioso
+        credibilidad = min(lam_rival_prom / 1.2, 1.0)  # normalizar
+        return max(credibilidad, 0.25)  # mínimo 25% de credibilidad siempre
+
+    def _ajustar_lambda(lam_base, forma, lam_rival_hist=1.0):
+        if not forma or forma.get('pj', 0) == 0:
+            return lam_base
+
+        pj  = forma['pj']
+        gf  = forma['gf'] / pj
+        gc  = forma['gc'] / pj
+
+        # Credibilidad según calidad de rivales enfrentados
+        cred = _credibilidad_goleada(None, gf, lam_rival_hist)
+
+        # Peso base conservador — no más del 20% de peso por partido
+        # y acotado al 40% máximo aunque se jueguen 3 partidos
+        peso_base = min(0.12 * pj, 0.35)
+        peso = peso_base * cred  # reducir si rivales eran débiles
+
+        # Ratio ofensivo vs historial, suavizado con raíz cuadrada
+        # para no exagerar outliers como el 7-1
+        ratio_raw = gf / max(lam_base, 0.3)
+        ratio = np.sqrt(ratio_raw)  # sqrt suaviza: 7/1.8=3.9 → sqrt=1.97
+        ratio = max(0.5, min(ratio, 2.0))  # clamp conservador
+
+        lam_nueva = lam_base * (1 - peso) + lam_base * ratio * peso
+        return max(lam_nueva, 0.15)
+
+    # Estimar lambda histórica del rival de cada equipo en el Mundial
+    # (qué tan fuertes eran los rivales que enfrentaron)
+    def _lam_rival_historica(nombre_app):
+        """Lambda promedio de los rivales históricos del equipo."""
+        nombre_dc = NOMBRES_DC.get(nombre_app, nombre_app)
+        idx = _eqs.get(nombre_dc)
+        if idx is None:
+            return 1.0
+        # Un equipo con buena defensa tiene defensa baja → rivales marcan poco
+        # Usamos su propia defensa como proxy de calidad de rivales
+        return float(np.exp(_params['mu_base'] + _params['defensa_media'][idx]))
+
+    lam_rival_a = _lam_rival_historica(equipo_b)  # rival de A es B
+    lam_rival_b = _lam_rival_historica(equipo_a)
+
+    if forma_mundial_a:
+        lam_a = _ajustar_lambda(lam_a, forma_mundial_a, lam_rival_a)
+    if forma_mundial_b:
+        lam_b = _ajustar_lambda(lam_b, forma_mundial_b, lam_rival_b)
 
     # Aplicar bajas
     lam_a = max(lam_a * bajas_a, 0.15)
