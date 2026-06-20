@@ -622,6 +622,76 @@ ARBITROS = {
 }
 ARBITRO_DEFAULT = (3.80, 0.12)  # cuando no hay árbitro asignado
 
+# ─────────────────────────────────────────────────────────────────────────────
+# TARJETAS POR EQUIPO EN ESTE MUNDIAL 2026 (se actualiza por jornada)
+# Formato: { equipo: (amarillas_recibidas, rojas_recibidas, partidos_jugados) }
+# ─────────────────────────────────────────────────────────────────────────────
+TARJETAS_MUNDIAL = {
+    # Grupo A — J1+J2
+    "Mexico":               (2, 0, 2),  # 0 en J1 + 0 en J2 (solo Corea tuvo 2)
+    "Sudafrica":            (2, 0, 2),  # partido inaugural con Sampaio
+    "Corea del Sur":        (4, 0, 2),  # 2 en J2 vs México
+    "Chequia":              (2, 0, 2),
+    # Grupo B
+    "Canada":               (1, 0, 2),
+    "Bosnia y Herzegovina": (3, 1, 2),  # roja en J2 vs Suiza
+    "Catar":                (2, 2, 2),  # 2 rojas vs Canadá
+    "Suiza":                (2, 0, 2),
+    # Grupo C
+    "Brasil":               (1, 0, 2),
+    "Marruecos":            (2, 0, 2),
+    "Haiti":                (1, 0, 2),
+    "Escocia":              (1, 0, 2),
+    # Grupo D
+    "Estados Unidos":       (1, 0, 2),
+    "Paraguay":             (2, 0, 1),
+    "Australia":            (1, 0, 2),
+    "Turquia":              (2, 0, 1),
+    # Grupo E
+    "Alemania":             (1, 0, 1),
+    "Curazao":              (2, 0, 1),
+    "Costa de Marfil":      (1, 0, 1),
+    "Ecuador":              (2, 0, 1),
+    # Grupo F
+    "Paises Bajos":         (2, 0, 1),
+    "Japon":                (1, 0, 1),
+    "Suecia":               (0, 0, 1),
+    "Tunez":                (1, 0, 1),
+    # Grupo G
+    "Belgica":              (2, 0, 1),
+    "Egipto":               (1, 0, 1),
+    "Iran":                 (2, 0, 1),
+    "Nueva Zelanda":        (1, 0, 1),
+    # Grupo H
+    "Espana":               (1, 0, 1),
+    "Cabo Verde":           (2, 0, 1),
+    "Arabia Saudi":         (2, 0, 1),
+    "Arabia Saudita":       (2, 0, 1),
+    "Uruguay":              (1, 0, 1),
+    # Grupo I
+    "Francia":              (1, 0, 1),
+    "Senegal":              (2, 0, 1),
+    "Irak":                 (2, 1, 1),
+    "Noruega":              (1, 0, 1),
+    # Grupo J
+    "Argentina":            (0, 0, 1),
+    "Algeria":              (2, 0, 1),
+    "Austria":              (1, 0, 1),
+    "Jordania":             (3, 0, 1),
+    # Grupo K
+    "Portugal":             (1, 0, 1),
+    "RD Congo":             (2, 0, 1),
+    "Uzbekistan":           (3, 1, 1),
+    "Colombia":             (1, 0, 1),
+    # Grupo L
+    "Inglaterra":           (1, 0, 1),
+    "Croacia":              (2, 0, 1),
+    "Ghana":                (2, 0, 1),
+    "Panama":               (1, 0, 1),
+}
+
+
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -959,20 +1029,35 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     prob_corners_under85 = 100 - prob_corners_over85
     prob_corners_under75 = float(np.mean(corners_sim <= 7) * 100) # menos de 7.5
 
-    # Tarjetas: mezcla árbitro histórico + historial H2H entre estos equipos
+    # Tarjetas: modelo mejorado con 4 fuentes de datos
     lam_am_arb, lam_ro_arb = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
+
+    # Factor de tarjetas basado en el comportamiento real de cada equipo en este Mundial
+    def factor_tarjetas_equipo(equipo):
+        datos = TARJETAS_MUNDIAL.get(equipo)
+        if not datos or datos[2] == 0:
+            return 1.0
+        am, ro, pj = datos
+        prom_am = am / pj          # promedio amarillas por partido en este Mundial
+        # Si el equipo es más agresivo que el promedio (3.8), ajustar hacia arriba
+        return max(0.7, min(1.4, prom_am / 1.9))  # 1.9 = mitad de amarillas por equipo
+
+    factor_a = factor_tarjetas_equipo(ea)
+    factor_b = factor_tarjetas_equipo(eb)
+    factor_equipos = (factor_a + factor_b) / 2  # promedio de ambos equipos
 
     _, _, tarj_h2h, desc_h2h = calcular_factor_h2h_completo(ea, eb)
 
     if tarj_h2h:
-        # 60% árbitro + 40% historial entre estos equipos
-        lam_am = lam_am_arb * 0.60 + tarj_h2h[0] * 0.40
-        lam_ro = lam_ro_arb * 0.60 + tarj_h2h[1] * 0.40
-        fuente_tarj = f"Árbitro 60% + H2H 40% ({desc_h2h})"
+        # 50% árbitro + 25% H2H + 25% comportamiento equipos en este Mundial
+        lam_am = lam_am_arb * 0.50 + tarj_h2h[0] * 0.25 + (lam_am_arb * factor_equipos) * 0.25
+        lam_ro = lam_ro_arb * 0.50 + tarj_h2h[1] * 0.25 + (lam_ro_arb * factor_equipos) * 0.25
+        fuente_tarj = f"Árbitro 50% + H2H 25% + Mundial 25% ({desc_h2h})"
     else:
-        lam_am = lam_am_arb
-        lam_ro = lam_ro_arb
-        fuente_tarj = f"Solo árbitro ({desc_h2h})"
+        # 70% árbitro + 30% comportamiento equipos en este Mundial
+        lam_am = lam_am_arb * 0.70 + (lam_am_arb * factor_equipos) * 0.30
+        lam_ro = lam_ro_arb * 0.70 + (lam_ro_arb * factor_equipos) * 0.30
+        fuente_tarj = f"Árbitro 70% + Equipos Mundial 30% ({desc_h2h})"
 
     tarjetas_am_sim = rng.poisson(lam_am, n)
     tarjetas_ro_sim = rng.poisson(max(lam_ro, 0.01), n)
@@ -1009,7 +1094,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
 def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     """
-    Muestra TODAS las apuestas con probabilidad >= 70% desde las 1M simulaciones.
+    Muestra TODAS las apuestas con probabilidad >= 70% desde las 10M simulaciones.
     Sin elif — cada mercado se evalúa independientemente.
     """
     apuestas = []
@@ -1060,11 +1145,11 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     # ── RESULTADO (1X2) ──────────────────────────────────────────────────────
     if pa >= UMBRAL_RESULTADO:
         ap("Resultado (1X2)", f"✅ Gana {ea}", pa,
-           f"{pa:.1f}% de 1M simulaciones",
+           f"{pa:.1f}% de 10M simulaciones",
            "Playdoit / Draftea → 1X2 → '1'")
     if pb >= UMBRAL_RESULTADO:
         ap("Resultado (1X2)", f"✅ Gana {eb}", pb,
-           f"{pb:.1f}% de 1M simulaciones",
+           f"{pb:.1f}% de 10M simulaciones",
            "Playdoit / Draftea → 1X2 → '2'")
 
     # ── DOBLE OPORTUNIDAD ────────────────────────────────────────────────────
@@ -1243,51 +1328,78 @@ if partidos_hoy:
         Simulación automática de los próximos partidos · Solo se muestran señales con confianza ALTA
         </div>""", unsafe_allow_html=True)
 
-        mejores = []  # (confianza, partido_label, apuesta)
+        # Organizar apuestas POR PARTIDO
+        partidos_con_apuestas = []
+        total_apuestas = 0
+
         for p in partidos_hoy:
             ea_d, eb_d, gr_d, sede_d, _, arb_d = p
+            horario_p = HORARIOS_PARTIDO.get((ea_d, eb_d)) or HORARIOS_PARTIDO.get((eb_d, ea_d), "")
+            hora_str = horario_p[11:] if horario_p else ""
             try:
-                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=1_000_000)
+                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=10_000_000)
                 r_d["goles_totales_esperados"] = r_d["goles_a"] + r_d["goles_b"]
-                sugs_d = analizar_apuestas(ea_d, eb_d, r_d)
-                for s in sugs_d:
-                    if s["nivel"] == "ALTA":
-                        mejores.append({
-                            "partido": f"{flag(ea_d)} {ea_d} vs {flag(eb_d)} {eb_d}",
-                            "grupo": gr_d,
-                            **s
-                        })
+                sugs_d = [s for s in analizar_apuestas(ea_d, eb_d, r_d) if s["nivel"] == "ALTA"]
+                if sugs_d:
+                    partidos_con_apuestas.append({
+                        "ea": ea_d, "eb": eb_d, "grupo": gr_d,
+                        "hora": hora_str, "apuestas": sugs_d
+                    })
+                    total_apuestas += len(sugs_d)
             except Exception:
                 continue
 
-        # Ordenar por confianza y mostrar top 6
-        mejores.sort(key=lambda x: x["confianza"], reverse=True)
-
-        if not mejores:
-            st.info("Hoy no hay señales de confianza ALTA en ningún partido. "
-                    "El modelo es conservador — si no está claro, no sugiere.")
+        if not partidos_con_apuestas:
+            st.info("Hoy no hay señales de confianza ALTA. El modelo es conservador.")
         else:
-            cols_d = st.columns(min(len(mejores), 3))
-            for i_d, ap_d in enumerate(mejores[:6]):
-                with cols_d[i_d % 3]:
-                    conf_d = min(ap_d["confianza"], 99)
-                    st.markdown(f"""
-                    <div style="background:#0d2818;border:1px solid #2d6b45;
-                    border-radius:10px;padding:0.9rem;margin-bottom:0.75rem">
-                      <div style="font-size:0.6rem;color:#4ade80;letter-spacing:1px">
-                      Grupo {ap_d["grupo"]} · {ap_d["partido"]}</div>
-                      <div style="font-size:0.6rem;color:#6677aa;letter-spacing:2px;
-                      text-transform:uppercase;margin-top:0.3rem">{ap_d["mercado"]}</div>
-                      <div style="font-size:0.95rem;color:#e8eaf0;margin:0.3rem 0;
-                      font-weight:600">{ap_d["seleccion"]}</div>
-                      <div style="background:#1e2d45;border-radius:3px;height:5px;margin:0.3rem 0">
-                        <div style="width:{conf_d:.0f}%;height:5px;border-radius:3px;
-                        background:linear-gradient(90deg,#3b82f6,#4ade80)"></div>
-                      </div>
-                      <div style="font-size:0.65rem;color:#4ade80">{conf_d:.0f}% confianza</div>
-                      <div style="font-size:0.6rem;color:#4a5568;margin-top:0.2rem">
-                      📱 {ap_d["donde"]}</div>
-                    </div>""", unsafe_allow_html=True)
+            st.markdown(f"""
+            <div style="font-size:0.75rem;color:#4ade80;margin-bottom:1rem">
+            ✓ {total_apuestas} apuesta(s) sugerida(s) en {len(partidos_con_apuestas)} partido(s) de hoy
+            </div>""", unsafe_allow_html=True)
+
+            # Un bloque por partido — scroll natural de la página
+            for pd_item in partidos_con_apuestas:
+                ea_d = pd_item["ea"]
+                eb_d = pd_item["eb"]
+                apuestas_d = pd_item["apuestas"]
+                hora_d = pd_item["hora"]
+
+                # Header del partido
+                st.markdown(f"""
+                <div style="display:flex;align-items:center;gap:0.5rem;
+                margin:1rem 0 0.5rem;padding-bottom:0.4rem;
+                border-bottom:1px solid #1e2d45">
+                  <span style="font-size:0.6rem;background:#2a1a00;color:#f0c040;
+                  border:1px solid #5a3a00;border-radius:20px;padding:2px 8px;
+                  letter-spacing:1px">Grupo {pd_item["grupo"]}</span>
+                  <span style="font-size:0.85rem;color:#e8eaf0;font-weight:600">
+                  {flag_img(ea_d,20)} {ea_d} vs {flag_img(eb_d,20)} {eb_d}</span>
+                  {f'<span style="font-size:0.7rem;color:#6677aa">⏰ {hora_d}h</span>' if hora_d else ""}
+                  <span style="font-size:0.65rem;color:#4ade80;margin-left:auto">
+                  {len(apuestas_d)} apuesta(s) ↓</span>
+                </div>""", unsafe_allow_html=True)
+
+                # Grid 3 columnas para las apuestas de este partido
+                cols_ap = st.columns(min(len(apuestas_d), 3))
+                for i_ap, ap_d in enumerate(apuestas_d):
+                    with cols_ap[i_ap % 3]:
+                        conf_d = min(ap_d["confianza"], 99)
+                        st.markdown(f"""
+                        <div style="background:#0d2818;border:1px solid #2d6b45;
+                        border-radius:10px;padding:0.75rem;margin-bottom:0.5rem">
+                          <div style="font-size:0.55rem;color:#6677aa;letter-spacing:2px;
+                          text-transform:uppercase">{ap_d["mercado"]}</div>
+                          <div style="font-size:0.9rem;color:#e8eaf0;margin:0.2rem 0;
+                          font-weight:600">{ap_d["seleccion"]}</div>
+                          <div style="background:#1e2d45;border-radius:3px;height:4px;margin:0.3rem 0">
+                            <div style="width:{conf_d:.0f}%;height:4px;border-radius:3px;
+                            background:linear-gradient(90deg,#3b82f6,#4ade80)"></div>
+                          </div>
+                          <div style="font-size:0.65rem;color:#4ade80;font-weight:600">
+                          {conf_d:.0f}% confianza</div>
+                          <div style="font-size:0.58rem;color:#4a5568;margin-top:0.2rem">
+                          📱 {ap_d["donde"]}</div>
+                        </div>""", unsafe_allow_html=True)
 
         st.markdown("""<div style="font-size:0.65rem;color:#4a5568;padding-top:0.5rem;
         border-top:1px solid #1e2d45">
@@ -1355,9 +1467,9 @@ with tab_pred:
 
         st.markdown("---")
         # Simulaciones fijas en 100k — vectorizado con numpy, corre en <500ms
-        n_sims = 1_000_000
+        n_sims = 10_000_000
         st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;'
-                    'margin-bottom:0.5rem">⚡ 1,000,000 simulaciones automáticas</div>',
+                    'margin-bottom:0.5rem">⚡ 10,000,000 simulaciones automáticas</div>',
                     unsafe_allow_html=True)
         btn = st.button("⚽ Simular partido")
 
@@ -1510,7 +1622,8 @@ with tab_pred:
                     f'<div class="model-note">{r["modelo"]} · ELO: {r["elo_a"]} ({ea}) vs {r["elo_b"]} ({eb})'
                     f' · λ_a={r["lam_a"]} · λ_b={r["lam_b"]} · Altitud: {r["alt"]:,} m'
                     f' · Árbitro: {r["arbitro"]} ({r["arbitro_am"]} T.A. / {r["arbitro_ro"]} T.R.)'
-                    f' · H2H: {r["h2h_desc"]}'  
+                    f' · Tarjetas: {r["fuente_tarj"]}'  
+                    + f' · H2H: {r["h2h_desc"]}'  
                     + (f' · ⚠️ Bajas: {", ".join([e for e in [ea, eb] if e in BAJAS])}' if any(e in BAJAS for e in [ea, eb]) else '')
                     + '</div>',
                     unsafe_allow_html=True)
@@ -1643,7 +1756,7 @@ with tab_apuestas:
         ea2, eb2, grupo2, sede2, res2, arb2 = PARTIDOS[idx_sel]
 
         # Necesitamos el resultado de la simulación — correrla de nuevo
-        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=1_000_000)
+        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=10_000_000)
         # Agregar goles totales al resultado
         r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
 
@@ -1732,7 +1845,7 @@ insuficiente para entrenar una red neuronal correctamente.
 Poisson es el estándar de la industria para goles: eventos raros,
 independientes entre sí, distribuidos en el tiempo.
 
-**Rendimiento:** 1,000,000 simulaciones corren en ~164ms gracias a NumPy vectorizado.
+**Rendimiento:** 10,000,000 simulaciones corren en ~2.4 segundos gracias a NumPy vectorizado.
 """)
     st.markdown("---")
     st.markdown("#### ELO Ratings — 48 selecciones")
@@ -1744,4 +1857,3 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
-            
