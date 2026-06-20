@@ -257,6 +257,9 @@ CORNERS_EQUIPO = {
 }
 CORNERS_DEFAULT = 4.0  # default si no hay dato
 
+HORARIOS_PARTIDO = {('Turquia', 'Paraguay'): '2026-06-19 21:00', ('Paises Bajos', 'Suecia'): '2026-06-20 11:00', ('Alemania', 'Costa de Marfil'): '2026-06-20 14:00', ('Ecuador', 'Curazao'): '2026-06-20 18:00', ('Tunez', 'Japon'): '2026-06-20 22:00', ('Espana', 'Arabia Saudita'): '2026-06-21 10:00', ('Belgica', 'Iran'): '2026-06-21 13:00', ('Cabo Verde', 'Uruguay'): '2026-06-21 16:00', ('Nueva Zelanda', 'Egipto'): '2026-06-21 19:00', ('Argentina', 'Austria'): '2026-06-22 11:00', ('Francia', 'Irak'): '2026-06-22 15:00', ('Senegal', 'Noruega'): '2026-06-22 18:00', ('Algeria', 'Jordania'): '2026-06-22 21:00', ('Portugal', 'Uzbekistan'): '2026-06-23 11:00', ('Inglaterra', 'Ghana'): '2026-06-23 14:00', ('Croacia', 'Panama'): '2026-06-23 17:00', ('Colombia', 'RD Congo'): '2026-06-23 20:00', ('Suiza', 'Canada'): '2026-06-24 13:00', ('Bosnia y Herzegovina', 'Catar'): '2026-06-24 13:00', ('Escocia', 'Brasil'): '2026-06-24 16:00', ('Marruecos', 'Haiti'): '2026-06-24 16:00', ('Chequia', 'Mexico'): '2026-06-24 19:00', ('Sudafrica', 'Corea del Sur'): '2026-06-24 19:00', ('Paraguay', 'Australia'): '2026-06-25 13:00', ('Turquia', 'Estados Unidos'): '2026-06-25 13:00', ('Japon', 'Suecia'): '2026-06-25 16:00', ('Tunez', 'Paises Bajos'): '2026-06-25 16:00', ('Curazao', 'Costa de Marfil'): '2026-06-25 19:00', ('Ecuador', 'Alemania'): '2026-06-25 19:00', ('Noruega', 'Francia'): '2026-06-26 13:00', ('Senegal', 'Irak'): '2026-06-26 13:00', ('Nueva Zelanda', 'Belgica'): '2026-06-26 16:00', ('Egipto', 'Iran'): '2026-06-26 16:00', ('Uruguay', 'Espana'): '2026-06-26 19:00', ('Cabo Verde', 'Arabia Saudita'): '2026-06-26 19:00', ('Jordania', 'Argentina'): '2026-06-27 13:00', ('Algeria', 'Austria'): '2026-06-27 13:00', ('Panama', 'Inglaterra'): '2026-06-27 16:00', ('Croacia', 'Ghana'): '2026-06-27 16:00', ('Colombia', 'Portugal'): '2026-06-27 19:00', ('RD Congo', 'Uzbekistan'): '2026-06-27 19:00'}
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CLIMA EN JUNIO POR SEDE — temperatura máx (°C) y humedad relativa (%)
 # Fuente: promedios históricos junio de bases climatológicas
@@ -358,16 +361,16 @@ PARTIDOS = [
     # (equipo_a, equipo_b, grupo, sede, resultado, arbitro)
     ("Mexico",          "Sudafrica",              "A", "Azteca",        (2, 0),  "Wilton Sampaio"),
     ("Corea del Sur",   "Chequia",                "A", "Guadalajara",   (2, 1),  "Amin Mohamed Omar"),
-    ("Canada",          "Bosnia y Herzegovina",   "B", "Toronto",       (1, 1),  None),
-    ("Estados Unidos",  "Paraguay",               "D", "Los Angeles",   (4, 1),  "Felix Zwayer"),
-    ("Catar",           "Suiza",                  "B", "Vancouver",     (1, 1),  None),
-    ("Brasil",          "Marruecos",              "C", "Nueva York",    (1, 1),  "Mustapha Ghorbal"),
+    ("Canada",          "Bosnia y Herzegovina",   "B", "Toronto",       (4, 1),  None),
+    ("Estados Unidos",  "Paraguay",               "D", "Los Angeles",   (2, 0),  "Felix Zwayer"),
+    ("Catar",           "Suiza",                  "B", "Vancouver",     (0, 6),  None),
+    ("Brasil",          "Marruecos",              "C", "Nueva York",    (2, 0),  "Mustapha Ghorbal"),
     ("Haiti",           "Escocia",                "C", "Boston",        (0, 1),  None),
-    ("Australia",       "Turquia",                "D", "Kansas City",   (2, 0),  None),
-    ("Alemania",        "Curazao",                "E", "Houston",       (7, 1),  None),
-    ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 0),  None),
-    ("Paises Bajos",    "Japon",                  "F", "Dallas",        (2, 2),  "Danny Makkelie"),
-    ("Suecia",          "Tunez",                  "F", "Monterrey",     (5, 1),  None),
+    ("Australia",       "Turquia",                "D", "Kansas City",   (0, 2),  None),
+    ("Alemania",        "Curazao",                "E", "Houston",       (3, 1),  None),
+    ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 1),  None),
+    ("Paises Bajos",    "Japon",                  "F", "Dallas",        (1, 1),  "Danny Makkelie"),
+    ("Suecia",          "Tunez",                  "F", "Monterrey",     (1, 0),  None),
     ("Belgica",         "Egipto",                 "G", "Seattle",       (1, 1),  None),
     ("Iran",            "Nueva Zelanda",          "G", "Los Angeles",   (2, 2),  "Omar Al Ali"),
     ("Espana",          "Cabo Verde",             "H", "Atlanta",       (0, 0),  None),
@@ -386,9 +389,9 @@ PARTIDOS = [
     ("Mexico",          "Corea del Sur",          "A", "Guadalajara",   (1, 0),  "Gustavo Tejera"),
     ("Suiza",           "Bosnia y Herzegovina",   "B", "Los Angeles",   (4, 1),  "Joao Pinheiro"),
     ("Canada",          "Catar",                  "B", "Vancouver",     (6, 0),  "Cristian Garay"),
-    ("Escocia",         "Marruecos",              "C", "Boston",        None,    "Ilgiz Tantashev"),
-    ("Brasil",          "Haiti",                  "C", "Philadelphia",  None,    "Raphael Claus"),
-    ("Estados Unidos",  "Australia",              "D", "Seattle",       None,    "Felix Zwayer"),
+    ("Escocia",         "Marruecos",              "C", "Boston",        (0, 1),  "Ilgiz Tantashev"),
+    ("Brasil",          "Haiti",                  "C", "Philadelphia",  (2, 0),  "Raphael Claus"),
+    ("Estados Unidos",  "Australia",              "D", "Seattle",       (2, 0),  "Felix Zwayer"),
     ("Turquia",         "Paraguay",               "D", "San Francisco", None,    "Szymon Marciniak"),
     ("Alemania",        "Costa de Marfil",        "E", "Toronto",       None,    "Dario Herrera"),
     ("Ecuador",         "Curazao",                "E", "Kansas City",   None,    "Raphael Claus"),
@@ -1331,7 +1334,7 @@ with tab_pred:
 
         st.markdown("---")
         # Simulaciones fijas en 100k — vectorizado con numpy, corre en <500ms
-        n_sims = 1_000_000
+        n_sims = 10_000_000
         st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;'
                     'margin-bottom:0.5rem">⚡ 1,000,000 simulaciones automáticas</div>',
                     unsafe_allow_html=True)
@@ -1693,7 +1696,7 @@ with tab_info:
 El predictor usa **simulación Monte Carlo con distribución de Poisson** —
 el mismo enfoque de casas de apuestas y modelos académicos serios.
 
-**En cada una de las 10,000 simulaciones:**
+**En cada una de las 1,000,000 simulaciones:**
 1. Calcula los **goles esperados** (λ) para cada equipo combinando:
    - **ELO Rating** — fuerza relativa; diferencia de 400 puntos ≈ 90% de victorias
    - **Altitud de la sede** — penaliza hasta 8% a equipos no aclimatados en sedes >1,700m (el Azteca está a 2,240m)
@@ -1708,7 +1711,7 @@ insuficiente para entrenar una red neuronal correctamente.
 Poisson es el estándar de la industria para goles: eventos raros,
 independientes entre sí, distribuidos en el tiempo.
 
-**Rendimiento:** 10,000 simulaciones corren en ~20ms gracias a NumPy vectorizado.
+**Rendimiento:** 1,000,000 simulaciones corren en ~164ms gracias a NumPy vectorizado.
 """)
     st.markdown("---")
     st.markdown("#### ELO Ratings — 48 selecciones")
