@@ -17,6 +17,13 @@ try:
 except ImportError:
     FD_DISPONIBLE = False
 
+# Módulo Dixon-Coles Bayesiano
+try:
+    from dixon_coles import calcular_lambdas_dc, simular_dc, disponible as dc_disponible
+    DC_DISPONIBLE = dc_disponible()
+except Exception:
+    DC_DISPONIBLE = False
+
 # Módulo ML — XGBoost (importación condicional)
 try:
     from modelo_ml import calcular_lambdas_xgb, disponible as ml_disponible
@@ -959,54 +966,60 @@ def calcular_lambdas(ea: str, eb: str, sede: str):
 def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -> dict:
     rng = np.random.default_rng()
 
-    # Intentar usar XGBoost primero, fallback a fórmula manual
-    xgb_usado = False
-    if ML_DISPONIBLE:
+    # ── Modelo de predicción: Dixon-Coles → XGBoost → fórmula manual ────────
+    modelo_usado = "Manual"
+    baja_a = BAJAS.get(ea, 1.0)
+    baja_b = BAJAS.get(eb, 1.0)
+
+    # Obtener forma en el Mundial para ajuste
+    forma_a = FORMA_MUNDIAL.get(ea)
+    forma_b = FORMA_MUNDIAL.get(eb)
+    forma_dc_a = {'gf': forma_a[0]/forma_a[2], 'gc': forma_a[1]/forma_a[2], 'pj': forma_a[2]} if forma_a and forma_a[2]>0 else None
+    forma_dc_b = {'gf': forma_b[0]/forma_b[2], 'gc': forma_b[1]/forma_b[2], 'pj': forma_b[2]} if forma_b and forma_b[2]>0 else None
+
+    # 1. Intentar Dixon-Coles (mejor modelo)
+    if DC_DISPONIBLE:
         try:
-            # Mapear nombres de la app → nombres del dataset de entrenamiento
-            NOMBRES_DATASET = {
-                "Mexico":"Mexico","Sudafrica":"South Africa",
-                "Corea del Sur":"South Korea","Chequia":"Czech Republic",
-                "Canada":"Canada","Bosnia y Herzegovina":"Bosnia and Herzegovina",
-                "Catar":"Qatar","Suiza":"Switzerland","Brasil":"Brazil",
-                "Marruecos":"Morocco","Haiti":"Haiti","Escocia":"Scotland",
-                "Estados Unidos":"United States","Paraguay":"Paraguay",
-                "Australia":"Australia","Turquia":"Turkey","Alemania":"Germany",
-                "Curazao":"Curaçao","Costa de Marfil":"Ivory Coast","Ecuador":"Ecuador",
-                "Paises Bajos":"Netherlands","Japon":"Japan","Suecia":"Sweden",
-                "Tunez":"Tunisia","Belgica":"Belgium","Egipto":"Egypt","Iran":"Iran",
-                "Nueva Zelanda":"New Zealand","Espana":"Spain","Cabo Verde":"Cape Verde",
-                "Arabia Saudi":"Saudi Arabia","Arabia Saudita":"Saudi Arabia",
-                "Uruguay":"Uruguay","Francia":"France","Senegal":"Senegal","Irak":"Iraq",
-                "Noruega":"Norway","Argentina":"Argentina","Algeria":"Algeria",
-                "Argelia":"Algeria","Austria":"Austria","Jordania":"Jordan",
-                "Portugal":"Portugal","RD Congo":"DR Congo","Uzbekistan":"Uzbekistan",
-                "Colombia":"Colombia","Inglaterra":"England","Croacia":"Croatia",
-                "Ghana":"Ghana","Panama":"Panama",
-            }
-            baja_a = BAJAS.get(ea, 1.0)
-            baja_b = BAJAS.get(eb, 1.0)
-            ea_ds = NOMBRES_DATASET.get(ea, ea)
-            eb_ds = NOMBRES_DATASET.get(eb, eb)
-            lam_a_xgb, lam_b_xgb, info_xgb = calcular_lambdas_xgb(
-                ea_ds, eb_ds, sede, es_neutral=True,
+            lam_a_dc, lam_b_dc, info_dc = calcular_lambdas_dc(
+                ea, eb, es_neutral=True,
+                forma_mundial_a=forma_dc_a,
+                forma_mundial_b=forma_dc_b,
+                bajas_a=baja_a, bajas_b=baja_b
+            )
+            if lam_a_dc and lam_b_dc:
+                lam_a, lam_b = lam_a_dc, lam_b_dc
+                modelo_usado = "Dixon-Coles 🎯"
+        except Exception:
+            pass
+
+    # 2. Fallback: XGBoost híbrido
+    if modelo_usado == "Manual" and ML_DISPONIBLE:
+        try:
+            lam_a_xgb, lam_b_xgb, _ = calcular_lambdas_xgb(
+                ea, eb, sede, es_neutral=True,
                 torneo='FIFA World Cup', mes=6,
                 bajas_a=baja_a, bajas_b=baja_b
             )
             if lam_a_xgb and lam_b_xgb:
                 lam_a, lam_b = lam_a_xgb, lam_b_xgb
-                xgb_usado = True
+                modelo_usado = "XGBoost 🤖"
         except Exception:
             pass
 
-    if not xgb_usado:
+    # 3. Fallback final: fórmula manual
+    if modelo_usado == "Manual":
         lam_a, lam_b = calcular_lambdas(ea, eb, sede)
+
+    xgb_usado = modelo_usado != "Manual"
 
     # Modelo de goles mixto:
     # - Poisson para el equipo con mayor lambda (favorito) → captura goleadas
     # - Negativa binomial r=4 para el equipo menor → más varianza en underdog
     # Esto reproduce bien tanto el 0-0 de España-Cabo Verde como el 7-1 de Alemania
-    if lam_a >= lam_b:
+    if DC_DISPONIBLE and modelo_usado == "Dixon-Coles 🎯":
+        # Simulación bivariada Dixon-Coles con corrección rho
+        ga, gb = simular_dc(lam_a, lam_b, n)
+    elif lam_a >= lam_b:
         ga = rng.poisson(lam_a, n)
         p_b = 4 / (4 + lam_b)
         gb = rng.negative_binomial(4, p_b, n)
@@ -1097,7 +1110,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "tarj_h2h": tarj_h2h,
         "fuente_tarj": fuente_tarj,
         "h2h_desc": desc_h2h,
-        "modelo": "XGBoost 🤖" if xgb_usado else "Monte Carlo 📊",
+        "modelo": modelo_usado,
     }
 
 
@@ -2044,4 +2057,3 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
-            
