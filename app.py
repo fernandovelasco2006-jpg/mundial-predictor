@@ -1213,7 +1213,28 @@ from datetime import date as _date
 hoy = _date.today()
 
 # Partidos de hoy = los que no tienen resultado aún y están en jornada próxima
-partidos_hoy = [p for p in PARTIDOS if p[4] is None][:6]  # máx 6 partidos
+from datetime import datetime as _dt_hoy, timezone, timedelta as _td
+_tz_mx = timezone(_td(hours=-6))
+_ahora_mx = _dt_hoy.now(_tz_mx)
+_hoy_fecha = _ahora_mx.strftime("%Y-%m-%d")
+
+partidos_hoy = []
+for _p in PARTIDOS:
+    if _p[4] is not None:
+        continue  # ya jugado
+    _horario = HORARIOS_PARTIDO.get((_p[0], _p[1])) or HORARIOS_PARTIDO.get((_p[1], _p[0]), "")
+    if not _horario:
+        continue  # sin horario asignado, no mostrar
+    if _horario[:10] != _hoy_fecha:
+        continue  # no es hoy
+    # Excluir si ya pasaron más de 2h del inicio
+    try:
+        _inicio = _dt_hoy.strptime(_horario, "%Y-%m-%d %H:%M").replace(tzinfo=_tz_mx)
+        if _ahora_mx > _inicio + _td(hours=2, minutes=15):
+            continue  # partido terminado
+    except Exception:
+        pass
+    partidos_hoy.append(_p)
 
 if partidos_hoy:
     with st.expander("🎰 APUESTAS MÁS FUERTES DE HOY — Click para ver", expanded=True):
@@ -1723,3 +1744,4 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
+            
