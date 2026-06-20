@@ -368,16 +368,16 @@ PARTIDOS = [
     # (equipo_a, equipo_b, grupo, sede, resultado, arbitro)
     ("Mexico",          "Sudafrica",              "A", "Azteca",        (2, 0),  "Wilton Sampaio"),
     ("Corea del Sur",   "Chequia",                "A", "Guadalajara",   (2, 1),  "Amin Mohamed Omar"),
-    ("Canada",          "Bosnia y Herzegovina",   "B", "Toronto",       (4, 1),  None),
-    ("Estados Unidos",  "Paraguay",               "D", "Los Angeles",   (2, 0),  "Felix Zwayer"),
-    ("Catar",           "Suiza",                  "B", "Vancouver",     (0, 6),  None),
-    ("Brasil",          "Marruecos",              "C", "Nueva York",    (2, 0),  "Mustapha Ghorbal"),
+    ("Canada",          "Bosnia y Herzegovina",   "B", "Toronto",       (1, 1),  None),
+    ("Estados Unidos",  "Paraguay",               "D", "Los Angeles",   (4, 1),  "Felix Zwayer"),
+    ("Catar",           "Suiza",                  "B", "Vancouver",     (1, 1),  None),
+    ("Brasil",          "Marruecos",              "C", "Nueva York",    (1, 1),  "Mustapha Ghorbal"),
     ("Haiti",           "Escocia",                "C", "Boston",        (0, 1),  None),
-    ("Australia",       "Turquia",                "D", "Kansas City",   (0, 2),  None),
-    ("Alemania",        "Curazao",                "E", "Houston",       (3, 1),  None),
-    ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 1),  None),
-    ("Paises Bajos",    "Japon",                  "F", "Dallas",        (1, 1),  "Danny Makkelie"),
-    ("Suecia",          "Tunez",                  "F", "Monterrey",     (1, 0),  None),
+    ("Australia",       "Turquia",                "D", "Kansas City",   (2, 0),  None),
+    ("Alemania",        "Curazao",                "E", "Houston",       (7, 1),  None),
+    ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 0),  None),
+    ("Paises Bajos",    "Japon",                  "F", "Dallas",        (2, 2),  "Danny Makkelie"),
+    ("Suecia",          "Tunez",                  "F", "Monterrey",     (5, 1),  None),
     ("Belgica",         "Egipto",                 "G", "Seattle",       (1, 1),  None),
     ("Iran",            "Nueva Zelanda",          "G", "Los Angeles",   (2, 2),  "Omar Al Ali"),
     ("Espana",          "Cabo Verde",             "H", "Atlanta",       (0, 0),  None),
@@ -397,9 +397,9 @@ PARTIDOS = [
     ("Suiza",           "Bosnia y Herzegovina",   "B", "Los Angeles",   (4, 1),  "Joao Pinheiro"),
     ("Canada",          "Catar",                  "B", "Vancouver",     (6, 0),  "Cristian Garay"),
     ("Escocia",         "Marruecos",              "C", "Boston",        (0, 1),  "Ilgiz Tantashev"),
-    ("Brasil",          "Haiti",                  "C", "Philadelphia",  (2, 0),  "Raphael Claus"),
+    ("Brasil",          "Haiti",                  "C", "Philadelphia",  (3, 0),  "Raphael Claus"),
     ("Estados Unidos",  "Australia",              "D", "Seattle",       (2, 0),  "Felix Zwayer"),
-    ("Turquia",         "Paraguay",               "D", "San Francisco", None,    "Szymon Marciniak"),
+    ("Turquia",         "Paraguay",               "D", "San Francisco", (0, 1),  "Szymon Marciniak"),
     ("Alemania",        "Costa de Marfil",        "E", "Toronto",       None,    "Dario Herrera"),
     ("Ecuador",         "Curazao",                "E", "Kansas City",   None,    "Raphael Claus"),
     ("Paises Bajos",    "Suecia",                 "F", "Houston",       None,    "Cesar Arturo Ramos"),
@@ -651,9 +651,9 @@ TARJETAS_MUNDIAL = {
     "Escocia":              (1, 0, 2),
     # Grupo D
     "Estados Unidos":       (1, 0, 2),
-    "Paraguay":             (2, 0, 1),
+    "Paraguay":             (4, 1, 2),  # 2 en J1 + 2 en J2 vs Turquía (roja)
     "Australia":            (1, 0, 2),
-    "Turquia":              (2, 0, 1),
+    "Turquia":              (4, 0, 2),  # 2 en J1 + 2 en J2 vs Paraguay
     # Grupo E
     "Alemania":             (1, 0, 1),
     "Curazao":              (2, 0, 1),
@@ -707,66 +707,68 @@ TARJETAS_MUNDIAL = {
 # Formato: { equipo: (goles_favor, goles_contra, partidos_jugados) }
 # ─────────────────────────────────────────────────────────────────────────────
 FORMA_MUNDIAL = {
-    # Grupo A
-    "Mexico":                (3, 0, 2),   # J1: 2-0 + J2: 1-0   # 2-0 vs Sudáfrica
-    "Sudafrica":             (1, 3, 2),   # J1: 0-2 + J2: 1-1   # 0-2 vs México
-    "Corea del Sur":         (2, 2, 2),   # J1: 2-1 + J2: 0-1   # 2-1 vs Chequia
-    "Chequia":               (2, 3, 2),   # J1: 1-2 + J2: 1-1   # 1-2 vs Corea del Sur
-    # Grupo B
-    "Canada":                (7, 1, 2),   # J1: 1-1 + J2: 6-0
-    "Bosnia y Herzegovina":  (2, 5, 2),   # J1: 1-1 + J2: 1-4
-    "Catar":                 (1, 7, 2),   # J1: 1-1 + J2: 0-6
-    "Suiza":                 (5, 2, 2),   # J1: 1-1 + J2: 4-1
-    # Grupo C
-    "Brasil":                (1, 1, 1),
-    "Marruecos":             (1, 1, 1),
-    "Haiti":                 (0, 1, 1),
-    "Escocia":               (1, 0, 1),
-    # Grupo D
-    "Estados Unidos":        (4, 1, 1),
-    "Paraguay":              (1, 4, 1),
-    "Australia":             (2, 0, 1),
-    "Turquia":               (0, 2, 1),
-    # Grupo E
-    "Alemania":              (7, 1, 1),
-    "Curazao":               (1, 7, 1),
-    "Costa de Marfil":       (1, 0, 1),
-    "Ecuador":               (0, 1, 1),
-    # Grupo F
-    "Paises Bajos":          (2, 2, 1),
-    "Japon":                 (2, 2, 1),
-    "Suecia":                (5, 1, 1),
-    "Tunez":                 (1, 5, 1),
-    # Grupo G
-    "Belgica":               (1, 1, 1),
-    "Egipto":                (1, 1, 1),
-    "Iran":                  (2, 2, 1),
-    "Nueva Zelanda":         (2, 2, 1),
-    # Grupo H
-    "Espana":                (0, 0, 1),
-    "Cabo Verde":            (0, 0, 1),
-    "Arabia Saudi":          (1, 1, 1),
-    "Uruguay":               (1, 1, 1),
-    # Grupo I
-    "Francia":               (3, 1, 1),
-    "Senegal":               (1, 3, 1),
-    "Irak":                  (1, 4, 1),
-    "Noruega":               (4, 1, 1),
-    # Grupo J
-    "Argentina":             (3, 0, 1),
-    "Algeria":               (0, 3, 1),
-    "Austria":               (3, 1, 1),
-    "Jordania":              (1, 3, 1),
-    # Grupo K
-    "Portugal":              (1, 1, 1),
-    "RD Congo":              (1, 1, 1),
-    "Uzbekistan":            (1, 3, 1),
-    "Colombia":              (3, 1, 1),
-    # Grupo L
-    "Inglaterra":            (4, 2, 1),
-    "Croacia":               (2, 4, 1),
-    "Ghana":                 (1, 0, 1),
-    "Panama":                (0, 1, 1),
+    # Grupo A — J1+J2 completa
+    "Mexico":               (3, 0, 2),   # 2-0 Sudáfrica + 1-0 Corea
+    "Sudafrica":            (1, 3, 2),   # 0-2 México + 1-1 Chequia
+    "Corea del Sur":        (2, 2, 2),   # 2-1 Chequia + 0-1 México
+    "Chequia":              (2, 3, 2),   # 1-2 Corea + 1-1 Sudáfrica
+    # Grupo B — J1+J2 completa
+    "Canada":               (7, 1, 2),   # 1-1 Bosnia + 6-0 Catar
+    "Bosnia y Herzegovina": (2, 5, 2),   # 1-1 Canadá + 1-4 Suiza
+    "Catar":                (1, 7, 2),   # 1-1 Suiza + 0-6 Canadá
+    "Suiza":                (5, 2, 2),   # 1-1 Catar + 4-1 Bosnia
+    # Grupo C — J1+J2 completa
+    "Brasil":               (4, 1, 2),   # 1-1 Marruecos + 3-0 Haití
+    "Marruecos":            (2, 1, 2),   # 1-1 Brasil + 1-0 Escocia
+    "Haiti":                (0, 4, 2),   # 0-1 Escocia + 0-3 Brasil
+    "Escocia":              (1, 2, 2),   # 1-0 Haití + 0-1 Marruecos
+    # Grupo D — J1+J2 completa
+    "Estados Unidos":       (6, 1, 2),   # 4-1 Paraguay + 2-0 Australia
+    "Paraguay":             (1, 5, 2),   # 1-4 EEUU + 1-0 Turquía
+    "Australia":            (2, 4, 2),   # 2-0 Turquía + 0-2 EEUU
+    "Turquia":              (2, 3, 2),   # 2-0 Australia + 0-1 Paraguay
+    # Grupo E — J1 completa
+    "Alemania":             (7, 1, 1),   # 7-1 Curazao
+    "Curazao":              (1, 7, 1),   # 1-7 Alemania
+    "Costa de Marfil":      (1, 0, 1),   # 1-0 Ecuador
+    "Ecuador":              (0, 1, 1),   # 0-1 Costa de Marfil
+    # Grupo F — J1 completa
+    "Paises Bajos":         (2, 2, 1),   # 2-2 Japón
+    "Japon":                (2, 2, 1),   # 2-2 Países Bajos
+    "Suecia":               (5, 1, 1),   # 5-1 Túnez
+    "Tunez":                (1, 5, 1),   # 1-5 Suecia
+    # Grupo G — J1 completa
+    "Belgica":              (1, 1, 1),   # 1-1 Egipto
+    "Egipto":               (1, 1, 1),   # 1-1 Bélgica
+    "Iran":                 (2, 2, 1),   # 2-2 Nueva Zelanda
+    "Nueva Zelanda":        (2, 2, 1),   # 2-2 Irán
+    # Grupo H — J1 completa
+    "Arabia Saudi":         (1, 1, 1),   # 1-1 Uruguay
+    "Arabia Saudita":       (1, 1, 1),
+    "Uruguay":              (1, 1, 1),   # 1-1 Arabia Saudita
+    "Espana":               (0, 0, 1),   # 0-0 Cabo Verde
+    "Cabo Verde":           (0, 0, 1),   # 0-0 España
+    # Grupo I — J1 completa
+    "Francia":              (3, 1, 1),   # 3-1 Senegal
+    "Senegal":              (1, 3, 1),   # 1-3 Francia
+    "Irak":                 (1, 4, 1),   # 1-4 Noruega
+    "Noruega":              (4, 1, 1),   # 4-1 Irak
+    # Grupo J — J1 completa
+    "Argentina":            (3, 0, 1),   # 3-0 Argelia
+    "Algeria":              (0, 3, 1),   # 0-3 Argentina
+    "Argelia":              (0, 3, 1),
+    "Austria":              (3, 1, 1),   # 3-1 Jordania
+    "Jordania":             (1, 3, 1),   # 1-3 Austria
+    # Grupo K — J1 completa
+    "Portugal":             (1, 1, 1),   # 1-1 RD Congo
+    "RD Congo":             (1, 1, 1),   # 1-1 Portugal
+    "Uzbekistan":           (1, 3, 1),   # 1-3 Colombia
+    "Colombia":             (3, 1, 1),   # 3-1 Uzbekistán
+    # Grupo L — J1 completa
+    "Inglaterra":           (4, 2, 1),   # 4-2 Croacia
+    "Croacia":              (2, 4, 1),   # 2-4 Inglaterra
+    "Ghana":                (1, 0, 1),   # 1-0 Panamá
+    "Panama":               (0, 1, 1),   # 0-1 Ghana
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -953,6 +955,7 @@ def calcular_lambdas(ea: str, eb: str, sede: str):
     return max(lam_a, 0.15), max(lam_b, 0.15)
 
 
+@st.cache_data(ttl=300, show_spinner=False)  # cache 5 min por partido
 def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -> dict:
     rng = np.random.default_rng()
 
@@ -1332,7 +1335,7 @@ for _p in PARTIDOS:
     partidos_hoy.append(_p)
 
 if partidos_hoy:
-    with st.expander("🎰 APUESTAS MÁS FUERTES DE HOY — Click para ver", expanded=True):
+    with st.expander("🎰 APUESTAS MÁS FUERTES DE HOY — Click para ver", expanded=False):
         st.markdown("""
         <div style="font-size:0.7rem;color:#f0c040;letter-spacing:1px;margin-bottom:1rem">
         Simulación automática de los próximos partidos · Solo se muestran señales con confianza ALTA
@@ -1347,7 +1350,7 @@ if partidos_hoy:
             horario_p = HORARIOS_PARTIDO.get((ea_d, eb_d)) or HORARIOS_PARTIDO.get((eb_d, ea_d), "")
             hora_str = horario_p[11:] if horario_p else ""
             try:
-                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=10_000_000)
+                r_d = simular(ea_d, eb_d, sede_d, arbitro=arb_d, n=500_000)
                 r_d["goles_totales_esperados"] = r_d["goles_a"] + r_d["goles_b"]
                 sugs_d = [s for s in analizar_apuestas(ea_d, eb_d, r_d) if s["nivel"] == "ALTA"]
                 if sugs_d:
@@ -1787,7 +1790,7 @@ with tab_apuestas:
         ea2, eb2, grupo2, sede2, res2, arb2 = PARTIDOS[idx_sel]
 
         # Necesitamos el resultado de la simulación — correrla de nuevo
-        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=10_000_000)
+        r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=500_000)
         # Agregar goles totales al resultado
         r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
 
@@ -1906,7 +1909,7 @@ with tab_hist:
 
             try:
                 # Simular con menos iteraciones para rapidez en historial
-                _r_h = simular(_ea_h, _eb_h, _sede_h, arbitro=_arb_h, n=100_000)
+                _r_h = simular(_ea_h, _eb_h, _sede_h, arbitro=_arb_h, n=50_000)
                 _favorito = _ea_h if _r_h["prob_a"] > _r_h["prob_b"] else _eb_h
                 _prob_fav = max(_r_h["prob_a"], _r_h["prob_b"])
 
@@ -2041,3 +2044,4 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
+            
