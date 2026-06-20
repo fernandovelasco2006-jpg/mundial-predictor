@@ -1706,8 +1706,77 @@ with tab_pred:
                               <div style="font-size:0.6rem;color:#4a5568;margin-top:0.3rem">
                               {ap["nota"]}</div>
                             </div>""", unsafe_allow_html=True)
-                    # Parlay si hay 2+ altas
-                    altas_i = [a for a in sugs if a["nivel"] == "ALTA"]
+                    # ── PARLAY: solo apuestas compatibles en casas reales ────────────
+                    def _filtrar_parlay(apuestas):
+                        """
+                        Elimina apuestas redundantes o incompatibles.
+                        Reglas de casas de apuestas:
+                        - Solo 1 mercado de goles (el más alto Over que aplique)
+                        - No Over + Under del mismo mercado
+                        - No Resultado + Doble Oportunidad del mismo equipo
+                        """
+                        seleccionadas = []
+                        mercados_usados = set()
+                        tiene_resultado = False
+                        tiene_doble_op  = False
+
+                        # Ordenar por confianza descendente
+                        por_confianza = sorted(apuestas, key=lambda x: x["confianza"], reverse=True)
+
+                        # Prioridad de mercados de goles: solo el MÁS ESPECÍFICO
+                        gol_mercados_over = []
+                        gol_mercados_under = []
+
+                        for ap in por_confianza:
+                            sel = ap["seleccion"]
+                            merc = ap["mercado"]
+
+                            # Clasificar mercados de goles
+                            if merc == "Total Goles":
+                                if "Over" in sel:
+                                    gol_mercados_over.append(ap)
+                                elif "Under" in sel:
+                                    gol_mercados_under.append(ap)
+                                continue  # los procesamos después
+
+                            # Resultado
+                            if merc == "Resultado (1X2)":
+                                if not tiene_resultado and not tiene_doble_op:
+                                    seleccionadas.append(ap)
+                                    tiene_resultado = True
+                                continue
+
+                            # Doble Oportunidad
+                            if merc == "Doble Oportunidad":
+                                if not tiene_resultado and not tiene_doble_op:
+                                    seleccionadas.append(ap)
+                                    tiene_doble_op = True
+                                continue
+
+                            # Otros mercados (tarjetas, córners, BTTS)
+                            if merc not in mercados_usados:
+                                seleccionadas.append(ap)
+                                mercados_usados.add(merc)
+
+                        # Para goles: solo el Over MÁS ALTO que aplique
+                        # (Over 2.5 implica Over 1.5 implica Over 0.5)
+                        if gol_mercados_over:
+                            # El más específico = mayor número
+                            def _nivel_over(ap):
+                                sel = ap["seleccion"]
+                                for n in ["3.5","2.5","1.5","0.5"]:
+                                    if n in sel: return float(n)
+                                return 0
+                            mejor_over = max(gol_mercados_over, key=_nivel_over)
+                            seleccionadas.append(mejor_over)
+
+                        # Para under: solo si no hay over del mismo mercado
+                        if gol_mercados_under and not gol_mercados_over:
+                            seleccionadas.append(gol_mercados_under[0])
+
+                        return [a for a in seleccionadas if a["nivel"] == "ALTA"]
+
+                    altas_i = _filtrar_parlay(sugs)
                     if len(altas_i) >= 2:
                         prob_p = 1.0
                         for a in altas_i: prob_p *= a["confianza"] / 100
@@ -2057,4 +2126,3 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
-          
