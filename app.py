@@ -10,6 +10,13 @@ try:
 except ImportError:
     ODDS_DISPONIBLE = False
 
+# Módulo de actualización automática de resultados
+try:
+    from football_data import actualizar_fixture_y_forma
+    FD_DISPONIBLE = True
+except ImportError:
+    FD_DISPONIBLE = False
+
 # Módulo ML — XGBoost (importación condicional)
 try:
     from modelo_ml import calcular_lambdas_xgb, disponible as ml_disponible
@@ -1263,10 +1270,13 @@ API_KEY = None
 ODDS_KEY = None
 try:
     API_KEY = st.secrets["RAPIDAPI_KEY"]
-    ODDS_KEY = API_KEY  # misma key de RapidAPI
+    ODDS_KEY = API_KEY
+    FD_TOKEN = os.environ.get("FD_TOKEN", None)  # misma key de RapidAPI
+    FD_TOKEN = st.secrets.get("FD_TOKEN", None)
 except Exception:
     API_KEY = os.environ.get("RAPIDAPI_KEY", None)
     ODDS_KEY = API_KEY
+    FD_TOKEN = os.environ.get("FD_TOKEN", None)
 
 # ── STATUS BADGE API ─────────────────────────────────────────────────────────
 # API status silencioso — sin badge visible
