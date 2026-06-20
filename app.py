@@ -1334,7 +1334,7 @@ with tab_pred:
 
         st.markdown("---")
         # Simulaciones fijas en 100k — vectorizado con numpy, corre en <500ms
-        n_sims = 10_000_000
+        n_sims = 1_000_000
         st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;'
                     'margin-bottom:0.5rem">⚡ 1,000,000 simulaciones automáticas</div>',
                     unsafe_allow_html=True)
