@@ -197,12 +197,36 @@ def calcular_lambdas_xgb(
         alt_factor, peso, mes
     ]])
 
-    lam_a = float(_model_home.predict(feats)[0]) * bajas_a
-    lam_b = float(_model_away.predict(feats)[0]) * bajas_b
+    lam_a_xgb = float(_model_home.predict(feats)[0]) * bajas_a
+    lam_b_xgb = float(_model_away.predict(feats)[0]) * bajas_b
+
+    # Modelo híbrido: combinar XGBoost con ajuste ELO directo
+    # XGBoost captura patrones cualitativos pero subestima diferencias ELO grandes
+    # La fórmula ELO captura la dominancia relativa entre equipos
+    elo_ajuste = (1 / (1 + 10 ** (-elo_diff / 400))) * 2 - 1
+    lam_base = 1.55
+    lam_a_elo = lam_base * (1.0 + elo_ajuste * 0.40) * bajas_a
+    lam_b_elo = lam_base * (1.0 - elo_ajuste * 0.40) * bajas_b
+
+    # Ajuste por forma en el Mundial (más peso si hay más partidos jugados)
+    pj_h = max(forma_h.get('pj', 1), 1) if isinstance(forma_h, dict) else 1
+    pj_a = max(forma_a.get('pj', 1), 1) if isinstance(forma_a, dict) else 1
+    peso_forma = min(0.15 * max(pj_h, pj_a), 0.30)  # hasta 30% peso forma
+
+    gf_h = forma_h['gf'] if isinstance(forma_h, dict) else forma_h[0] if hasattr(forma_h, '__len__') else 1.5
+    gf_a = forma_a['gf'] if isinstance(forma_a, dict) else forma_a[0] if hasattr(forma_a, '__len__') else 1.5
+    factor_forma_h = gf_h / 1.5 if gf_h > 0 else 0.7
+    factor_forma_a = gf_a / 1.5 if gf_a > 0 else 0.7
+
+    # Combinar: 50% XGBoost + 35% ELO + 15% forma Mundial
+    lam_a = (lam_a_xgb * 0.50 + lam_a_elo * 0.35 +
+             lam_a_elo * factor_forma_h * peso_forma) * bajas_a
+    lam_b = (lam_b_xgb * 0.50 + lam_b_elo * 0.35 +
+             lam_b_elo * factor_forma_a * peso_forma) * bajas_b
 
     # Clip a valores razonables
-    lam_a = max(min(lam_a, 5.0), 0.1)
-    lam_b = max(min(lam_b, 5.0), 0.1)
+    lam_a = max(min(lam_a, 5.0), 0.15)
+    lam_b = max(min(lam_b, 5.0), 0.15)
 
     info = {
         'elo_a': round(elo_h, 0),
