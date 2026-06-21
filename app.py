@@ -252,7 +252,7 @@ ALTITUD = {
 # ─────────────────────────────────────────────────────────────────────────────
 CORNERS_EQUIPO = {
     # Equipos de posesión/ataque → más córners
-    "Espana":          6.2, "Alemania":       6.0, "Brasil":         5.8,
+    "Espana":          6.0, "Alemania":       6.0, "Brasil":         5.8,
     "Paises Bajos":    5.7, "Argentina":      5.5, "Francia":        5.4,
     "Inglaterra":      5.4, "Portugal":       5.3, "Belgica":        5.2,
     "Japon":           5.1, "Mexico":         5.0, "Colombia":       4.9,
@@ -425,7 +425,7 @@ PARTIDOS = [
     ("Croacia",         "Panama",                 "L", "Toronto",       None,    None),
 
     # ── JORNADA 3 ──────────────────────────────────────────────────────────
-    ("Chequia",              "Mexico",            "A", "Azteca",        None,    "Yael Falcon Perez"),
+    ("Mexico",               "Chequia",           "A", "Azteca",        None,    "Yael Falcon Perez"),
     ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     None,    "Facundo Tello"),
     ("Suiza",                "Canada",            "B", "Vancouver",     None,    "Ramon Abatti Abel"),
     ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       None,    "Jesus Valenzuela"),
@@ -680,10 +680,10 @@ TARJETAS_MUNDIAL = {
     "Iran":                 (2, 0, 1),
     "Nueva Zelanda":        (1, 0, 1),
     # Grupo H
-    "Espana":               (1, 0, 1),
+    "Espana":               (1, 0, 2),  # 0 en J2 vs Arabia
     "Cabo Verde":           (2, 0, 1),
-    "Arabia Saudi":         (2, 0, 1),
-    "Arabia Saudita":       (2, 0, 1),
+    "Arabia Saudi":         (4, 0, 2),  # 2 en J2 vs España
+    "Arabia Saudita":       (4, 0, 2),
     "Uruguay":              (1, 0, 1),
     # Grupo I
     "Francia":              (1, 0, 1),
@@ -753,10 +753,10 @@ FORMA_MUNDIAL = {
     "Iran":                 (2, 2, 1),   # 2-2 Nueva Zelanda
     "Nueva Zelanda":        (2, 2, 1),   # 2-2 Irán
     # Grupo H — J1 completa
-    "Arabia Saudi":         (1, 1, 1),   # 1-1 Uruguay
-    "Arabia Saudita":       (1, 1, 1),
+    "Arabia Saudi":         (1, 5, 2),   # 1-1 Uruguay + 0-4 España
+    "Arabia Saudita":       (1, 5, 2),
     "Uruguay":              (1, 1, 1),   # 1-1 Arabia Saudita
-    "Espana":               (0, 0, 1),   # 0-0 Cabo Verde
+    "Espana":               (4, 0, 2),   # 0-0 Cabo Verde + 4-0 Arabia Saudita
     "Cabo Verde":           (0, 0, 1),   # 0-0 España
     # Grupo I — J1 completa
     "Francia":              (3, 1, 1),   # 3-1 Senegal
@@ -983,8 +983,26 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     # 1. Intentar Dixon-Coles (mejor modelo)
     if DC_DISPONIBLE:
         try:
+            # Co-anfitriones tienen ventaja de local en su propia sede
+            _sedes_mexico = {"Azteca", "Akron", "Guadalajara", "Monterrey"}
+            _sedes_canada = {"Toronto", "Vancouver", "BC Place", "BMO Field"}
+            _sedes_usa    = {"Los Angeles", "New York", "Dallas", "Seattle",
+                             "Houston", "Boston", "Philadelphia", "Kansas City",
+                             "San Francisco", "Atlanta", "Miami", "SoFi"}
+            _es_local_a = (
+                (ea == "Mexico" and sede in _sedes_mexico) or
+                (ea == "Canada" and sede in _sedes_canada) or
+                (ea == "Estados Unidos" and sede in _sedes_usa)
+            )
+            _es_local_b = (
+                (eb == "Mexico" and sede in _sedes_mexico) or
+                (eb == "Canada" and sede in _sedes_canada) or
+                (eb == "Estados Unidos" and sede in _sedes_usa)
+            )
+            _es_neutral_dc = not _es_local_a and not _es_local_b
+
             lam_a_dc, lam_b_dc, info_dc = calcular_lambdas_dc(
-                ea, eb, es_neutral=True,
+                ea, eb, es_neutral=_es_neutral_dc,
                 forma_mundial_a=forma_dc_a,
                 forma_mundial_b=forma_dc_b,
                 bajas_a=baja_a, bajas_b=baja_b
