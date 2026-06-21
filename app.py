@@ -360,7 +360,15 @@ FLAG_ISO = {
 
 def flag_img(equipo: str, size: int = 48) -> str:
     iso = FLAG_ISO.get(equipo, "un")
-    return f'<img src="https://flagcdn.com/w{size}/{iso}.png" width="{size}" style="border-radius:4px;margin-bottom:4px" alt="{equipo}">'  
+    # Estilo redondeado con borde y sombra, como SofaScore
+    border_r = "50%" if size >= 40 else "6px"
+    shadow = "0 2px 6px rgba(0,0,0,0.45)" if size >= 40 else "0 1px 3px rgba(0,0,0,0.3)"
+    border = "2px solid rgba(255,255,255,0.15)" if size >= 40 else "1px solid rgba(255,255,255,0.1)"
+    return (f'<img src="https://flagcdn.com/w{size*2}/{iso}.png" '
+            f'width="{size}" height="{size}" '
+            f'style="border-radius:{border_r};border:{border};'
+            f'box-shadow:{shadow};object-fit:cover;vertical-align:middle" '
+            f'alt="{equipo}">')
 
 def flag(t): return BANDERAS.get(t, "🏳️")
 
