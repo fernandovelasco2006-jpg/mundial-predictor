@@ -173,49 +173,49 @@ ELO = {
     "Francia":               1871,
     "Inglaterra":            1828,
     "Portugal":              1768,
-    "Brasil":                1766,
-    "Marruecos":             1755,
-    "Paises Bajos":          1754,
+    "Brasil":                5.4,  # WC26
+    "Marruecos":             4.0,  # WC26
+    "Paises Bajos":          4.6,  # WC26
     "Belgica":               1742,
-    "Alemania":              1736,
+    "Alemania":              6.6,  # WC26
     "Croacia":               1715,
     "Colombia":              1698,
-    "Mexico":                1687,
+    "Mexico":                3.2,  # WC26
     "Senegal":               1684,
     "Uruguay":               1673,
-    "Estados Unidos":        1671,
-    "Japon":                 1662,
-    "Suiza":                 1650,
+    "Estados Unidos":        4.8,  # WC26
+    "Japon":                 4.4,  # WC26
+    "Suiza":                 6.6,  # WC26
     "Iran":                  1620,
-    "Turquia":               1606,
-    "Ecuador":               1599,
+    "Turquia":               7.1,  # WC26
+    "Ecuador":               5.7,  # WC26
     "Austria":               1597,
-    "Corea del Sur":         1592,
-    "Australia":             1579,
+    "Corea del Sur":         3.8,  # WC26
+    "Australia":             4.5,  # WC26
     "Argelia":               1571,
     "Egipto":                1562,
-    "Canada":                1559,
+    "Canada":                9.2,  # WC26
     "Noruega":               1557,
-    "Costa de Marfil":       1541,
+    "Costa de Marfil":       3.5,  # WC26
     "Panama":                1539,
-    "Escocia":               1503,
-    "Chequia":               1506,
-    "Paraguay":              1505,
-    "Suecia":                1510,
-    "Tunez":                 1476,
+    "Escocia":               3.0,  # WC26
+    "Chequia":               4.5,  # WC26
+    "Paraguay":              2.1,  # WC26
+    "Suecia":                4.7,  # WC26
+    "Tunez":                 3.5,  # WC26
     "RD Congo":              1474,
     "Ghana":                 1347,
-    "Catar":                 1450,
+    "Catar":                 2.5,  # WC26
     "Arabia Saudita":        1424,
     "Jordania":              1388,
-    "Bosnia y Herzegovina":  1387,
+    "Bosnia y Herzegovina":  3.8,  # WC26
     "Irak":                  1446,
     "Uzbekistan":            1459,
     "Cabo Verde":            1371,
-    "Sudafrica":             1428,
-    "Haiti":                 1293,
+    "Sudafrica":             3.0,  # WC26
+    "Haiti":                 3.2,  # WC26
     "Nueva Zelanda":         1276,
-    "Curazao":               1295,
+    "Curazao":               1.5,  # WC26
     # aliases
     "Algeria":               1571,
     "Arabia Saudi":          1424,
@@ -583,6 +583,7 @@ def calcular_factor_h2h(ea: str, eb: str) -> tuple:
 ARBITROS = {
     "Fernando Rapallini":         (4.80, 0.25),  # ARG - CONMEBOL
     "Pierre-Ghislain Atcho":  (3.67, 0.17),  # nuevo
+    "Juan Gabriel Benitez":       (4.64, 0.31),  # PAR - CONMEBOL
     "Szymon Marciniak":           (4.10, 0.18),  # UEFA - Final 2022, deja jugar
     "Alejandro Hernandez":        (5.20, 0.30),  # UEFA
     "Istvan Kovacs":              (4.90, 0.28),  # UEFA
