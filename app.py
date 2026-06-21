@@ -407,10 +407,10 @@ PARTIDOS = [
     ("Brasil",          "Haiti",                  "C", "Philadelphia",  (3, 0),  "Raphael Claus"),
     ("Estados Unidos",  "Australia",              "D", "Seattle",       (2, 0),  "Felix Zwayer"),
     ("Turquia",         "Paraguay",               "D", "San Francisco", (0, 1),  "Szymon Marciniak"),
-    ("Alemania",        "Costa de Marfil",        "E", "Toronto",       None,    "Dario Herrera"),
-    ("Ecuador",         "Curazao",                "E", "Kansas City",   None,    "Raphael Claus"),
-    ("Paises Bajos",    "Suecia",                 "F", "Houston",       None,    "Cesar Arturo Ramos"),
-    ("Tunez",           "Japon",                  "F", "Monterrey",     None,    "Istvan Kovacs"),
+    ("Alemania",        "Costa de Marfil",        "E", "Toronto",       (2, 1),    "Dario Herrera"),
+    ("Ecuador",         "Curazao",                "E", "Kansas City",   (0, 0),    "Raphael Claus"),
+    ("Paises Bajos",    "Suecia",                 "F", "Houston",       (5, 1),    "Cesar Arturo Ramos"),
+    ("Tunez",           "Japon",                  "F", "Monterrey",     (0, 4),    "Istvan Kovacs"),
     ("Belgica",         "Iran",                   "G", "Los Angeles",   None,    None),
     ("Nueva Zelanda",   "Egipto",                 "G", "Seattle",       None,    None),
     ("Espana",          "Arabia Saudita",         "H", "Azteca",        None,    "Felix Zwayer"),
@@ -581,6 +581,7 @@ def calcular_factor_h2h(ea: str, eb: str) -> tuple:
 # ÁRBITROS — promedio histórico de tarjetas por partido (amarillas, rojas)
 # ─────────────────────────────────────────────────────────────────────────────
 ARBITROS = {
+    "Fernando Rapallini":         (4.80, 0.25),  # ARG - CONMEBOL
     "Szymon Marciniak":           (4.10, 0.18),  # UEFA - Final 2022, deja jugar
     "Alejandro Hernandez":        (5.20, 0.30),  # UEFA
     "Istvan Kovacs":              (4.90, 0.28),  # UEFA
@@ -662,15 +663,15 @@ TARJETAS_MUNDIAL = {
     "Australia":            (1, 0, 2),
     "Turquia":              (4, 0, 2),  # 2 en J1 + 2 en J2 vs Paraguay
     # Grupo E
-    "Alemania":             (1, 0, 1),
+    "Alemania":             (3, 0, 2),
     "Curazao":              (2, 0, 1),
-    "Costa de Marfil":      (1, 0, 1),
+    "Costa de Marfil":      (3, 1, 2),
     "Ecuador":              (2, 0, 1),
     # Grupo F
-    "Paises Bajos":         (2, 0, 1),
-    "Japon":                (1, 0, 1),
-    "Suecia":               (0, 0, 1),
-    "Tunez":                (1, 0, 1),
+    "Paises Bajos":         (4, 0, 2),
+    "Japon":                (2, 0, 2),
+    "Suecia":               (2, 0, 2),
+    "Tunez":                (3, 1, 2),
     # Grupo G
     "Belgica":              (2, 0, 1),
     "Egipto":               (1, 0, 1),
@@ -735,15 +736,15 @@ FORMA_MUNDIAL = {
     "Australia":            (2, 4, 2),   # 2-0 Turquía + 0-2 EEUU
     "Turquia":              (2, 3, 2),   # 2-0 Australia + 0-1 Paraguay
     # Grupo E — J1 completa
-    "Alemania":             (7, 1, 1),   # 7-1 Curazao
-    "Curazao":              (1, 7, 1),   # 1-7 Alemania
-    "Costa de Marfil":      (1, 0, 1),   # 1-0 Ecuador
-    "Ecuador":              (0, 1, 1),   # 0-1 Costa de Marfil
+    "Alemania":             (9, 2, 2),   # 7-1 Curazao + 2-1 Costa de Marfil
+    "Curazao":              (1, 7, 1),   # 1-7 Alemania (eliminado)
+    "Costa de Marfil":      (2, 2, 2),   # 1-0 Ecuador + 1-2 Alemania
+    "Ecuador":              (0, 1, 2),   # 0-1 Costa de Marfil + 0-0 Curazao
     # Grupo F — J1 completa
-    "Paises Bajos":         (2, 2, 1),   # 2-2 Japón
-    "Japon":                (2, 2, 1),   # 2-2 Países Bajos
-    "Suecia":               (5, 1, 1),   # 5-1 Túnez
-    "Tunez":                (1, 5, 1),   # 1-5 Suecia
+    "Paises Bajos":         (7, 3, 2),   # 2-2 Japón + 5-1 Suecia
+    "Japon":                (6, 2, 2),   # 2-2 Países Bajos + 4-0 Túnez
+    "Suecia":               (6, 3, 2),   # 5-1 Túnez + 1-5 Países Bajos
+    "Tunez":                (1, 9, 2),   # 1-5 Suecia + 0-4 Japón
     # Grupo G — J1 completa
     "Belgica":              (1, 1, 1),   # 1-1 Egipto
     "Egipto":               (1, 1, 1),   # 1-1 Bélgica
