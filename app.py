@@ -1145,6 +1145,32 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     UMBRAL_RESULTADO = 75.0   # para ganador y doble oportunidad
     UMBRAL_MERCADOS  = 80.0   # para goles, tarjetas y córners
 
+    # Ajuste dinámico de umbrales según riesgo de 0-0
+    lam_a_r = r.get("lam_a", 1.5)
+    lam_b_r = r.get("lam_b", 1.0)
+    lam_total = lam_a_r + lam_b_r
+
+    import math as _math
+    prob_00 = _math.exp(-lam_a_r) * _math.exp(-lam_b_r) * 100
+
+    # Partido defensivo: lambdas bajas → Over difícil de alcanzar
+    ES_PARTIDO_DEFENSIVO = prob_00 > 8 or lam_total < 2.2
+
+    # Over goles: más exigente si partido defensivo
+    if prob_00 > 8:
+        UMBRAL_OVER05 = min(92.0, 80.0 + prob_00 * 0.5)
+    elif prob_00 > 5:
+        UMBRAL_OVER05 = 85.0
+    else:
+        UMBRAL_OVER05 = 80.0
+
+    UMBRAL_OVER15 = 82.0 if lam_total < 2.5 else 80.0
+
+    # Tarjetas y córners: MÁS PERMISIVOS en partidos defensivos
+    # porque son los únicos mercados disponibles
+    UMBRAL_TARJ = 75.0 if ES_PARTIDO_DEFENSIVO else 80.0
+    UMBRAL_CORN = 75.0 if ES_PARTIDO_DEFENSIVO else 80.0
+
     pa  = r["prob_a"]
     pd_ = r["prob_emp"]
     pb  = r["prob_b"]
@@ -1209,11 +1235,11 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
            "Playdoit / Draftea → Doble Oportunidad → 'X2'")
 
     # ── TOTAL DE GOLES — todos los mercados independientes ───────────────────
-    if p_over05 >= UMBRAL_MERCADOS:
+    if p_over05 >= UMBRAL_OVER05:
         ap("Total Goles", "✅ Over 0.5 (al menos 1 gol)", p_over05,
            f"{p_over05:.1f}% de simulaciones: el partido tiene goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 0.5' → Over")
-    if p_over15 >= UMBRAL_MERCADOS:
+    if p_over15 >= UMBRAL_OVER15:
         ap("Total Goles", "✅ Over 1.5 (2+ goles)", p_over15,
            f"{p_over15:.1f}% de simulaciones terminaron con 2+ goles",
            "Playdoit / Draftea → Totales → 'Más/Menos 1.5' → Over")
@@ -1245,41 +1271,63 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
            "Playdoit / Draftea → Ambos Marcan → 'No'")
 
     # ── TARJETAS AMARILLAS — todos los mercados independientes ───────────────
-    if p_am_over25 >= UMBRAL_MERCADOS:
+    # ── Mercados de tarjetas con umbrales ajustados ──────────────────────────
+    # Over 1.5 amarillas (2+) — mercado muy disponible en todas las casas
+    p_am_over15 = r.get("prob_am_over15", 70.0)
+    if p_am_over15 >= UMBRAL_TARJ and p_am_over15 < 98:
+        ap("Tarjetas Amarillas", "✅ Over 1.5 amarillas (2+ tarjetas)", p_am_over15,
+           f"{p_am_over15:.1f}% de simulaciones: 2+ amarillas · {amarillas:.1f} esp.",
+           "Playdoit / Draftea → Tarjetas → 'Más/Menos 1.5' → Over")
+
+    if p_am_over25 >= UMBRAL_TARJ:
         ap("Tarjetas Amarillas", "✅ Over 2.5 amarillas (3+ tarjetas)", p_am_over25,
            f"{p_am_over25:.1f}% de simulaciones: 3+ amarillas · {amarillas:.1f} esp.",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Over")
-    if p_am_over35 >= UMBRAL_MERCADOS:
+    if p_am_over35 >= UMBRAL_TARJ:
         ap("Tarjetas Amarillas", "✅ Over 3.5 amarillas (4+ tarjetas)", p_am_over35,
            f"{p_am_over35:.1f}% de simulaciones: 4+ amarillas · {amarillas:.1f} esp.",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Over")
-    if p_am_over45 >= UMBRAL_MERCADOS:
+    if p_am_over45 >= UMBRAL_TARJ:
         ap("Tarjetas Amarillas", "✅ Over 4.5 amarillas (5+ tarjetas)", p_am_over45,
            f"{p_am_over45:.1f}% de simulaciones: 5+ amarillas · {amarillas:.1f} esp.",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 4.5' → Over")
-    if p_am_under25 >= UMBRAL_MERCADOS:
+    if p_am_under25 >= UMBRAL_TARJ:
         ap("Tarjetas Amarillas", "✅ Under 2.5 amarillas (máx 2 tarjetas)", p_am_under25,
            f"{p_am_under25:.1f}% de simulaciones: 2 amarillas o menos",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 2.5' → Under")
-    if p_am_under35 >= UMBRAL_MERCADOS:
+    if p_am_under35 >= UMBRAL_TARJ:
         ap("Tarjetas Amarillas", "✅ Under 3.5 amarillas (máx 3 tarjetas)", p_am_under35,
            f"{p_am_under35:.1f}% de simulaciones: 3 amarillas o menos",
            "Playdoit / Draftea → Tarjetas → 'Más/Menos 3.5' → Under")
 
     # ── TIROS DE ESQUINA — todos los mercados independientes ─────────────────
-    if p_c_over85 >= UMBRAL_MERCADOS:
+    # ── Mercados de córners más granulares ───────────────────────────────────
+    p_c_over65 = r.get("prob_corners_over65", 60.0)
+    p_c_over75 = r.get("prob_corners_over75", 50.0)
+    p_c_under65 = r.get("prob_corners_under65", 40.0)
+
+    if p_c_over65 >= UMBRAL_CORN and corners_esp >= 7:
+        ap("Córners", f"✅ Over 6.5 córners (7+)", p_c_over65,
+           f"{p_c_over65:.1f}% · {corners_esp:.1f} esp. entre ambos equipos",
+           "Playdoit / Draftea → Esquinas → 'Más/Menos 6.5' → Over")
+    if p_c_over75 >= UMBRAL_CORN and corners_esp >= 8:
+        ap("Córners", f"✅ Over 7.5 córners (8+)", p_c_over75,
+           f"{p_c_over75:.1f}% · {corners_esp:.1f} esp. entre ambos equipos",
+           "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Over")
+
+    if p_c_over85 >= UMBRAL_CORN:
         ap("Córners", f"✅ Over 8.5 córners (9+)", p_c_over85,
            f"{p_c_over85:.1f}% de simulaciones: 9+ córners · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Over")
-    if p_c_over95 >= UMBRAL_MERCADOS:
+    if p_c_over95 >= UMBRAL_CORN:
         ap("Córners", f"✅ Over 9.5 córners (10+)", p_c_over95,
            f"{p_c_over95:.1f}% de simulaciones: 10+ córners · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 9.5' → Over")
-    if p_c_under85 >= UMBRAL_MERCADOS:
+    if p_c_under85 >= UMBRAL_CORN:
         ap("Córners", f"✅ Under 8.5 córners (máx 8)", p_c_under85,
            f"{p_c_under85:.1f}% de simulaciones: 8 córners o menos · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 8.5' → Under")
-    if p_c_under75 >= UMBRAL_MERCADOS:
+    if p_c_under75 >= UMBRAL_CORN:
         ap("Córners", f"✅ Under 7.5 córners (máx 7)", p_c_under75,
            f"{p_c_under75:.1f}% de simulaciones: 7 córners o menos · {corners_esp:.1f} esp.",
            "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under")
@@ -1575,26 +1623,50 @@ with tab_pred:
                 with st.spinner(f"Simulando {n_sims:,} partidos..."):
                     r = simular(ea, eb, sede, arbitro=arbitro, n=n_sims)
 
-                # Guardar predicción automáticamente si el partido no tiene resultado aún
+                # ── GUARDAR PREDICCIÓN CON TIMESTAMP ─────────────────────────────
+                # Solo guarda si el partido aún no tiene resultado
+                # Esto permite comparar predicción vs resultado real después
                 if resultado_real is None:
                     try:
                         import json as _json
-                        from datetime import datetime as _dtnow
+                        from datetime import datetime as _dtnow, timezone, timedelta as _td
+                        _tz_mx = timezone(_td(hours=-6))
+                        _ahora_pred = _dtnow.now(_tz_mx)
+
                         _pred_key = f"pred_{ea}_{eb}".replace(" ", "_")
-                        _pred_data = _json.dumps({
-                            "ea": ea, "eb": eb, "grupo": grupo,
-                            "fecha": _dtnow.now().strftime("%Y-%m-%d %H:%M"),
-                            "prob_a": round(r["prob_a"], 1),
-                            "prob_emp": round(r["prob_emp"], 1),
-                            "prob_b": round(r["prob_b"], 1),
-                            "goles_a": round(r["goles_a"], 2),
-                            "goles_b": round(r["goles_b"], 2),
-                            "favorito": ea if r["prob_a"] > r["prob_b"] else eb,
-                            "resultado_real": None,
-                        })
-                        window.storage.set(_pred_key, _pred_data)
+
+                        # Solo guardar si no existe ya una predicción previa
+                        # (no sobreescribir la primera predicción antes del partido)
+                        _ya_existe = st.session_state.get(f"pred_guardada_{ea}_{eb}", False)
+
+                        if not _ya_existe:
+                            _pred_data = _json.dumps({
+                                "ea":          ea,
+                                "eb":          eb,
+                                "grupo":       grupo,
+                                "guardada_en": _ahora_pred.strftime("%Y-%m-%d %H:%M"),
+                                "prob_a":      round(r["prob_a"], 1),
+                                "prob_emp":    round(r["prob_emp"], 1),
+                                "prob_b":      round(r["prob_b"], 1),
+                                "goles_a_esp": round(r["goles_a"], 2),
+                                "goles_b_esp": round(r["goles_b"], 2),
+                                "favorito":    ea if r["prob_a"] > r["prob_b"] else eb,
+                                "prob_fav":    round(max(r["prob_a"], r["prob_b"]), 1),
+                                "modelo":      r.get("modelo", "Dixon-Coles"),
+                                "arbitro":     arbitro or "desconocido",
+                                "resultado_real": None,
+                            }, ensure_ascii=False)
+
+                            # Guardar en session_state (persiste mientras la app está abierta)
+                            if "predicciones_guardadas" not in st.session_state:
+                                st.session_state["predicciones_guardadas"] = {}
+                            st.session_state["predicciones_guardadas"][_pred_key] = _json.loads(_pred_data)
+                            st.session_state[f"pred_guardada_{ea}_{eb}"] = True
+
+                            st.toast(f"✅ Predicción guardada: {ea} {r['prob_a']:.0f}% vs {eb} {r['prob_b']:.0f}%",
+                                     icon="📊")
                     except Exception:
-                        pass  # silencioso si storage no disponible
+                        pass  # silencioso
 
                 pa, pd_, pb = r["prob_a"], r["prob_emp"], r["prob_b"]
 
