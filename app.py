@@ -360,15 +360,27 @@ FLAG_ISO = {
 
 def flag_img(equipo: str, size: int = 48) -> str:
     iso = FLAG_ISO.get(equipo, "un")
-    # Estilo redondeado con borde y sombra, como SofaScore
+    emoji = BANDERAS.get(equipo, "🏳️")
     border_r = "50%" if size >= 40 else "6px"
-    shadow = "0 2px 6px rgba(0,0,0,0.45)" if size >= 40 else "0 1px 3px rgba(0,0,0,0.3)"
-    border = "2px solid rgba(255,255,255,0.15)" if size >= 40 else "1px solid rgba(255,255,255,0.1)"
-    return (f'<img src="https://flagcdn.com/w{size*2}/{iso}.png" '
-            f'width="{size}" height="{size}" '
-            f'style="border-radius:{border_r};border:{border};'
-            f'box-shadow:{shadow};object-fit:cover;vertical-align:middle" '
-            f'alt="{equipo}">')
+    shadow = "0 2px 8px rgba(0,0,0,0.5)" if size >= 40 else "0 1px 3px rgba(0,0,0,0.3)"
+    border_css = "2px solid rgba(255,255,255,0.18)" if size >= 40 else "1px solid rgba(255,255,255,0.1)"
+    # Fuente primaria PNG, fallback SVG, fallback emoji
+    src1 = f"https://flagcdn.com/w{size*2}/{iso}.png"
+    src2 = f"https://flagicons.lipis.dev/flags/4x3/{iso}.svg"
+    fallback_js = f"this.onerror=null;this.src='{src2}';this.onerror=function(){{this.style.display='none';this.parentNode.querySelector('.fe').style.display='block'}}"
+    return (
+        f'<span style="display:inline-block;width:{size}px;height:{size}px;'
+        f'border-radius:{border_r};border:{border_css};box-shadow:{shadow};'
+        f'overflow:hidden;vertical-align:middle;background:#1a2540;'
+        f'position:relative;text-align:center;line-height:{size}px">'
+        f'<img src="{src1}" width="{size}" height="{size}" '
+        f'style="border-radius:{border_r};object-fit:cover;display:block" '
+        f'onerror="{fallback_js}" alt="{equipo}">'
+        f'<span class="fe" style="display:none;font-size:{int(size*0.75)}px;'
+        f'position:absolute;top:0;left:0;width:100%;height:100%;'
+        f'line-height:{size}px;text-align:center">{emoji}</span>'
+        f'</span>'
+    )
 
 def flag(t): return BANDERAS.get(t, "🏳️")
 
