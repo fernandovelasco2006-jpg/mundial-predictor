@@ -411,25 +411,25 @@ PARTIDOS = [
     ("Ecuador",         "Curazao",                "E", "Kansas City",   (0, 0),    "Raphael Claus"),
     ("Paises Bajos",    "Suecia",                 "F", "Houston",       (5, 1),    "Cesar Arturo Ramos"),
     ("Tunez",           "Japon",                  "F", "Monterrey",     (0, 4),    "Istvan Kovacs"),
-    ("Belgica",         "Iran",                   "G", "Los Angeles",   None,    None),
-    ("Nueva Zelanda",   "Egipto",                 "G", "Seattle",       None,    None),
-    ("Espana",          "Arabia Saudita",         "H", "Azteca",        None,    "Felix Zwayer"),
-    ("Cabo Verde",      "Uruguay",                "H", "Atlanta",       None,    None),
-    ("Francia",         "Irak",                   "I", "Boston",        None,    None),
-    ("Senegal",         "Noruega",                "I", "Nueva York",    None,    None),
-    ("Argentina",       "Austria",                "J", "Dallas",        None,    "Szymon Marciniak"),
-    ("Algeria",         "Jordania",               "J", "Dallas",        None,    None),
-    ("Portugal",        "Uzbekistan",             "K", "Houston",       None,    None),
-    ("Colombia",        "RD Congo",               "K", "Guadalajara",   None,    None),
-    ("Inglaterra",      "Ghana",                  "L", "Boston",        None,    None),
+    ("Belgica",         "Iran",                   "G", "Los Angeles",   None,    "Dario Herrera"),
+    ("Nueva Zelanda",   "Egipto",                 "G", "Vancouver",     None,    "Omar Al Ali"),
+    ("Espana",          "Arabia Saudita",         "H", "Atlanta",        None,    "Raphael Claus"),
+    ("Cabo Verde",      "Uruguay",                "H", "Miami",         None,    "Espen Eskas"),
+    ("Francia",         "Irak",                   "I", "Philadelphia",  None,    "Drew Fischer"),
+    ("Senegal",         "Noruega",                "I", "Nueva York",    None,    "Wilton Sampaio"),
+    ("Argentina",       "Austria",                "J", "Dallas",        None,    "Amin Mohamed Omar"),
+    ("Algeria",         "Jordania",               "J", "San Francisco", None,    "Slavko Vincic"),
+    ("Portugal",        "Uzbekistan",             "K", "Houston",       None,    "Jalal Jayed"),
+    ("Colombia",        "RD Congo",               "K", "Guadalajara",   None,    "Maurizio Mariani"),
+    ("Inglaterra",      "Ghana",                  "L", "Boston",        None,    "Said Martinez"),
     ("Croacia",         "Panama",                 "L", "Toronto",       None,    None),
 
     # ── JORNADA 3 ──────────────────────────────────────────────────────────
-    ("Chequia",              "Mexico",            "A", "Azteca",        None,    None),
-    ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     None,    None),
-    ("Suiza",                "Canada",            "B", "Vancouver",     None,    None),
-    ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       None,    None),
-    ("Escocia",              "Brasil",            "C", "Miami",         None,    None),
+    ("Chequia",              "Mexico",            "A", "Azteca",        None,    "Yael Falcon Perez"),
+    ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     None,    "Facundo Tello"),
+    ("Suiza",                "Canada",            "B", "Vancouver",     None,    "Ramon Abatti Abel"),
+    ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       None,    "Jesus Valenzuela"),
+    ("Escocia",              "Brasil",            "C", "Miami",         None,    "Cesar Ramos Palazuelos"),
     ("Marruecos",            "Haiti",             "C", "Philadelphia",  None,    None),
     ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    None),
     ("Paraguay",             "Australia",         "D", "San Francisco", None,    None),
@@ -582,6 +582,7 @@ def calcular_factor_h2h(ea: str, eb: str) -> tuple:
 # ─────────────────────────────────────────────────────────────────────────────
 ARBITROS = {
     "Fernando Rapallini":         (4.80, 0.25),  # ARG - CONMEBOL
+    "Pierre-Ghislain Atcho":  (3.67, 0.17),  # nuevo
     "Szymon Marciniak":           (4.10, 0.18),  # UEFA - Final 2022, deja jugar
     "Alejandro Hernandez":        (5.20, 0.30),  # UEFA
     "Istvan Kovacs":              (4.90, 0.28),  # UEFA
