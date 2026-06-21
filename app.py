@@ -17,6 +17,14 @@ try:
 except ImportError:
     FD_DISPONIBLE = False
 
+# Módulo de predicciones persistentes (Supabase)
+try:
+    from supabase_preds import (simular_y_guardar_dia, cargar_todas_predicciones,
+                                 calcular_accuracy)
+    SUPABASE_DISPONIBLE = True
+except ImportError:
+    SUPABASE_DISPONIBLE = False
+
 # Módulo Dixon-Coles Bayesiano
 try:
     from dixon_coles import calcular_lambdas_dc, simular_dc, disponible as dc_disponible
@@ -1376,12 +1384,18 @@ ODDS_KEY = None
 try:
     API_KEY = st.secrets["RAPIDAPI_KEY"]
     ODDS_KEY = API_KEY
-    FD_TOKEN = os.environ.get("FD_TOKEN", None)  # misma key de RapidAPI
+    FD_TOKEN = os.environ.get("FD_TOKEN", None)
+    SUPABASE_URL = os.environ.get("SUPABASE_URL", None)
+    SUPABASE_KEY = os.environ.get("SUPABASE_KEY", None)  # misma key de RapidAPI
     FD_TOKEN = st.secrets.get("FD_TOKEN", None)
+    SUPABASE_URL = st.secrets.get("SUPABASE_URL", None)
+    SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", None)
 except Exception:
     API_KEY = os.environ.get("RAPIDAPI_KEY", None)
     ODDS_KEY = API_KEY
     FD_TOKEN = os.environ.get("FD_TOKEN", None)
+    SUPABASE_URL = os.environ.get("SUPABASE_URL", None)
+    SUPABASE_KEY = os.environ.get("SUPABASE_KEY", None)
 
 # ── STATUS BADGE API ─────────────────────────────────────────────────────────
 # API status silencioso — sin badge visible
@@ -1522,6 +1536,132 @@ if partidos_hoy:
         Apuesta responsablemente · No garantiza resultados
         </div>""", unsafe_allow_html=True)
 
+# ══════════════════════════════════════════════════════════════════════════════
+# SIMULACIÓN AUTOMÁTICA DEL DÍA — se ejecuta una vez por día al abrir la app
+# Guarda las predicciones de todos los partidos de hoy en JSON persistente
+# Estas son las predicciones "oficiales" que se comparan con resultados reales
+# ══════════════════════════════════════════════════════════════════════════════
+
+import json as _json_auto
+from datetime import datetime as _dt_auto, timezone as _tz_auto, timedelta as _td_auto
+
+_tz_mx_auto = _tz_auto(_td_auto(hours=-6))
+_hoy_auto = _dt_auto.now(_tz_mx_auto).strftime("%Y-%m-%d")
+_archivo_preds = "predicciones_mundial.json"
+
+# Cargar predicciones existentes
+try:
+    with open(_archivo_preds, "r", encoding="utf-8") as _f:
+        _todas_preds = _json_auto.load(_f)
+except Exception:
+    _todas_preds = {}
+
+# Sincronizar session_state con el disco
+if "predicciones_guardadas" not in st.session_state:
+    st.session_state["predicciones_guardadas"] = dict(_todas_preds)
+
+# Verificar si ya corrimos las simulaciones del día de hoy
+_clave_dia = f"sims_del_dia_{_hoy_auto}"
+_ya_simule_hoy = st.session_state.get(_clave_dia, False) or _clave_dia in _todas_preds
+
+# Obtener partidos de hoy pendientes
+_partidos_hoy_auto = []
+for _p in PARTIDOS:
+    if _p[4] is not None:
+        continue  # ya jugado
+    _hor = HORARIOS_PARTIDO.get((_p[0], _p[1])) or HORARIOS_PARTIDO.get((_p[1], _p[0]), "")
+    if not _hor or _hor[:10] != _hoy_auto:
+        continue
+    try:
+        _ini = _dt_auto.strptime(_hor, "%Y-%m-%d %H:%M").replace(tzinfo=_tz_mx_auto)
+        if _dt_auto.now(_tz_mx_auto) > _ini + _td_auto(hours=2, minutes=15):
+            continue  # ya terminó
+    except Exception:
+        pass
+    _partidos_hoy_auto.append(_p)
+
+# Solo simular si hay partidos hoy Y no lo hemos hecho aún hoy
+if _partidos_hoy_auto and not _ya_simule_hoy:
+    _placeholder = st.empty()
+    _placeholder.info(f"⚡ Calculando predicciones del día ({len(_partidos_hoy_auto)} partidos)...")
+
+    # Intentar guardar en Supabase (web + desktop comparten datos)
+    _nuevas_sb = 0
+    if SUPABASE_DISPONIBLE and 'SUPABASE_URL' in dir() and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            _nuevas_sb = simular_y_guardar_dia(
+                SUPABASE_URL, SUPABASE_KEY,
+                _partidos_hoy_auto, simular,
+                HORARIOS_PARTIDO
+            )
+            # Cargar desde Supabase para tener en session_state
+            _preds_sb = cargar_todas_predicciones(SUPABASE_URL, SUPABASE_KEY)
+            if "predicciones_guardadas" not in st.session_state:
+                st.session_state["predicciones_guardadas"] = {}
+            st.session_state["predicciones_guardadas"].update(_preds_sb)
+            _todas_preds.update(_preds_sb)
+        except Exception:
+            _nuevas_sb = 0
+
+    # Fallback: guardar en archivo local si Supabase no disponible
+    if _nuevas_sb == 0:
+        for _p in _partidos_hoy_auto:
+            _ea, _eb, _gr, _sede = _p[0], _p[1], _p[2], _p[3]
+            _arb = _p[5]
+            _pred_key = f"pred_{_ea}_{_eb}".replace(" ", "_")
+            if _pred_key not in _todas_preds:
+                try:
+                    _r = simular(_ea, _eb, _sede, arbitro=_arb, n=500_000)
+                    _pred_nueva = {
+                        "ea": _ea, "eb": _eb, "grupo": _gr,
+                        "guardada_en": _dt_auto.now(_tz_mx_auto).strftime("%Y-%m-%d %H:%M"),
+                        "tipo": "automatica_mañana",
+                        "prob_a": round(_r["prob_a"], 1),
+                        "prob_emp": round(_r["prob_emp"], 1),
+                        "prob_b": round(_r["prob_b"], 1),
+                        "goles_a_esp": round(_r["goles_a"], 2),
+                        "goles_b_esp": round(_r["goles_b"], 2),
+                        "favorito": _ea if _r["prob_a"] > _r["prob_b"] else _eb,
+                        "prob_fav": round(max(_r["prob_a"], _r["prob_b"]), 1),
+                        "modelo": _r.get("modelo", "Dixon-Coles 🎯"),
+                        "arbitro": _arb or "desconocido",
+                        "lam_a": round(_r.get("lam_a", 0), 3),
+                        "lam_b": round(_r.get("lam_b", 0), 3),
+                        "prob_over05": round(_r.get("prob_over05", 0), 1),
+                        "prob_over15": round(_r.get("prob_over15", 0), 1),
+                        "prob_over25": round(_r.get("prob_over25", 0), 1),
+                        "amarillas_esp": round(_r.get("amarillas", 0), 2),
+                        "corners_esp": round(_r.get("corners_esp", 0), 1),
+                        "fecha_partido": _hoy_auto,
+                    }
+                    _todas_preds[_pred_key] = _pred_nueva
+                    st.session_state["predicciones_guardadas"][_pred_key] = _pred_nueva
+                    _nuevas_sb += 1
+                except Exception:
+                    pass
+        try:
+            with open(_archivo_preds, "w", encoding="utf-8") as _f:
+                _json_auto.dump(_todas_preds, _f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+    _todas_preds[_clave_dia] = {"fecha": _hoy_auto, "partidos": len(_partidos_hoy_auto)}
+    st.session_state[_clave_dia] = True
+    _placeholder.empty()
+    if _nuevas_sb > 0:
+        st.toast(f"📊 {_nuevas_sb} predicciones del día guardadas", icon="✅")
+
+elif _partidos_hoy_auto and _ya_simule_hoy:
+    # Ya simulamos hoy — cargar desde el archivo silenciosamente
+    for _p in _partidos_hoy_auto:
+        _k = f"pred_{_p[0]}_{_p[1]}".replace(" ", "_")
+        if _k in _todas_preds and _k not in st.session_state.get("predicciones_guardadas", {}):
+            if "predicciones_guardadas" not in st.session_state:
+                st.session_state["predicciones_guardadas"] = {}
+            st.session_state["predicciones_guardadas"][_k] = _todas_preds[_k]
+
+# ══════════════════════════════════════════════════════════════════════════════
+
 tab_pred, tab_res, tab_apuestas, tab_hist, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "📈 Historial", "⚙️ Modelo"])
 
 
@@ -1643,24 +1783,27 @@ with tab_pred:
                 with st.spinner(f"Simulando {n_sims:,} partidos..."):
                     r = simular(ea, eb, sede, arbitro=arbitro, n=n_sims)
 
-                # ── GUARDAR PREDICCIÓN CON TIMESTAMP ─────────────────────────────
-                # Solo guarda si el partido aún no tiene resultado
-                # Esto permite comparar predicción vs resultado real después
+                # ── GUARDAR PREDICCIÓN CON TIMESTAMP (PERSISTENTE) ───────────────
+                # Usa archivo JSON en disco — persiste entre sesiones y recargas
                 if resultado_real is None:
                     try:
                         import json as _json
                         from datetime import datetime as _dtnow, timezone, timedelta as _td
                         _tz_mx = timezone(_td(hours=-6))
                         _ahora_pred = _dtnow.now(_tz_mx)
-
                         _pred_key = f"pred_{ea}_{eb}".replace(" ", "_")
+                        _archivo_preds = "predicciones_mundial.json"
 
-                        # Solo guardar si no existe ya una predicción previa
-                        # (no sobreescribir la primera predicción antes del partido)
-                        _ya_existe = st.session_state.get(f"pred_guardada_{ea}_{eb}", False)
+                        # Cargar predicciones existentes del archivo
+                        try:
+                            with open(_archivo_preds, "r", encoding="utf-8") as _f:
+                                _todas_preds = _json.load(_f)
+                        except Exception:
+                            _todas_preds = {}
 
-                        if not _ya_existe:
-                            _pred_data = _json.dumps({
+                        # Solo guardar si no existe ya (no sobreescribir)
+                        if _pred_key not in _todas_preds:
+                            _nueva_pred = {
                                 "ea":          ea,
                                 "eb":          eb,
                                 "grupo":       grupo,
@@ -1672,19 +1815,27 @@ with tab_pred:
                                 "goles_b_esp": round(r["goles_b"], 2),
                                 "favorito":    ea if r["prob_a"] > r["prob_b"] else eb,
                                 "prob_fav":    round(max(r["prob_a"], r["prob_b"]), 1),
-                                "modelo":      r.get("modelo", "Dixon-Coles"),
+                                "modelo":      r.get("modelo", "Dixon-Coles 🎯"),
                                 "arbitro":     arbitro or "desconocido",
-                                "resultado_real": None,
-                            }, ensure_ascii=False)
+                                "lam_a":       round(r.get("lam_a", 0), 3),
+                                "lam_b":       round(r.get("lam_b", 0), 3),
+                            }
+                            _todas_preds[_pred_key] = _nueva_pred
 
-                            # Guardar en session_state (persiste mientras la app está abierta)
+                            # Guardar al archivo
+                            with open(_archivo_preds, "w", encoding="utf-8") as _f:
+                                _json.dump(_todas_preds, _f, ensure_ascii=False, indent=2)
+
+                            # También en session_state para acceso rápido
                             if "predicciones_guardadas" not in st.session_state:
                                 st.session_state["predicciones_guardadas"] = {}
-                            st.session_state["predicciones_guardadas"][_pred_key] = _json.loads(_pred_data)
-                            st.session_state[f"pred_guardada_{ea}_{eb}"] = True
+                            st.session_state["predicciones_guardadas"][_pred_key] = _nueva_pred
 
-                            st.toast(f"✅ Predicción guardada: {ea} {r['prob_a']:.0f}% vs {eb} {r['prob_b']:.0f}%",
-                                     icon="📊")
+                            st.toast(
+                                f"📊 Predicción guardada: {ea} {r['prob_a']:.0f}% — "
+                                f"se comparará con el resultado real",
+                                icon="✅"
+                            )
                     except Exception:
                         pass  # silencioso
 
