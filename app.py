@@ -1,3 +1,4 @@
+
 import streamlit as st
 import numpy as np
 from collections import Counter
@@ -20,7 +21,9 @@ except ImportError:
 # Módulo de predicciones persistentes (Supabase)
 try:
     from supabase_preds import (simular_y_guardar_dia, cargar_todas_predicciones,
-                                 calcular_accuracy)
+                                 calcular_accuracy, guardar_apuestas_dia,
+                                 actualizar_aciertos, cargar_historial_apuestas,
+                                 calcular_stats_apuestas)
     SUPABASE_DISPONIBLE = True
 except ImportError:
     SUPABASE_DISPONIBLE = False
@@ -1647,9 +1650,24 @@ if _partidos_hoy_auto and not _ya_simule_hoy:
 
     _todas_preds[_clave_dia] = {"fecha": _hoy_auto, "partidos": len(_partidos_hoy_auto)}
     st.session_state[_clave_dia] = True
+    # También guardar apuestas sugeridas del día
+    if SUPABASE_DISPONIBLE and 'SUPABASE_URL' in dir() and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            _nuevas_ap = guardar_apuestas_dia(
+                SUPABASE_URL, SUPABASE_KEY,
+                _partidos_hoy_auto, simular, analizar_apuestas,
+                HORARIOS_PARTIDO
+            )
+            # Actualizar aciertos de apuestas de partidos ya terminados
+            _partidos_term = [p for p in PARTIDOS if p[4] is not None]
+            if _partidos_term:
+                actualizar_aciertos(SUPABASE_URL, SUPABASE_KEY, _partidos_term)
+        except Exception:
+            _nuevas_ap = 0
+
     _placeholder.empty()
     if _nuevas_sb > 0:
-        st.toast(f"📊 {_nuevas_sb} predicciones del día guardadas", icon="✅")
+        st.toast(f"📊 {_nuevas_sb} predicciones y apuestas del día guardadas", icon="✅")
 
 elif _partidos_hoy_auto and _ya_simule_hoy:
     # Ya simulamos hoy — cargar desde el archivo silenciosamente
@@ -1662,7 +1680,7 @@ elif _partidos_hoy_auto and _ya_simule_hoy:
 
 # ══════════════════════════════════════════════════════════════════════════════
 
-tab_pred, tab_res, tab_apuestas, tab_hist, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "📈 Historial", "⚙️ Modelo"])
+tab_pred, tab_res, tab_apuestas, tab_hist, tab_hist_ap, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "📈 Historial", "⚙️ Modelo"])
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -2355,7 +2373,146 @@ with tab_hist:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 5 — CÓMO FUNCIONA
+# TAB 5 — HISTORIAL DE APUESTAS
+# ══════════════════════════════════════════════════════════════════════════════
+with tab_hist_ap:
+    st.markdown("#### 🎰 Historial de apuestas sugeridas")
+    st.caption("Apuestas de confianza ALTA sugeridas antes de cada partido, "
+               "comparadas con el resultado real.")
+
+    _apuestas_hist = []
+    if SUPABASE_DISPONIBLE and 'SUPABASE_URL' in dir() and SUPABASE_URL and SUPABASE_KEY:
+        try:
+            # Actualizar aciertos primero
+            _pts = [p for p in PARTIDOS if p[4] is not None]
+            if _pts:
+                actualizar_aciertos(SUPABASE_URL, SUPABASE_KEY, _pts)
+            _apuestas_hist = cargar_historial_apuestas(SUPABASE_URL, SUPABASE_KEY)
+        except Exception:
+            pass
+
+    if not _apuestas_hist:
+        st.info("⏳ Aún no hay apuestas registradas. Se guardarán automáticamente "
+                "mañana al abrir la app.")
+    else:
+        _stats = calcular_stats_apuestas(_apuestas_hist)
+
+        # ── Métricas generales ────────────────────────────────────────────────
+        col_a1, col_a2, col_a3, col_a4 = st.columns(4)
+        with col_a1:
+            color_ap = "#4ade80" if _stats["accuracy"] >= 60 else "#f0c040" if _stats["accuracy"] >= 45 else "#ef4444"
+            st.markdown(f"""
+            <div class="metric-box">
+              <div class="metric-val" style="color:{color_ap}">{_stats["accuracy"]:.1f}%</div>
+              <div class="metric-lbl">Accuracy apuestas</div>
+              <div style="font-size:0.6rem;color:#6677aa">{_stats["aciertos"]}/{_stats["total_evaluadas"]} acertadas</div>
+            </div>""", unsafe_allow_html=True)
+        with col_a2:
+            st.markdown(f"""
+            <div class="metric-box">
+              <div class="metric-val" style="color:#4ade80">{_stats["aciertos"]}</div>
+              <div class="metric-lbl">✅ Aciertos</div>
+              <div style="font-size:0.6rem;color:#6677aa">apuestas ganadoras</div>
+            </div>""", unsafe_allow_html=True)
+        with col_a3:
+            st.markdown(f"""
+            <div class="metric-box">
+              <div class="metric-val" style="color:#ef4444">{_stats["fallos"]}</div>
+              <div class="metric-lbl">❌ Fallos</div>
+              <div style="font-size:0.6rem;color:#6677aa">apuestas perdidas</div>
+            </div>""", unsafe_allow_html=True)
+        with col_a4:
+            st.markdown(f"""
+            <div class="metric-box">
+              <div class="metric-val" style="color:#f0c040">{_stats["total_pendientes"]}</div>
+              <div class="metric-lbl">⏳ Pendientes</div>
+              <div style="font-size:0.6rem;color:#6677aa">sin resultado aún</div>
+            </div>""", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # ── Accuracy por mercado ──────────────────────────────────────────────
+        if _stats["por_mercado"]:
+            st.markdown("##### 📊 Accuracy por tipo de apuesta")
+            cols_merc = st.columns(len(_stats["por_mercado"]))
+            for i, (merc, datos) in enumerate(_stats["por_mercado"].items()):
+                with cols_merc[i % len(cols_merc)]:
+                    color_m = "#4ade80" if datos["accuracy"] >= 60 else "#f0c040"
+                    st.markdown(f"""
+                    <div style="background:#111827;border:1px solid #1e2d45;
+                    border-radius:8px;padding:0.6rem;text-align:center;margin-bottom:0.5rem">
+                      <div style="font-size:0.6rem;color:#6677aa;letter-spacing:1px">{merc.upper()}</div>
+                      <div style="font-size:1.4rem;color:{color_m};font-weight:700">{datos["accuracy"]:.0f}%</div>
+                      <div style="font-size:0.65rem;color:#8899bb">{datos["aciertos"]}/{datos["total"]}</div>
+                    </div>""", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # ── Detalle por apuesta ───────────────────────────────────────────────
+        if _stats.get("evaluadas"):
+            st.markdown("##### ✅ Apuestas evaluadas")
+            for _ap in _stats["evaluadas"]:
+                _color = "#0d2818" if _ap["acierto"] else "#1a0d0d"
+                _borde = "#2d6b45" if _ap["acierto"] else "#6b2d2d"
+                _icono = "✅" if _ap["acierto"] else "❌"
+                st.markdown(f"""
+                <div style="background:{_color};border:1px solid {_borde};
+                border-radius:8px;padding:0.5rem 0.9rem;margin-bottom:0.3rem">
+                  <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+                    <span>{_icono}</span>
+                    <span style="color:#e8eaf0;font-size:0.8rem;font-weight:600">
+                      {flag_img(_ap['ea'],16)} {_ap['ea']} vs {flag_img(_ap['eb'],16)} {_ap['eb']}</span>
+                    <span style="color:#4ade80;font-family:'Bebas Neue',sans-serif">
+                      {_ap.get('resultado_real','?')}</span>
+                    <span style="color:#6677aa;font-size:0.7rem;margin-left:auto">
+                      Grupo {_ap.get('grupo','?')} · {_ap.get('fecha_partido','?')}</span>
+                  </div>
+                  <div style="display:flex;gap:1rem;margin-top:0.3rem;flex-wrap:wrap">
+                    <span style="font-size:0.75rem;color:#f0c040">
+                      📋 {_ap.get('mercado','')}</span>
+                    <span style="font-size:0.75rem;color:#e8eaf0">
+                      → {_ap.get('seleccion','')}</span>
+                    <span style="font-size:0.7rem;color:#4ade80">
+                      {_ap.get('confianza',0):.0f}% confianza</span>
+                  </div>
+                  <div style="font-size:0.6rem;color:#4a5568;margin-top:0.2rem">
+                    📱 {_ap.get('donde','')} · Guardada: {_ap.get('guardada_en','?')}</div>
+                </div>""", unsafe_allow_html=True)
+
+        # ── Apuestas pendientes ───────────────────────────────────────────────
+        if _stats.get("pendientes"):
+            st.markdown("---")
+            st.markdown(f"##### ⏳ Apuestas pendientes de resultado ({len(_stats['pendientes'])})")
+            for _ap in _stats["pendientes"]:
+                st.markdown(f"""
+                <div style="background:#111827;border:1px solid #1e3a5f;
+                border-radius:8px;padding:0.5rem 0.9rem;margin-bottom:0.3rem">
+                  <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+                    <span style="color:#e8eaf0;font-size:0.8rem;font-weight:600">
+                      {flag_img(_ap['ea'],16)} {_ap['ea']} vs {flag_img(_ap['eb'],16)} {_ap['eb']}</span>
+                    <span style="color:#6677aa;font-size:0.7rem;margin-left:auto">
+                      {_ap.get('fecha_partido','?')}</span>
+                  </div>
+                  <div style="display:flex;gap:1rem;margin-top:0.3rem;flex-wrap:wrap">
+                    <span style="font-size:0.75rem;color:#f0c040">
+                      📋 {_ap.get('mercado','')}</span>
+                    <span style="font-size:0.75rem;color:#e8eaf0">
+                      → {_ap.get('seleccion','')}</span>
+                    <span style="font-size:0.7rem;color:#4ade80">
+                      {_ap.get('confianza',0):.0f}%</span>
+                  </div>
+                </div>""", unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="model-note" style="margin-top:1rem">
+        🎯 Solo se registran apuestas de confianza ALTA (≥75-82% según mercado).<br>
+        Las apuestas se guardan automáticamente cada mañana antes de los partidos.<br>
+        ⚠️ Solo informativo — apuesta responsablemente.
+        </div>""", unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TAB 6 — CÓMO FUNCIONA
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_info:
     st.markdown("#### ¿Cómo funciona el modelo?")
@@ -2390,3 +2547,4 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
+            
