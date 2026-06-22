@@ -186,24 +186,24 @@ ELO = {
     "Brasil":                5.4,  # WC26
     "Marruecos":             4.0,  # WC26
     "Paises Bajos":          4.6,  # WC26
-    "Belgica":               1742,
+    "Belgica":          4.7,  # WC26
     "Alemania":              6.6,  # WC26
     "Croacia":               1715,
     "Colombia":              1698,
     "Mexico":                3.2,  # WC26
     "Senegal":               1684,
-    "Uruguay":               1673,
+    "Uruguay":          6.9,  # WC26
     "Estados Unidos":        4.8,  # WC26
     "Japon":                 4.4,  # WC26
     "Suiza":                 6.6,  # WC26
-    "Iran":                  1620,
+    "Iran":          3.1,  # WC26
     "Turquia":               7.1,  # WC26
     "Ecuador":               5.7,  # WC26
     "Austria":               1597,
     "Corea del Sur":         3.8,  # WC26
     "Australia":             4.5,  # WC26
     "Argelia":               1571,
-    "Egipto":                1562,
+    "Egipto":          3.3,  # WC26
     "Canada":                9.2,  # WC26
     "Noruega":               1557,
     "Costa de Marfil":       3.5,  # WC26
@@ -221,10 +221,10 @@ ELO = {
     "Bosnia y Herzegovina":  3.8,  # WC26
     "Irak":                  1446,
     "Uzbekistan":            1459,
-    "Cabo Verde":            1371,
+    "Cabo Verde":          3.5,  # WC26
     "Sudafrica":             3.0,  # WC26
     "Haiti":                 3.2,  # WC26
-    "Nueva Zelanda":         1276,
+    "Nueva Zelanda":          4.1,  # WC26
     "Curazao":               1.5,  # WC26
     # aliases
     "Algeria":               1571,
@@ -441,10 +441,10 @@ PARTIDOS = [
     ("Ecuador",         "Curazao",                "E", "Kansas City",   (0, 0),    "Raphael Claus"),
     ("Paises Bajos",    "Suecia",                 "F", "Houston",       (5, 1),    "Cesar Arturo Ramos"),
     ("Tunez",           "Japon",                  "F", "Monterrey",     (0, 4),    "Istvan Kovacs"),
-    ("Belgica",         "Iran",                   "G", "Los Angeles",   None,    "Dario Herrera"),
-    ("Nueva Zelanda",   "Egipto",                 "G", "Vancouver",     None,    "Omar Al Ali"),
+    ("Belgica",         "Iran",                   "G", "Los Angeles",   (0, 0),  "Dario Herrera"),
+    ("Nueva Zelanda",   "Egipto",                 "G", "Vancouver",     (1, 3),  "Omar Al Ali"),
     ("Espana",          "Arabia Saudita",         "H", "Atlanta",        None,    "Raphael Claus"),
-    ("Cabo Verde",      "Uruguay",                "H", "Miami",         None,    "Espen Eskas"),
+    ("Cabo Verde",      "Uruguay",                "H", "Miami",         (2, 2),  "Espen Eskas"),
     ("Francia",         "Irak",                   "I", "Philadelphia",  None,    "Drew Fischer"),
     ("Senegal",         "Noruega",                "I", "Nueva York",    None,    "Wilton Sampaio"),
     ("Argentina",       "Austria",                "J", "Dallas",        None,    "Amin Mohamed Omar"),
@@ -706,15 +706,15 @@ TARJETAS_MUNDIAL = {
     "Tunez":                (3, 1, 2),
     # Grupo G
     "Belgica":              (2, 0, 1),
-    "Egipto":               (1, 0, 1),
+    "Egipto":               (2, 0, 2),
     "Iran":                 (2, 0, 1),
-    "Nueva Zelanda":        (1, 0, 1),
+    "Nueva Zelanda":        (3, 0, 2),
     # Grupo H
     "Espana":               (1, 0, 2),  # 0 en J2 vs Arabia
-    "Cabo Verde":           (2, 0, 1),
+    "Cabo Verde":           (4, 0, 2),  # 2 en J2 vs Uruguay
     "Arabia Saudi":         (4, 0, 2),  # 2 en J2 vs España
     "Arabia Saudita":       (4, 0, 2),
-    "Uruguay":              (1, 0, 1),
+    "Uruguay":              (3, 0, 2),  # 2 en J2 vs Cabo Verde
     # Grupo I
     "Francia":              (1, 0, 1),
     "Senegal":              (2, 0, 1),
@@ -778,16 +778,16 @@ FORMA_MUNDIAL = {
     "Suecia":               (6, 3, 2),   # 5-1 Túnez + 1-5 Países Bajos
     "Tunez":                (1, 9, 2),   # 1-5 Suecia + 0-4 Japón
     # Grupo G — J1 completa
-    "Belgica":              (1, 1, 1),   # 1-1 Egipto
-    "Egipto":               (1, 1, 1),   # 1-1 Bélgica
-    "Iran":                 (2, 2, 1),   # 2-2 Nueva Zelanda
-    "Nueva Zelanda":        (2, 2, 1),   # 2-2 Irán
+    "Belgica":              (1, 1, 2),   # 1-1 Egipto + 0-0 Irán
+    "Egipto":               (4, 2, 2),   # 1-1 Bélgica + 3-1 Nueva Zelanda
+    "Iran":                 (2, 2, 2),   # 2-2 Nueva Zelanda + 0-0 Bélgica
+    "Nueva Zelanda":        (3, 5, 2),   # 2-2 Irán + 1-3 Egipto
     # Grupo H — J1 completa
     "Arabia Saudi":         (1, 5, 2),   # 1-1 Uruguay + 0-4 España
     "Arabia Saudita":       (1, 5, 2),
-    "Uruguay":              (1, 1, 1),   # 1-1 Arabia Saudita
+    "Uruguay":              (3, 3, 2),   # 1-1 Arabia Saudita + 2-2 Cabo Verde
     "Espana":               (4, 0, 2),   # 0-0 Cabo Verde + 4-0 Arabia Saudita
-    "Cabo Verde":           (0, 0, 1),   # 0-0 España
+    "Cabo Verde":           (2, 2, 2),   # 0-0 España + 2-2 Uruguay
     # Grupo I — J1 completa
     "Francia":              (3, 1, 1),   # 3-1 Senegal
     "Senegal":              (1, 3, 1),   # 1-3 Francia
@@ -2158,6 +2158,62 @@ with tab_apuestas:
         r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
 
         sugerencias = analizar_apuestas(ea2, eb2, r2)
+
+        # Guardar apuestas ALTA en Supabase si el partido no tiene resultado
+        if sugerencias and resultado_real2 is None:
+            if SUPABASE_DISPONIBLE and 'SUPABASE_URL' in dir() and SUPABASE_URL and SUPABASE_KEY:
+                try:
+                    from datetime import datetime as _dts, timezone as _tzs, timedelta as _tds
+                    _tz_s = _tzs(_tds(hours=-6))
+                    _ahora_s = _dts.now(_tz_s)
+                    _hor2 = HORARIOS_PARTIDO.get((ea2, eb2)) or HORARIOS_PARTIDO.get((eb2, ea2), "")
+                    _fecha_p2 = _hor2[:10] if _hor2 else _ahora_s.strftime("%Y-%m-%d")
+
+                    for _i2, _s2 in enumerate(sugerencias):
+                        if _s2["nivel"] != "ALTA":
+                            continue
+                        _ap_id2 = f"ap_{ea2}_{eb2}_{_i2}_{_fecha_p2}".replace(" ", "_")
+                        _ap2 = {
+                            "id":            _ap_id2,
+                            "ea":            ea2,
+                            "eb":            eb2,
+                            "grupo":         grupo2,
+                            "fecha_partido": _fecha_p2,
+                            "guardada_en":   _ahora_s.strftime("%Y-%m-%d %H:%M"),
+                            "mercado":       _s2["mercado"],
+                            "seleccion":     _s2["seleccion"].replace("✅ ", ""),
+                            "confianza":     round(_s2["confianza"], 1),
+                            "donde":         _s2.get("donde", "Playdoit / Draftea"),
+                            "resultado_real": None,
+                            "goles_a":       None,
+                            "goles_b":       None,
+                            "acierto":       None,
+                        }
+                        try:
+                            import requests as _req2
+                            _hdr2 = {
+                                "apikey": SUPABASE_KEY,
+                                "Authorization": f"Bearer {SUPABASE_KEY}",
+                                "Content-Type": "application/json",
+                                "Prefer": "return=minimal",
+                            }
+                            _chk2 = _req2.get(
+                                f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                                headers={**_hdr2, "Prefer": ""},
+                                params={"id": f"eq.{_ap_id2}", "select": "id"},
+                                timeout=5
+                            )
+                            if _chk2.status_code == 200 and not _chk2.json():
+                                _req2.post(
+                                    f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                                    headers=_hdr2,
+                                    json=_ap2,
+                                    timeout=5
+                                )
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
 
         if not sugerencias:
             st.info("El modelo no encontró señales suficientemente claras para este partido. "
