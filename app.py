@@ -2160,7 +2160,7 @@ with tab_apuestas:
         sugerencias = analizar_apuestas(ea2, eb2, r2)
 
         # Guardar apuestas ALTA en Supabase si el partido no tiene resultado
-        if sugerencias and resultado_real2 is None:
+        if sugerencias and res2 is None:
             if SUPABASE_DISPONIBLE and 'SUPABASE_URL' in dir() and SUPABASE_URL and SUPABASE_KEY:
                 try:
                     from datetime import datetime as _dts, timezone as _tzs, timedelta as _tds
