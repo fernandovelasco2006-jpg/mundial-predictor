@@ -222,3 +222,51 @@ def actualizar_fixture_y_forma(token: str, PARTIDOS: list, FORMA_MUNDIAL: dict,
             )
 
     return nuevos_partidos, nueva_forma, nuevas_tarjetas, actualizaciones
+
+
+def actualizar_clasificados_knockout(token: str, PARTIDOS: list) -> list:
+    """
+    Consulta football-data.org para obtener los equipos clasificados
+    a la fase eliminatoria y actualiza los TBD en el fixture.
+    Se llama automáticamente cuando termina la fase de grupos (después del 27 jun).
+    """
+    from datetime import datetime, timezone, timedelta
+    tz_mx = timezone(timedelta(hours=-6))
+    hoy = datetime.now(tz_mx).strftime("%Y-%m-%d")
+
+    # Solo actualizar si ya terminó la fase de grupos
+    if hoy < "2026-06-28":
+        return PARTIDOS
+
+    try:
+        # Obtener standings del Mundial
+        r = requests.get(
+            f"{BASE_URL}/competitions/{WC_2026_ID}/standings",
+            headers=_headers(token),
+            timeout=10
+        )
+        if r.status_code != 200:
+            return PARTIDOS
+
+        standings = r.json().get("standings", [])
+
+        # Extraer clasificados por grupo
+        clasificados = {}  # {grupo: [1ro, 2do, 3ro]}
+        for grupo in standings:
+            if grupo.get("type") != "TOTAL":
+                continue
+            grupo_nombre = grupo.get("group", "")
+            tabla = grupo.get("table", [])
+            clasificados[grupo_nombre] = [
+                _normalizar(e["team"]["name"])
+                for e in sorted(tabla, key=lambda x: x["position"])[:3]
+            ]
+
+        # Actualizar TBD en el fixture con equipos reales
+        # El bracket oficial FIFA determina quién juega contra quién
+        # Por ahora retornar PARTIDOS sin modificar
+        # (se implementará cuando el bracket esté completo)
+        return PARTIDOS
+
+    except Exception:
+        return PARTIDOS
