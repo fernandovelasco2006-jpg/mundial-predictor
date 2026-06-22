@@ -2269,7 +2269,7 @@ with tab_apuestas:
             border-top:1px solid #1e2d45">
             📊 Basado en: ELO FIFA + forma en el Mundial + altitud + árbitro + historial H2H.
             El modelo es deliberadamente conservador — si la señal no es clara, no aparece aquí.
-            Tiros de esquina no incluidos (requieren datos de estadísticas de córners por equipo).
+            Córners calculados con datos reales del Mundial 2026 + histórico FIFA.
             </div>
             """, unsafe_allow_html=True)
 
