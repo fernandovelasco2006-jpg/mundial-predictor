@@ -281,7 +281,47 @@ CORNERS_EQUIPO = {
 }
 CORNERS_DEFAULT = 4.0  # default si no hay dato
 
-HORARIOS_PARTIDO = {('Turquia', 'Paraguay'): '2026-06-19 21:00', ('Paises Bajos', 'Suecia'): '2026-06-20 11:00', ('Alemania', 'Costa de Marfil'): '2026-06-20 14:00', ('Ecuador', 'Curazao'): '2026-06-20 18:00', ('Tunez', 'Japon'): '2026-06-20 22:00', ('Espana', 'Arabia Saudita'): '2026-06-21 10:00', ('Belgica', 'Iran'): '2026-06-21 13:00', ('Cabo Verde', 'Uruguay'): '2026-06-21 16:00', ('Nueva Zelanda', 'Egipto'): '2026-06-21 19:00', ('Argentina', 'Austria'): '2026-06-22 11:00', ('Francia', 'Irak'): '2026-06-22 15:00', ('Senegal', 'Noruega'): '2026-06-22 18:00', ('Algeria', 'Jordania'): '2026-06-22 21:00', ('Portugal', 'Uzbekistan'): '2026-06-23 11:00', ('Inglaterra', 'Ghana'): '2026-06-23 14:00', ('Croacia', 'Panama'): '2026-06-23 17:00', ('Colombia', 'RD Congo'): '2026-06-23 20:00', ('Suiza', 'Canada'): '2026-06-24 13:00', ('Bosnia y Herzegovina', 'Catar'): '2026-06-24 13:00', ('Escocia', 'Brasil'): '2026-06-24 16:00', ('Marruecos', 'Haiti'): '2026-06-24 16:00', ('Chequia', 'Mexico'): '2026-06-24 19:00', ('Sudafrica', 'Corea del Sur'): '2026-06-24 19:00', ('Paraguay', 'Australia'): '2026-06-25 13:00', ('Turquia', 'Estados Unidos'): '2026-06-25 13:00', ('Japon', 'Suecia'): '2026-06-25 16:00', ('Tunez', 'Paises Bajos'): '2026-06-25 16:00', ('Curazao', 'Costa de Marfil'): '2026-06-25 19:00', ('Ecuador', 'Alemania'): '2026-06-25 19:00', ('Noruega', 'Francia'): '2026-06-26 13:00', ('Senegal', 'Irak'): '2026-06-26 13:00', ('Nueva Zelanda', 'Belgica'): '2026-06-26 16:00', ('Egipto', 'Iran'): '2026-06-26 16:00', ('Uruguay', 'Espana'): '2026-06-26 19:00', ('Cabo Verde', 'Arabia Saudita'): '2026-06-26 19:00', ('Jordania', 'Argentina'): '2026-06-27 13:00', ('Algeria', 'Austria'): '2026-06-27 13:00', ('Panama', 'Inglaterra'): '2026-06-27 16:00', ('Croacia', 'Ghana'): '2026-06-27 16:00', ('Colombia', 'Portugal'): '2026-06-27 19:00', ('RD Congo', 'Uzbekistan'): '2026-06-27 19:00'}
+HORARIOS_PARTIDO = {('Turquia', 'Paraguay'): '2026-06-19 21:00', ('Paises Bajos', 'Suecia'): '2026-06-20 11:00', ('Alemania', 'Costa de Marfil'): '2026-06-20 14:00', ('Ecuador', 'Curazao'): '2026-06-20 18:00', ('Tunez', 'Japon'): '2026-06-20 22:00', ('Espana', 'Arabia Saudita'): '2026-06-21 10:00', ('Belgica', 'Iran'): '2026-06-21 13:00', ('Cabo Verde', 'Uruguay'): '2026-06-21 16:00', ('Nueva Zelanda', 'Egipto'): '2026-06-21 19:00', ('Argentina', 'Austria'): '2026-06-22 11:00', ('Francia', 'Irak'): '2026-06-22 15:00', ('Senegal', 'Noruega'): '2026-06-22 18:00', ('Algeria', 'Jordania'): '2026-06-22 21:00', ('Portugal', 'Uzbekistan'): '2026-06-23 11:00', ('Inglaterra', 'Ghana'): '2026-06-23 14:00', ('Croacia', 'Panama'): '2026-06-23 17:00', ('Colombia', 'RD Congo'): '2026-06-23 20:00', ('Suiza', 'Canada'): '2026-06-24 13:00', ('Bosnia y Herzegovina', 'Catar'): '2026-06-24 13:00', ('Escocia', 'Brasil'): '2026-06-24 16:00', ('Marruecos', 'Haiti'): '2026-06-24 16:00', ('Chequia', 'Mexico'): '2026-06-24 19:00', ('Sudafrica', 'Corea del Sur'): '2026-06-24 19:00', ('Paraguay', 'Australia'): '2026-06-25 13:00', ('Turquia', 'Estados Unidos'): '2026-06-25 13:00', ('Japon', 'Suecia'): '2026-06-25 16:00', ('Tunez', 'Paises Bajos'): '2026-06-25 16:00', ('Curazao', 'Costa de Marfil'): '2026-06-25 19:00', ('Ecuador', 'Alemania'): '2026-06-25 19:00', ('Noruega', 'Francia'): '2026-06-26 13:00', ('Senegal', 'Irak'): '2026-06-26 13:00', ('Nueva Zelanda', 'Belgica'): '2026-06-26 16:00', ('Egipto', 'Iran'): '2026-06-26 16:00', ('Uruguay', 'Espana'): '2026-06-26 19:00', ('Cabo Verde', 'Arabia Saudita'): '2026-06-26 19:00', ('Jordania', 'Argentina'): '2026-06-27 13:00', ('Algeria', 'Austria'): '2026-06-27 13:00', ('Panama', 'Inglaterra'): '2026-06-27 16:00', ('Croacia', 'Ghana'): '2026-06-27 16:00', ('Colombia', 'Portugal'): '2026-06-27 19:00', ('RD Congo', 'Uzbekistan'): '2026-06-27 19:00',
+
+    # ── RONDA DE 32 ──────────────────────────────────────────────────────────
+    ("TBD-R32-1A",  "TBD-R32-1B"):  "2026-06-28 14:00",  # Los Angeles
+    ("TBD-R32-2A",  "TBD-R32-2B"):  "2026-06-29 12:00",  # Boston
+    ("TBD-R32-3A",  "TBD-R32-3B"):  "2026-06-29 20:00",  # Monterrey
+    ("TBD-R32-4A",  "TBD-R32-4B"):  "2026-06-29 12:00",  # Houston
+    ("TBD-R32-5A",  "TBD-R32-5B"):  "2026-06-30 16:00",  # Nueva York
+    ("TBD-R32-6A",  "TBD-R32-6B"):  "2026-06-30 12:00",  # Dallas
+    ("TBD-R32-7A",  "TBD-R32-7B"):  "2026-06-30 20:00",  # Ciudad de México
+    ("TBD-R32-8A",  "TBD-R32-8B"):  "2026-07-01 11:00",  # Atlanta
+    ("TBD-R32-9A",  "TBD-R32-9B"):  "2026-07-01 19:00",  # San Francisco
+    ("TBD-R32-10A", "TBD-R32-10B"): "2026-07-01 15:00",  # Seattle
+    ("TBD-R32-11A", "TBD-R32-11B"): "2026-07-02 18:00",  # Toronto
+    ("TBD-R32-12A", "TBD-R32-12B"): "2026-07-02 14:00",  # Los Angeles
+    ("TBD-R32-13A", "TBD-R32-13B"): "2026-07-02 20:00",  # Vancouver
+    ("TBD-R32-14A", "TBD-R32-14B"): "2026-07-03 17:00",  # Miami
+    ("TBD-R32-15A", "TBD-R32-15B"): "2026-07-03 20:30",  # Kansas City
+    ("TBD-R32-16A", "TBD-R32-16B"): "2026-07-03 13:00",  # Dallas
+    # ── RONDA DE 16 ──────────────────────────────────────────────────────────
+    ("TBD-R16-1A",  "TBD-R16-1B"):  "2026-07-04 16:00",
+    ("TBD-R16-2A",  "TBD-R16-2B"):  "2026-07-04 12:00",
+    ("TBD-R16-3A",  "TBD-R16-3B"):  "2026-07-05 15:00",
+    ("TBD-R16-4A",  "TBD-R16-4B"):  "2026-07-05 19:00",
+    ("TBD-R16-5A",  "TBD-R16-5B"):  "2026-07-06 14:00",
+    ("TBD-R16-6A",  "TBD-R16-6B"):  "2026-07-06 19:00",
+    ("TBD-R16-7A",  "TBD-R16-7B"):  "2026-07-06 11:00",
+    ("TBD-R16-8A",  "TBD-R16-8B"):  "2026-07-07 15:00",
+    # ── CUARTOS ──────────────────────────────────────────────────────────────
+    ("TBD-QF-1A",   "TBD-QF-1B"):   "2026-07-09 15:00",
+    ("TBD-QF-2A",   "TBD-QF-2B"):   "2026-07-10 14:00",
+    ("TBD-QF-3A",   "TBD-QF-3B"):   "2026-07-11 16:00",
+    ("TBD-QF-4A",   "TBD-QF-4B"):   "2026-07-11 20:00",
+    # ── SEMIS ────────────────────────────────────────────────────────────────
+    ("TBD-SF-1A",   "TBD-SF-1B"):   "2026-07-14 14:00",
+    ("TBD-SF-2A",   "TBD-SF-2B"):   "2026-07-15 14:00",
+    # ── 3ER LUGAR ────────────────────────────────────────────────────────────
+    ("TBD-3P-1A",   "TBD-3P-1B"):   "2026-07-18 16:00",
+    # ── FINAL ────────────────────────────────────────────────────────────────
+    ("TBD-F-1A",    "TBD-F-1B"):    "2026-07-19 14:00",
+}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -479,6 +519,52 @@ PARTIDOS = [
     ("Colombia",             "Portugal",          "K", "Miami",         None,    None),
     ("Croacia",              "Ghana",             "L", "Toronto",       None,    None),
     ("Panama",               "Inglaterra",        "L", "Guadalajara",   None,    None),
+    # ── RONDA DE 32 (Round of 32) — Jun 28 - Jul 3 ──────────────────────────
+    # Los equipos se llenan automáticamente cuando clasifiquen de grupos
+    # Formato: (equipo_a, equipo_b, fase, sede, resultado, arbitro)
+    # Por ahora TBD = "Por definir"
+    ("TBD-R32-1A",  "TBD-R32-1B",  "R32", "Los Angeles",    None, None),  # Jun 28 15:00 EDT
+    ("TBD-R32-2A",  "TBD-R32-2B",  "R32", "Boston",         None, None),  # Jun 29 13:00 EDT
+    ("TBD-R32-3A",  "TBD-R32-3B",  "R32", "Monterrey",      None, None),  # Jun 29 21:00 EDT
+    ("TBD-R32-4A",  "TBD-R32-4B",  "R32", "Houston",        None, None),  # Jun 29 13:00 EDT
+    ("TBD-R32-5A",  "TBD-R32-5B",  "R32", "Nueva York",     None, None),  # Jun 30 17:00 EDT
+    ("TBD-R32-6A",  "TBD-R32-6B",  "R32", "Dallas",         None, None),  # Jun 30 13:00 EDT
+    ("TBD-R32-7A",  "TBD-R32-7B",  "R32", "Azteca",         None, None),  # Jun 30 21:00 EDT
+    ("TBD-R32-8A",  "TBD-R32-8B",  "R32", "Atlanta",        None, None),  # Jul 1 12:00 EDT
+    ("TBD-R32-9A",  "TBD-R32-9B",  "R32", "San Francisco",  None, None),  # Jul 1 20:00 EDT
+    ("TBD-R32-10A", "TBD-R32-10B", "R32", "Seattle",        None, None),  # Jul 1 16:00 EDT
+    ("TBD-R32-11A", "TBD-R32-11B", "R32", "Toronto",        None, None),  # Jul 2 19:00 EDT
+    ("TBD-R32-12A", "TBD-R32-12B", "R32", "Los Angeles",    None, None),  # Jul 2 15:00 EDT
+    ("TBD-R32-13A", "TBD-R32-13B", "R32", "Vancouver",      None, None),  # Jul 2 21:00 EDT
+    ("TBD-R32-14A", "TBD-R32-14B", "R32", "Miami",          None, None),  # Jul 3 18:00 EDT
+    ("TBD-R32-15A", "TBD-R32-15B", "R32", "Kansas City",    None, None),  # Jul 3 21:30 EDT
+    ("TBD-R32-16A", "TBD-R32-16B", "R32", "Dallas",         None, None),  # Jul 3 14:00 EDT
+
+    # ── RONDA DE 16 — Jul 4-7 ────────────────────────────────────────────────
+    ("TBD-R16-1A",  "TBD-R16-1B",  "R16", "Philadelphia",   None, None),  # Jul 4 17:00 EDT
+    ("TBD-R16-2A",  "TBD-R16-2B",  "R16", "Houston",        None, None),  # Jul 4 13:00 EDT
+    ("TBD-R16-3A",  "TBD-R16-3B",  "R16", "Nueva York",     None, None),  # Jul 5 16:00 EDT
+    ("TBD-R16-4A",  "TBD-R16-4B",  "R16", "Azteca",         None, None),  # Jul 5 20:00 EDT
+    ("TBD-R16-5A",  "TBD-R16-5B",  "R16", "Dallas",         None, None),  # Jul 6 15:00 EDT
+    ("TBD-R16-6A",  "TBD-R16-6B",  "R16", "Seattle",        None, None),  # Jul 6 20:00 EDT
+    ("TBD-R16-7A",  "TBD-R16-7B",  "R16", "Atlanta",        None, None),  # Jul 6 12:00 EDT
+    ("TBD-R16-8A",  "TBD-R16-8B",  "R16", "Vancouver",      None, None),  # Jul 7 16:00 EDT
+
+    # ── CUARTOS DE FINAL — Jul 9-11 ──────────────────────────────────────────
+    ("TBD-QF-1A",   "TBD-QF-1B",   "QF",  "Boston",         None, None),  # Jul 9 16:00 EDT
+    ("TBD-QF-2A",   "TBD-QF-2B",   "QF",  "Los Angeles",    None, None),  # Jul 10 15:00 EDT
+    ("TBD-QF-3A",   "TBD-QF-3B",   "QF",  "Miami",          None, None),  # Jul 11 17:00 EDT
+    ("TBD-QF-4A",   "TBD-QF-4B",   "QF",  "Kansas City",    None, None),  # Jul 11 21:00 EDT
+
+    # ── SEMIFINALES — Jul 14-15 ──────────────────────────────────────────────
+    ("TBD-SF-1A",   "TBD-SF-1B",   "SF",  "Dallas",         None, None),  # Jul 14 15:00 EDT
+    ("TBD-SF-2A",   "TBD-SF-2B",   "SF",  "Atlanta",        None, None),  # Jul 15 15:00 EDT
+
+    # ── TERCER LUGAR — Jul 18 ────────────────────────────────────────────────
+    ("TBD-3P-1A",   "TBD-3P-1B",   "3P",  "Miami",          None, None),  # Jul 18 17:00 EDT
+
+    # ── FINAL — Jul 19 ───────────────────────────────────────────────────────
+    ("TBD-F-1A",    "TBD-F-1B",    "F",   "Nueva York",     None, None),  # Jul 19 15:00 EDT
 ]
 
 
@@ -1438,6 +1524,8 @@ partidos_hoy = []
 for _p in PARTIDOS:
     if _p[4] is not None:
         continue  # ya jugado
+    if str(_p[0]).startswith('TBD'):
+        continue  # fase eliminatoria sin equipos definidos
     _horario = HORARIOS_PARTIDO.get((_p[0], _p[1])) or HORARIOS_PARTIDO.get((_p[1], _p[0]), "")
     if not _horario:
         continue  # sin horario asignado, no mostrar
@@ -1571,6 +1659,8 @@ _partidos_hoy_auto = []
 for _p in PARTIDOS:
     if _p[4] is not None:
         continue  # ya jugado
+    if str(_p[0]).startswith('TBD'):
+        continue  # fase eliminatoria sin equipos definidos
     _hor = HORARIOS_PARTIDO.get((_p[0], _p[1])) or HORARIOS_PARTIDO.get((_p[1], _p[0]), "")
     if not _hor or _hor[:10] != _hoy_auto:
         continue
@@ -1692,7 +1782,7 @@ with tab_pred:
         st.markdown("#### Elige el partido")
 
         # Botón rápido "Partidos de hoy"
-        partidos_pendientes = [p for p in PARTIDOS if p[4] is None]
+        partidos_pendientes = [p for p in PARTIDOS if p[4] is None and not str(p[0]).startswith('TBD')]
         if partidos_pendientes:
             if st.button("📅 Partidos de hoy", use_container_width=True):
                 st.session_state["filtro_hoy"] = True
@@ -2307,7 +2397,7 @@ with tab_hist:
             })
 
     # Mostrar métricas de accuracy con los partidos ya jugados
-    partidos_jugados = [p for p in PARTIDOS if p[4] is not None]
+    partidos_jugados = [p for p in PARTIDOS if p[4] is not None and not str(p[0]).startswith('TBD')]
     total = len(partidos_jugados)
 
     if total == 0:
