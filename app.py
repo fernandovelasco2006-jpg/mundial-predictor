@@ -1,4 +1,3 @@
-
 import streamlit as st
 import numpy as np
 from collections import Counter
@@ -1680,7 +1679,7 @@ elif _partidos_hoy_auto and _ya_simule_hoy:
 
 # ══════════════════════════════════════════════════════════════════════════════
 
-tab_pred, tab_res, tab_apuestas, tab_hist, tab_hist_ap, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "📈 Historial", "⚙️ Modelo"])
+tab_pred, tab_res, tab_apuestas, tab_hist, tab_hist_ap, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "📈 Historial", "🎲 Apuestas Hist.", "⚙️ Modelo"])
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -2547,4 +2546,3 @@ independientes entre sí, distribuidos en el tiempo.
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
-            
