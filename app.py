@@ -1331,7 +1331,8 @@ if partidos_hoy:
             st.markdown(f'<div style="font-size:0.75rem;color:#4ade80;margin-bottom:1rem">✓ {total_apuestas} apuesta(s) en {len(partidos_con_apuestas)} partido(s) de hoy</div>', unsafe_allow_html=True)
             for pd_item in partidos_con_apuestas:
                 ea_d, eb_d = pd_item["ea"], pd_item["eb"]
-                st.markdown(f'<div style="display:flex;align-items:center;gap:0.5rem;margin:1rem 0 0.5rem;padding-bottom:0.4rem;border-bottom:1px solid #1e2d45"><span style="font-size:0.6rem;background:#2a1a00;color:#f0c040;border:1px solid #5a3a00;border-radius:20px;padding:2px 8px">Grupo {pd_item["grupo"]}</span><span style="font-size:0.85rem;color:#e8eaf0;font-weight:600">{flag_img(ea_d,20)} {ea_d} vs {flag_img(eb_d,20)} {eb_d}</span>{f\'<span style="font-size:0.7rem;color:#6677aa">⏰ {pd_item["hora"]}h</span>\' if pd_item["hora"] else ""}</div>', unsafe_allow_html=True)
+                _hora_html = f'<span style="font-size:0.7rem;color:#6677aa">⏰ {pd_item["hora"]}h</span>' if pd_item["hora"] else ""
+                st.markdown(f'<div style="display:flex;align-items:center;gap:0.5rem;margin:1rem 0 0.5rem;padding-bottom:0.4rem;border-bottom:1px solid #1e2d45"><span style="font-size:0.6rem;background:#2a1a00;color:#f0c040;border:1px solid #5a3a00;border-radius:20px;padding:2px 8px">Grupo {pd_item["grupo"]}</span><span style="font-size:0.85rem;color:#e8eaf0;font-weight:600">{flag_img(ea_d,20)} {ea_d} vs {flag_img(eb_d,20)} {eb_d}</span>{_hora_html}</div>', unsafe_allow_html=True)
                 cols_ap = st.columns(min(len(pd_item["apuestas"]), 3))
                 for i_ap, ap_d in enumerate(pd_item["apuestas"]):
                     with cols_ap[i_ap % 3]:
@@ -1533,7 +1534,8 @@ with tab_pred:
                     mostrar_comparacion_odds(ea, eb, r, ODDS_KEY)
 
                 bajas_activas = [e for e in [ea, eb] if e in BAJAS]
-                st.markdown(f'<div class="model-note">{r["modelo"]} · ELO: {r["elo_a"]} ({ea}) vs {r["elo_b"]} ({eb}) · λ_a={r["lam_a"]} · λ_b={r["lam_b"]} · Altitud: {r["alt"]:,} m · Árbitro: {r["arbitro"]} ({r["arbitro_am"]} T.A. / {r["arbitro_ro"]} T.R.) · Tarjetas: {r["fuente_tarj"]} · H2H: {r["h2h_desc"]}{f\' · ⚠️ Bajas: {", ".join(bajas_activas)}\' if bajas_activas else ""}</div>', unsafe_allow_html=True)
+                _bajas_html = (" · ⚠️ Bajas: " + ", ".join(bajas_activas)) if bajas_activas else ""
+                st.markdown(f'<div class="model-note">{r["modelo"]} · ELO: {r["elo_a"]} ({ea}) vs {r["elo_b"]} ({eb}) · λ_a={r["lam_a"]} · λ_b={r["lam_b"]} · Altitud: {r["alt"]:,} m · Árbitro: {r["arbitro"]} ({r["arbitro_am"]} T.A. / {r["arbitro_ro"]} T.R.) · Tarjetas: {r["fuente_tarj"]} · H2H: {r["h2h_desc"]}{_bajas_html}</div>', unsafe_allow_html=True)
 
                 st.markdown("<br>", unsafe_allow_html=True)
                 r["goles_totales_esperados"] = r["goles_a"] + r["goles_b"]
