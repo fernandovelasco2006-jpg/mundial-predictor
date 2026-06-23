@@ -1713,13 +1713,63 @@ with tab_hist_ap:
         with col_a4:
             st.markdown(f'<div class="metric-box"><div class="metric-val" style="color:#f0c040">{_stats["total_pendientes"]}</div><div class="metric-lbl">⏳ Pendientes</div></div>', unsafe_allow_html=True)
         if _stats.get("evaluadas"):
-            st.markdown("<br>##### ✅ Apuestas evaluadas")
+            st.markdown("##### ✅ Apuestas evaluadas")
             for _ap in _stats["evaluadas"]:
                 _color = "#0d2818" if _ap["acierto"] else "#1a0d0d"
                 _borde = "#2d6b45" if _ap["acierto"] else "#6b2d2d"
                 _icono = "✅" if _ap["acierto"] else "❌"
-                st.markdown(f'<div style="background:{_color};border:1px solid {_borde};border-radius:8px;padding:0.5rem 0.9rem;margin-bottom:0.3rem"><div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap"><span>{_icono}</span><span style="color:#e8eaf0;font-size:0.8rem;font-weight:600">{flag_img(_ap["ea"],16)} {_ap["ea"]} vs {flag_img(_ap["eb"],16)} {_ap["eb"]}</span><span style="color:#4ade80;font-family:\'Bebas Neue\',sans-serif">{_ap.get("resultado_real","?")}</span><span style="color:#6677aa;font-size:0.7rem;margin-left:auto">{_ap.get("fecha_partido","?")}</span></div><div style="display:flex;gap:1rem;margin-top:0.3rem;flex-wrap:wrap"><span style="font-size:0.75rem;color:#f0c040">📋 {_ap.get("mercado","")}</span><span style="font-size:0.75rem;color:#e8eaf0">→ {_ap.get("seleccion","")}</span><span style="font-size:0.7rem;color:#4ade80">{_ap.get("confianza",0):.0f}%</span></div></div>', unsafe_allow_html=True)
+                _res = _ap.get("resultado_real", "?")
+                _fecha = _ap.get("fecha_partido", "?")
+                _merc = _ap.get("mercado", "")
+                _sel = _ap.get("seleccion", "")
+                _conf = _ap.get("confianza", 0)
+                _donde = _ap.get("donde", "")
+                _guard = _ap.get("guardada_en", "?")
+                st.markdown(
+                    f'<div style="background:{_color};border:1px solid {_borde};border-radius:8px;padding:0.5rem 0.9rem;margin-bottom:0.3rem">' +
+                    f'<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">' +
+                    f'<span>{_icono}</span>' +
+                    f'<span style="color:#e8eaf0;font-size:0.8rem;font-weight:600">{flag_img(_ap["ea"],16)} {_ap["ea"]} vs {flag_img(_ap["eb"],16)} {_ap["eb"]}</span>' +
+                    f'<span style="color:#4ade80;font-family:Bebas Neue,sans-serif">{_res}</span>' +
+                    f'<span style="color:#6677aa;font-size:0.7rem;margin-left:auto">{_fecha}</span>' +
+                    f'</div>' +
+                    f'<div style="display:flex;gap:1rem;margin-top:0.3rem;flex-wrap:wrap">' +
+                    f'<span style="font-size:0.75rem;color:#f0c040">📋 {_merc}</span>' +
+                    f'<span style="font-size:0.75rem;color:#e8eaf0">→ {_sel}</span>' +
+                    f'<span style="font-size:0.7rem;color:#4ade80">{_conf:.0f}% confianza</span>' +
+                    f'</div>' +
+                    f'<div style="font-size:0.6rem;color:#4a5568;margin-top:0.2rem">📱 {_donde} · Guardada: {_guard}</div>' +
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
+        if _stats.get("pendientes"):
+            st.markdown("---")
+            st.markdown(f"##### ⏳ Apuestas pendientes ({len(_stats['pendientes'])})")
+            for _ap in _stats["pendientes"]:
+                _fecha = _ap.get("fecha_partido", "?")
+                _merc = _ap.get("mercado", "")
+                _sel = _ap.get("seleccion", "")
+                _conf = _ap.get("confianza", 0)
+                st.markdown(
+                    f'<div style="background:#111827;border:1px solid #1e3a5f;border-radius:8px;padding:0.5rem 0.9rem;margin-bottom:0.3rem">' +
+                    f'<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">' +
+                    f'<span style="color:#e8eaf0;font-size:0.8rem;font-weight:600">{flag_img(_ap["ea"],16)} {_ap["ea"]} vs {flag_img(_ap["eb"],16)} {_ap["eb"]}</span>' +
+                    f'<span style="color:#6677aa;font-size:0.7rem;margin-left:auto">{_fecha}</span>' +
+                    f'</div>' +
+                    f'<div style="display:flex;gap:1rem;margin-top:0.3rem;flex-wrap:wrap">' +
+                    f'<span style="font-size:0.75rem;color:#f0c040">📋 {_merc}</span>' +
+                    f'<span style="font-size:0.75rem;color:#e8eaf0">→ {_sel}</span>' +
+                    f'<span style="font-size:0.7rem;color:#4ade80">{_conf:.0f}% confianza</span>' +
+                    f'</div></div>',
+                    unsafe_allow_html=True
+                )
+
+        st.markdown(
+            '<div class="model-note">🎯 Solo apuestas de confianza ALTA (≥75-82%). ' +
+            'Se guardan automáticamente antes de cada partido.<br>⚠️ Solo informativo — apuesta responsablemente.</div>',
+            unsafe_allow_html=True
+        )
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_info:
     st.markdown("#### ¿Cómo funciona el modelo?")
