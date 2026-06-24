@@ -1494,45 +1494,44 @@ DATOS_REALES = {
 # ══════════════════════════════════════════════════════════════════════════════
 def _auto_actualizar_aciertos():
     """
-    Corre silenciosamente al abrir la app.
-    Re-evalúa todas las apuestas de partidos con resultado,
-    incluyendo tarjetas y córners con los datos reales de DATOS_REALES.
+    Corre en cada carga de la app.
+    Re-evalúa TODAS las apuestas de partidos con resultado usando DATOS_REALES.
+    Es rápida porque Supabase solo hace PATCH cuando el valor cambió.
     """
     if not SUPABASE_DISPONIBLE or not SUPABASE_URL or not SUPABASE_KEY:
         return
 
-    # Clave incluye número de partidos jugados — re-evalúa si hay partidos nuevos
-    _n_jugados = len([p for p in PARTIDOS if p[4] is not None and not str(p[0]).startswith('TBD')])
-    _clave_auto = f"aciertos_actualizados_{_hoy_auto}_{_n_jugados}"
-    if st.session_state.get(_clave_auto):
-        return  # ya corrió hoy
+    partidos_jugados = [p for p in PARTIDOS
+                        if p[4] is not None and not str(p[0]).startswith('TBD')]
+    if not partidos_jugados:
+        return
+
+    # Guard: solo re-corre si el número de partidos jugados cambió desde la última vez
+    _n_jugados = len(partidos_jugados)
+    _clave = f"aciertos_n_{_n_jugados}"
+    if st.session_state.get(_clave):
+        return
 
     try:
-        partidos_jugados = [p for p in PARTIDOS if p[4] is not None
-                            and not str(p[0]).startswith('TBD')]
-        if not partidos_jugados:
-            return
+        import requests as _req
 
-        import requests as _req_auto
-
-        def _headers_auto(k):
+        def _hdrs(k):
             return {"apikey": k, "Authorization": f"Bearer {k}",
                     "Content-Type": "application/json", "Prefer": "return=minimal"}
 
         actualizadas = 0
+
         for p in partidos_jugados:
             ea, eb = p[0], p[1]
             ga, gb = p[4]
-            clave_datos = f"{ea}_{eb}"
-            datos = DATOS_REALES.get(clave_datos, {})
+            datos = DATOS_REALES.get(f"{ea}_{eb}", {})
             am_reales = datos.get("am")
             co_reales = datos.get("co")
 
             try:
-                # Obtener TODAS las apuestas del partido (con y sin acierto)
-                r = _req_auto.get(
+                r = _req.get(
                     f"{SUPABASE_URL}/rest/v1/apuestas_historial",
-                    headers={**_headers_auto(SUPABASE_KEY), "Prefer": ""},
+                    headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
                     params={"ea": f"eq.{ea}", "eb": f"eq.{eb}", "select": "*"},
                     timeout=8
                 )
@@ -1540,7 +1539,10 @@ def _auto_actualizar_aciertos():
                     continue
 
                 for ap in r.json():
-                    # Enriquecer con datos reales antes de evaluar
+                    # Saltar apuestas de TBD (no tienen resultado real)
+                    if str(ap.get("ea", "")).startswith("TBD"):
+                        continue
+
                     ap_enriquecido = dict(ap)
                     if am_reales is not None:
                         ap_enriquecido["amarillas_reales"] = am_reales
@@ -1551,20 +1553,19 @@ def _auto_actualizar_aciertos():
                     nuevo_acierto = _evaluar_acierto(ap_enriquecido, ga, gb)
 
                     if nuevo_acierto is None:
-                        continue  # sin datos suficientes, dejar pendiente
+                        continue
 
                     acierto_actual = ap.get("acierto")
-                    # Actualizar si no tiene valor o si cambió
                     if acierto_actual is None or acierto_actual != nuevo_acierto:
-                        _req_auto.patch(
+                        _req.patch(
                             f"{SUPABASE_URL}/rest/v1/apuestas_historial",
-                            headers={**_headers_auto(SUPABASE_KEY), "Prefer": ""},
+                            headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
                             params={"id": f"eq.{ap['id']}"},
                             json={
-                                "acierto":        nuevo_acierto,
-                                "goles_a":        ga,
-                                "goles_b":        gb,
-                                "resultado_real": f"{ga}-{gb}",
+                                "acierto":          nuevo_acierto,
+                                "goles_a":          ga,
+                                "goles_b":          gb,
+                                "resultado_real":   f"{ga}-{gb}",
                                 "amarillas_reales": am_reales,
                                 "corners_reales":   co_reales,
                             },
@@ -1574,10 +1575,11 @@ def _auto_actualizar_aciertos():
             except Exception:
                 continue
 
-        st.session_state[_clave_auto] = True
+        # Marcar como completado para este número de partidos jugados
+        st.session_state[_clave] = True
+
         if actualizadas > 0:
-            # Forzar rerun para que el tab de historial cargue datos frescos
-            st.rerun()
+            st.rerun()  # Forzar reload para mostrar datos frescos en el tab
 
     except Exception:
         pass
@@ -1868,7 +1870,7 @@ with tab_hist_ap:
         try:
             _pts = [p for p in PARTIDOS if p[4] is not None]
             if _pts: actualizar_aciertos(SUPABASE_URL, SUPABASE_KEY, _pts)
-            _apuestas_hist = cargar_historial_apuestas(SUPABASE_URL, SUPABASE_KEY)
+            _apuestas_hist = [a for a in cargar_historial_apuestas(SUPABASE_URL, SUPABASE_KEY) if not str(a.get("ea","")).startswith("TBD")]
         except Exception:
             pass
     if not _apuestas_hist:
