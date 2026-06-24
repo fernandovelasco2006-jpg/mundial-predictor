@@ -1501,7 +1501,9 @@ def _auto_actualizar_aciertos():
     if not SUPABASE_DISPONIBLE or not SUPABASE_URL or not SUPABASE_KEY:
         return
 
-    _clave_auto = f"aciertos_actualizados_{_hoy_auto}"
+    # Clave incluye número de partidos jugados — re-evalúa si hay partidos nuevos
+    _n_jugados = len([p for p in PARTIDOS if p[4] is not None and not str(p[0]).startswith('TBD')])
+    _clave_auto = f"aciertos_actualizados_{_hoy_auto}_{_n_jugados}"
     if st.session_state.get(_clave_auto):
         return  # ya corrió hoy
 
@@ -1574,7 +1576,8 @@ def _auto_actualizar_aciertos():
 
         st.session_state[_clave_auto] = True
         if actualizadas > 0:
-            st.toast(f"✅ {actualizadas} apuestas re-evaluadas", icon="📊")
+            # Forzar rerun para que el tab de historial cargue datos frescos
+            st.rerun()
 
     except Exception:
         pass
