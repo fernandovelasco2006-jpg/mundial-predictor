@@ -1425,6 +1425,164 @@ if _partidos_hoy_auto and not _ya_simule_hoy:
     if _nuevas_sb > 0:
         st.toast(f"📊 {_nuevas_sb} predicciones guardadas", icon="✅")
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DATOS REALES POR PARTIDO — tarjetas y córners reales de Sofascore
+# Ale agrega esto cada noche con los datos del día.
+# Formato: { "ea_eb": {"am": int, "co": int} }
+# El sistema usa estos datos para evaluar apuestas de tarjetas y córners.
+# ══════════════════════════════════════════════════════════════════════════════
+DATOS_REALES = {
+    # Jornada 1
+    "Mexico_Sudafrica":              {"am": 3,  "co": 8},
+    "Corea del Sur_Chequia":         {"am": 4,  "co": 7},
+    "Estados Unidos_Paraguay":       {"am": 5,  "co": 9},
+    "Brasil_Marruecos":              {"am": 3,  "co": 7},
+    "Haiti_Escocia":                 {"am": 2,  "co": 5},
+    "Australia_Turquia":             {"am": 3,  "co": 8},
+    "Alemania_Curazao":              {"am": 2,  "co": 6},
+    "Costa de Marfil_Ecuador":       {"am": 3,  "co": 7},
+    "Paises Bajos_Japon":            {"am": 4,  "co": 9},
+    "Suecia_Tunez":                  {"am": 1,  "co": 7},
+    "Belgica_Egipto":                {"am": 3,  "co": 8},
+    "Iran_Nueva Zelanda":            {"am": 4,  "co": 7},
+    "Espana_Cabo Verde":             {"am": 2,  "co": 8},
+    "Arabia Saudi_Uruguay":          {"am": 3,  "co": 7},
+    "Francia_Senegal":               {"am": 3,  "co": 6},
+    "Irak_Noruega":                  {"am": 2,  "co": 6},
+    "Argentina_Algeria":             {"am": 0,  "co": 5},
+    "Austria_Jordania":              {"am": 4,  "co": 6},
+    "Portugal_RD Congo":             {"am": 3,  "co": 8},
+    "Uzbekistan_Colombia":           {"am": 4,  "co": 7},
+    "Inglaterra_Croacia":            {"am": 3,  "co": 9},
+    "Ghana_Panama":                  {"am": 3,  "co": 7},
+    # Jornada 2
+    "Chequia_Sudafrica":             {"am": 2,  "co": 7},
+    "Mexico_Corea del Sur":          {"am": 2,  "co": 8},
+    "Suiza_Bosnia y Herzegovina":    {"am": 3,  "co": 8},
+    "Canada_Catar":                  {"am": 3,  "co": 7},
+    "Escocia_Marruecos":             {"am": 2,  "co": 6},
+    "Brasil_Haiti":                  {"am": 1,  "co": 8},
+    "Estados Unidos_Australia":      {"am": 1,  "co": 7},
+    "Turquia_Paraguay":              {"am": 4,  "co": 8},
+    "Alemania_Costa de Marfil":      {"am": 3,  "co": 8},
+    "Ecuador_Curazao":               {"am": 2,  "co": 6},
+    "Paises Bajos_Suecia":           {"am": 3,  "co": 9},
+    "Tunez_Japon":                   {"am": 3,  "co": 7},
+    "Belgica_Iran":                  {"am": 2,  "co": 7},
+    "Nueva Zelanda_Egipto":          {"am": 3,  "co": 6},
+    "Espana_Arabia Saudita":         {"am": 2,  "co": 7},   # ESP 0 + KSA 2
+    "Cabo Verde_Uruguay":            {"am": 4,  "co": 8},
+    "Francia_Irak":                  {"am": 1,  "co": 6},   # FRA 0 + IRQ 1
+    "Senegal_Noruega":               {"am": 0,  "co": 9},   # sin tarjetas reportadas
+    "Argentina_Austria":             {"am": 4,  "co": 4},   # ARG 2 + AUT 2
+    "Algeria_Jordania":              {"am": 2,  "co": 11},  # ALG 1 + JOR 1, 10 corners JOR
+    "Portugal_Uzbekistan":           {"am": 0,  "co": 7},   # Jalal Jayed permisivo
+    "Inglaterra_Ghana":              {"am": 2,  "co": 11},  # 9 ENG + 2 GHA
+    "Croacia_Panama":                {"am": 2,  "co": 9},   # 7 PAN + 2 CRO
+    "Colombia_RD Congo":             {"am": 3,  "co": 9},   # COL 2 + RDC 1
+    # Jornada 3
+    "Bosnia y Herzegovina_Catar":    {"am": 2,  "co": 10},  # BIH 1 + QAT 1
+    "Suiza_Canada":                  {"am": 3,  "co": 9},   # SUI 1 + CAN 2
+}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# AUTO-ACTUALIZACIÓN DE ACIERTOS — corre al inicio de cada sesión
+# Evalúa automáticamente todas las apuestas de partidos ya jugados
+# usando DATOS_REALES para tarjetas y córners.
+# ══════════════════════════════════════════════════════════════════════════════
+def _auto_actualizar_aciertos():
+    """
+    Corre silenciosamente al abrir la app.
+    Re-evalúa todas las apuestas de partidos con resultado,
+    incluyendo tarjetas y córners con los datos reales de DATOS_REALES.
+    """
+    if not SUPABASE_DISPONIBLE or not SUPABASE_URL or not SUPABASE_KEY:
+        return
+
+    _clave_auto = f"aciertos_actualizados_{_hoy_auto}"
+    if st.session_state.get(_clave_auto):
+        return  # ya corrió hoy
+
+    try:
+        partidos_jugados = [p for p in PARTIDOS if p[4] is not None
+                            and not str(p[0]).startswith('TBD')]
+        if not partidos_jugados:
+            return
+
+        import requests as _req_auto
+
+        def _headers_auto(k):
+            return {"apikey": k, "Authorization": f"Bearer {k}",
+                    "Content-Type": "application/json", "Prefer": "return=minimal"}
+
+        actualizadas = 0
+        for p in partidos_jugados:
+            ea, eb = p[0], p[1]
+            ga, gb = p[4]
+            clave_datos = f"{ea}_{eb}"
+            datos = DATOS_REALES.get(clave_datos, {})
+            am_reales = datos.get("am")
+            co_reales = datos.get("co")
+
+            try:
+                # Obtener TODAS las apuestas del partido (con y sin acierto)
+                r = _req_auto.get(
+                    f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                    headers={**_headers_auto(SUPABASE_KEY), "Prefer": ""},
+                    params={"ea": f"eq.{ea}", "eb": f"eq.{eb}", "select": "*"},
+                    timeout=8
+                )
+                if r.status_code != 200:
+                    continue
+
+                for ap in r.json():
+                    # Enriquecer con datos reales antes de evaluar
+                    ap_enriquecido = dict(ap)
+                    if am_reales is not None:
+                        ap_enriquecido["amarillas_reales"] = am_reales
+                    if co_reales is not None:
+                        ap_enriquecido["corners_reales"] = co_reales
+
+                    from supabase_preds import _evaluar_acierto
+                    nuevo_acierto = _evaluar_acierto(ap_enriquecido, ga, gb)
+
+                    if nuevo_acierto is None:
+                        continue  # sin datos suficientes, dejar pendiente
+
+                    acierto_actual = ap.get("acierto")
+                    # Actualizar si no tiene valor o si cambió
+                    if acierto_actual is None or acierto_actual != nuevo_acierto:
+                        _req_auto.patch(
+                            f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                            headers={**_headers_auto(SUPABASE_KEY), "Prefer": ""},
+                            params={"id": f"eq.{ap['id']}"},
+                            json={
+                                "acierto":        nuevo_acierto,
+                                "goles_a":        ga,
+                                "goles_b":        gb,
+                                "resultado_real": f"{ga}-{gb}",
+                                "amarillas_reales": am_reales,
+                                "corners_reales":   co_reales,
+                            },
+                            timeout=8
+                        )
+                        actualizadas += 1
+            except Exception:
+                continue
+
+        st.session_state[_clave_auto] = True
+        if actualizadas > 0:
+            st.toast(f"✅ {actualizadas} apuestas re-evaluadas", icon="📊")
+
+    except Exception:
+        pass
+
+
+# Ejecutar silenciosamente al cargar
+_auto_actualizar_aciertos()
+
 tab_pred, tab_res, tab_apuestas, tab_hist, tab_hist_ap, tab_info = st.tabs(["🎯 Predictor", "📊 Resultados reales", "🎰 Apuestas", "📈 Historial", "🎲 Apuestas Hist.", "⚙️ Modelo"])
 
 # ══════════════════════════════════════════════════════════════════════════════
