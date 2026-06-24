@@ -516,8 +516,8 @@ PARTIDOS = [
     # ── JORNADA 3 ─────────────────────────────────────────────────────────────
     ("Mexico",               "Chequia",           "A", "Azteca",        None,    "Yael Falcon Perez"),
     ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     None,    "Facundo Tello"),
-    ("Suiza",                "Canada",            "B", "Vancouver",     None,    "Ramon Abatti Abel"),
-    ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       None,    "Jesus Valenzuela"),
+    ("Suiza",                "Canada",            "B", "Vancouver",     (2, 1),  "Ramon Abatti Abel"),
+    ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       (3, 1),  "Jesus Valenzuela"),
     ("Escocia",              "Brasil",            "C", "Miami",         None,    "Cesar Ramos Palazuelos"),
     ("Marruecos",            "Haiti",             "C", "Philadelphia",  None,    None),
     ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    None),
@@ -605,6 +605,9 @@ H2H = {
     ("Inglaterra", "Ghana"):         [(2023, 3, 1, 3, 0), (2026, 0, 0, 1, 0)],
     ("Croacia", "Panama"):           [(2026, 1, 0, 1, 0)],
     ("Colombia", "RD Congo"):        [(2026, 1, 0, 2, 0)],
+    # J3 2026
+    ("Bosnia y Herzegovina", "Catar"): [(2026, 3, 1, 1, 0)],
+    ("Suiza", "Canada"):               [(2026, 2, 1, 1, 0)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -717,11 +720,11 @@ TARJETAS_MUNDIAL = {
     "Sudafrica":            (2, 0, 2),
     "Corea del Sur":        (4, 0, 2),
     "Chequia":              (2, 0, 2),
-    # Grupo B
-    "Canada":               (1, 0, 2),
-    "Bosnia y Herzegovina": (3, 1, 2),
-    "Catar":                (2, 2, 2),
-    "Suiza":                (2, 0, 2),
+    # Grupo B — J1+J2+J3 completa
+    "Canada":               (3, 0, 3),   # 1 J1 + 0 J2 + 2 J3
+    "Bosnia y Herzegovina": (4, 1, 3),   # 3 J1+J2 + 1 J3
+    "Catar":                (3, 2, 3),   # 2 J1+J2 + 1 J3
+    "Suiza":                (3, 0, 3),   # 2 J1+J2 + 1 J3
     # Grupo C
     "Brasil":               (1, 0, 2),
     "Marruecos":            (2, 0, 2),
