@@ -508,10 +508,10 @@ PARTIDOS = [
     ("Senegal",         "Noruega",                "I", "Nueva York",    (2, 3),  "Wilton Sampaio"),  # ← J2 actualizado
     ("Argentina",       "Austria",                "J", "Dallas",        (2, 0),  "Amin Mohamed Omar"), # ← J2 actualizado
     ("Algeria",         "Jordania",               "J", "San Francisco", (2, 1),  "Slavko Vincic"),   # ← J2 actualizado
-    ("Portugal",        "Uzbekistan",             "K", "Houston",       None,    "Jalal Jayed"),
-    ("Colombia",        "RD Congo",               "K", "Guadalajara",   None,    "Maurizio Mariani"),
-    ("Inglaterra",      "Ghana",                  "L", "Boston",        None,    "Said Martinez"),
-    ("Croacia",         "Panama",                 "L", "Toronto",       None,    None),
+    ("Portugal",        "Uzbekistan",             "K", "Houston",       (5, 0),  "Jalal Jayed"),
+    ("Colombia",        "RD Congo",               "K", "Guadalajara",   (1, 0),  "Maurizio Mariani"),
+    ("Inglaterra",      "Ghana",                  "L", "Boston",        (0, 0),  "Said Martinez"),
+    ("Croacia",         "Panama",                 "L", "Toronto",       (1, 0),  "Pierre Ghislain Atcho"),
 
     # ── JORNADA 3 ─────────────────────────────────────────────────────────────
     ("Mexico",               "Chequia",           "A", "Azteca",        None,    "Yael Falcon Perez"),
@@ -600,6 +600,11 @@ H2H = {
     ("Francia", "Irak"):             [(2026, 3, 0, 0, 1)],
     ("Senegal", "Noruega"):          [(2026, 2, 3, 0, 0)],
     ("Algeria", "Jordania"):         [(2026, 2, 1, 1, 0)],
+    # J2 2026 hoy
+    ("Portugal", "Uzbekistan"):      [(2026, 5, 0, 0, 0)],
+    ("Inglaterra", "Ghana"):         [(2023, 3, 1, 3, 0), (2026, 0, 0, 1, 0)],
+    ("Croacia", "Panama"):           [(2026, 1, 0, 1, 0)],
+    ("Colombia", "RD Congo"):        [(2026, 1, 0, 2, 0)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -759,16 +764,20 @@ TARJETAS_MUNDIAL = {
     "Argelia":              (3, 0, 2),
     "Austria":              (3, 0, 2),   # 1 J1 + 2 J2
     "Jordania":             (4, 0, 2),   # 3 J1 + 1 J2
-    # Grupo K — solo J1
-    "Portugal":             (1, 0, 1),
-    "RD Congo":             (2, 0, 1),
-    "Uzbekistan":           (3, 1, 1),
-    "Colombia":             (1, 0, 1),
-    # Grupo L — solo J1
-    "Inglaterra":           (1, 0, 1),
-    "Croacia":              (2, 0, 1),
-    "Ghana":                (2, 0, 1),
-    "Panama":               (1, 0, 1),
+    # Grupo K — J1+J2 completa
+    # Portugal 0 am J2, Uzbekistan 0 am J2 (árbitro Jalal Jayed muy permisivo)
+    # Colombia 2 am J2 (Lerma + otra), RD Congo 1 am J2 (Pickel)
+    "Portugal":             (1, 0, 2),   # 1 J1 + 0 J2
+    "RD Congo":             (3, 0, 2),   # 2 J1 + 1 J2
+    "Uzbekistan":           (3, 1, 2),   # 3+roja J1 + 0 J2
+    "Colombia":             (3, 0, 2),   # 1 J1 + 2 J2
+    # Grupo L — J1+J2 completa
+    # Inglaterra 1 am J2, Ghana 1 am J2 (Said Martinez 4.2 prom)
+    # Croacia 1 am J2 (Sučić), Panamá 1 am J2
+    "Inglaterra":           (2, 0, 2),   # 1 J1 + 1 J2
+    "Croacia":              (3, 0, 2),   # 2 J1 + 1 J2
+    "Ghana":                (3, 0, 2),   # 2 J1 + 1 J2
+    "Panama":               (2, 0, 2),   # 1 J1 + 1 J2
 }
 
 
@@ -828,16 +837,16 @@ FORMA_MUNDIAL = {
     "Argelia":              (2, 4, 2),
     "Austria":              (3, 3, 2),   # 3-1 Jordania + 0-2 Argentina
     "Jordania":             (2, 5, 2),   # 1-3 Austria + 1-2 Argelia
-    # Grupo K — J1
-    "Portugal":             (1, 1, 1),
-    "RD Congo":             (1, 1, 1),
-    "Uzbekistan":           (1, 3, 1),
-    "Colombia":             (3, 1, 1),
-    # Grupo L — J1
-    "Inglaterra":           (4, 2, 1),
-    "Croacia":              (2, 4, 1),
-    "Ghana":                (1, 0, 1),
-    "Panama":               (0, 1, 1),
+    # Grupo K — J1+J2 completa
+    "Portugal":             (6, 1, 2),   # 1-1 RD Congo + 5-0 Uzbekistán
+    "RD Congo":             (1, 2, 2),   # 1-1 Portugal + 0-1 Colombia
+    "Uzbekistan":           (1, 8, 2),   # 1-3 Colombia + 0-5 Portugal
+    "Colombia":             (4, 1, 2),   # 3-1 Uzbekistán + 1-0 RD Congo
+    # Grupo L — J1+J2 completa
+    "Inglaterra":           (4, 2, 2),   # 4-2 Croacia + 0-0 Ghana
+    "Croacia":              (3, 4, 2),   # 2-4 Inglaterra + 1-0 Panamá
+    "Ghana":                (1, 1, 2),   # 1-0 Panamá + 0-0 Inglaterra
+    "Panama":               (0, 2, 2),   # 0-1 Ghana + 0-1 Croacia
 }
 
 
@@ -854,7 +863,7 @@ BAJAS = {
     'Chequia':       0.96,  # Kuchta
     'Ghana':         0.95,  # Lawrence Ati Zigi (portero)
     'Espana':        0.96,  # Mikel Merino
-    'Mexico':        0.96,  # suspendido J2 (ya jugó)
+    # Mexico: suspensión J2 ya cumplida — sin penalización J3
     'Paraguay':      0.95,  # Sosa + Caballero
     'Panama':        0.96,  # Carrasquilla
     'Suiza':         0.97,  # Muheim
