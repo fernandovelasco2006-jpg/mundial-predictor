@@ -43,7 +43,7 @@ def guardar_prediccion(url: str, key: str, pred: dict) -> bool:
 
 def cargar_predicciones(url: str, key: str, fecha: str = None) -> dict:
     try:
-        params = {"select": "*", "order": "created_at.desc"}
+        params = {"select": "*", "order": "fecha_partido.desc,guardada_en.desc"}
         if fecha:
             params["fecha_partido"] = f"eq.{fecha}"
         r = requests.get(
@@ -392,7 +392,7 @@ def cargar_historial_apuestas(url: str, key: str) -> list:
         r = requests.get(
             f"{url}/rest/v1/apuestas_historial",
             headers={**_headers(key), "Prefer": ""},
-            params={"select": "*", "order": "created_at.desc"},
+            params={"select": "*", "order": "fecha_partido.desc,guardada_en.desc"},
             timeout=10
         )
         if r.status_code == 200:
