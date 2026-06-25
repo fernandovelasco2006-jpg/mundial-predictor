@@ -263,23 +263,24 @@ ALTITUD = {
 }
 
 CORNERS_EQUIPO = {
-    "Espana":          5.8, "Alemania":       5.9, "Brasil":         5.6,
-    "Paises Bajos":    5.5, "Argentina":      4.8, "Francia":        4.7,
-    "Inglaterra":      5.3, "Portugal":       5.2, "Belgica":        5.0,
-    "Japon":           5.0, "Mexico":         4.9, "Colombia":       4.8,
-    "Uruguay":         4.6, "Croacia":        4.7, "Suiza":          4.6,
-    "Estados Unidos":  4.6, "Corea del Sur":  4.5, "Australia":      4.4,
-    "Marruecos":       4.4, "Senegal":        4.4, "Canada":         4.3,
-    "Noruega":         4.6, "Suecia":         4.2, "Austria":        4.2,
-    "Turquia":         4.1, "Ecuador":        4.1, "Chequia":        4.0,
-    "Ghana":           4.0, "Costa de Marfil":3.9, "Iran":           3.9,
-    "Egipto":          3.8, "Tunez":          3.7, "Algeria":        2.4,
-    "Arabia Saudi":    2.4, "Arabia Saudita": 2.4, "Paraguay":       3.6,
-    "Escocia":         3.5, "Jordania":       3.8, "Irak":           3.5,
-    "Uzbekistan":      3.3, "RD Congo":       3.3, "Panama":         3.2,
-    "Cabo Verde":      3.1, "Catar":          3.0, "Haiti":          2.9,
-    "Sudafrica":       2.9, "Curazao":        2.7, "Nueva Zelanda":  2.9,
-    "Argelia":         2.4,
+    # Calibrado con datos reales Mundial 2026 (60% real + 40% histórico)
+    "Espana":          5.9,  "Alemania":       5.9,  "Brasil":         5.8,
+    "Inglaterra":      7.5,  "Paises Bajos":   5.5,  "Marruecos":      7.2,
+    "Japon":           5.0,  "Escocia":        5.6,  "Canada":         5.9,
+    "Corea del Sur":   5.4,  "Ecuador":        7.0,  "Panama":         5.5,
+    "Noruega":         4.8,  "Colombia":       4.8,  "Belgica":        4.4,
+    "Bosnia y Herzegovina": 4.4, "Francia":    4.3,  "Chequia":        4.6,
+    "Suecia":          4.2,  "Australia":      4.4,  "Senegal":        4.2,
+    "Catar":           4.2,  "Cabo Verde":     3.6,  "Turquia":        4.1,
+    "Algeria":         3.6,  "Sudafrica":      3.6,  "Paraguay":       3.6,
+    "Nueva Zelanda":   3.6,  "Portugal":       3.9,  "Costa de Marfil":3.9,
+    "Jordania":        3.8,  "Egipto":         3.3,  "Tunez":          3.3,
+    "RD Congo":        3.3,  "Croacia":        3.1,  "Suiza":          3.0,
+    "Uruguay":         8.4,  "Estados Unidos": 4.6,  "Mexico":         2.6,
+    "Argentina":       2.5,  "Uzbekistan":     2.5,  "Irak":           2.6,
+    "Ghana":           2.8,  "Iran":           2.8,  "Haiti":          1.8,
+    "Arabia Saudita":  1.6,  "Arabia Saudi":   1.6,  "Curazao":        1.1,
+    "Austria":         3.5,  "Argelia":        3.6,
 }
 CORNERS_DEFAULT = 4.0
 
