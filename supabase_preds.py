@@ -256,14 +256,11 @@ def actualizar_aciertos(url: str, key: str, partidos_con_resultado: list) -> int
         try:
             # Buscar TODAS las apuestas de este partido (con y sin acierto)
             # para poder re-evaluar las que estaban mal
+            import urllib.parse as _up
+            _params = f"ea=eq.{_up.quote(ea)}&eb=eq.{_up.quote(eb)}&select=*"
             r = requests.get(
-                f"{url}/rest/v1/apuestas_historial",
+                f"{url}/rest/v1/apuestas_historial?{_params}",
                 headers={**_headers(key), "Prefer": ""},
-                params={
-                    "ea":     f"eq.{ea}",
-                    "eb":     f"eq.{eb}",
-                    "select": "*"
-                },
                 timeout=10
             )
             if r.status_code != 200:
@@ -506,3 +503,4 @@ def actualizar_datos_partido(url: str, key: str,
         pass
 
     return actualizadas
+                                  
