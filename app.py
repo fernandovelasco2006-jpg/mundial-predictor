@@ -1340,6 +1340,53 @@ if partidos_hoy:
                 if sugs_d:
                     partidos_con_apuestas.append({"ea": ea_d, "eb": eb_d, "grupo": gr_d, "hora": hora_str, "apuestas": sugs_d})
                     total_apuestas += len(sugs_d)
+                    # ── Guardar en Supabase ────────────────────────────────
+                    if SUPABASE_DISPONIBLE and SUPABASE_URL and SUPABASE_KEY:
+                        try:
+                            import requests as _rqd
+                            _hdrd = {"apikey": SUPABASE_KEY,
+                                     "Authorization": f"Bearer {SUPABASE_KEY}",
+                                     "Content-Type": "application/json",
+                                     "Prefer": "return=minimal"}
+                            _fecha_d = horario_p[:10] if horario_p else _hoy_fecha
+                            _res_d = p[4]
+                            _ga_d = _res_d[0] if _res_d else None
+                            _gb_d = _res_d[1] if _res_d else None
+                            for _id2, _sd in enumerate(sugs_d):
+                                _apid = f"ap_{ea_d}_{eb_d}_{_id2}_{_fecha_d}".replace(" ", "_")
+                                _acd = None
+                                if _ga_d is not None:
+                                    from supabase_preds import _evaluar_acierto
+                                    _dd = DATOS_REALES.get(f"{ea_d}_{eb_d}", {})
+                                    _acd = _evaluar_acierto(
+                                        {"seleccion": _sd["seleccion"].replace("✅ ", ""),
+                                         "mercado": _sd["mercado"], "ea": ea_d, "eb": eb_d},
+                                        _ga_d, _gb_d,
+                                        am_reales=_dd.get("am"), co_reales=_dd.get("co")
+                                    )
+                                _apd = {
+                                    "id": _apid, "ea": ea_d, "eb": eb_d, "grupo": gr_d,
+                                    "fecha_partido": _fecha_d,
+                                    "guardada_en": _ahora_mx.strftime("%Y-%m-%d %H:%M"),
+                                    "mercado": _sd["mercado"],
+                                    "seleccion": _sd["seleccion"].replace("✅ ", ""),
+                                    "confianza": round(_sd["confianza"], 1),
+                                    "donde": _sd.get("donde", "Playdoit / Draftea"),
+                                    "resultado_real": f"{_ga_d}-{_gb_d}" if _ga_d is not None else None,
+                                    "goles_a": _ga_d, "goles_b": _gb_d, "acierto": _acd,
+                                }
+                                try:
+                                    _ck = _rqd.get(
+                                        f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                                        headers={**_hdrd, "Prefer": ""},
+                                        params={"id": f"eq.{_apid}", "select": "id"}, timeout=5)
+                                    if _ck.status_code == 200 and not _ck.json():
+                                        _rqd.post(f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                                                  headers=_hdrd, json=_apd, timeout=5)
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
             except Exception:
                 continue
         if not partidos_con_apuestas:
@@ -1504,9 +1551,9 @@ DATOS_REALES = {
 # ══════════════════════════════════════════════════════════════════════════════
 def _auto_actualizar_aciertos():
     """
-    Corre en cada carga de la app.
-    Re-evalúa TODAS las apuestas de partidos con resultado usando DATOS_REALES.
-    Es rápida porque Supabase solo hace PATCH cuando el valor cambió.
+    Corre al inicio de cada sesión.
+    Re-evalúa todas las apuestas de partidos con resultado.
+    Usa DATOS_REALES para tarjetas y córners.
     """
     if not SUPABASE_DISPONIBLE or not SUPABASE_URL or not SUPABASE_KEY:
         return
@@ -1516,14 +1563,18 @@ def _auto_actualizar_aciertos():
     if not partidos_jugados:
         return
 
-    # Guard: solo re-corre si el número de partidos jugados cambió desde la última vez
+    # Guard: resetea cada día y cada vez que cambia el número de partidos
     _n_jugados = len(partidos_jugados)
-    _clave = f"aciertos_{_hoy_auto}_n_{_n_jugados}"  # resetea cada día
+    _clave = f"aciertos_{_hoy_auto}_n_{_n_jugados}"
     if st.session_state.get(_clave):
         return
 
+    # Marcar ANTES de procesar para evitar loops con st.rerun()
+    st.session_state[_clave] = True
+
     try:
         import requests as _req
+        import urllib.parse as _up
 
         def _hdrs(k):
             return {"apikey": k, "Authorization": f"Bearer {k}",
@@ -1531,70 +1582,79 @@ def _auto_actualizar_aciertos():
 
         actualizadas = 0
 
+        # Obtener TODAS las apuestas de una vez (más eficiente que por partido)
+        try:
+            r_all = _req.get(
+                f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
+                params={"select": "*", "limit": 1000},
+                timeout=15
+            )
+            todas_apuestas = r_all.json() if r_all.status_code == 200 else []
+        except Exception:
+            todas_apuestas = []
+
+        if not todas_apuestas:
+            return
+
+        # Crear mapa de resultados para lookup rápido
+        mapa_resultados = {}
         for p in partidos_jugados:
             ea, eb = p[0], p[1]
-            ga, gb = p[4]
-            datos = DATOS_REALES.get(f"{ea}_{eb}", {})
+            mapa_resultados[(ea, eb)] = p[4]
+
+        for ap in todas_apuestas:
+            ap_ea = ap.get("ea", "")
+            ap_eb = ap.get("eb", "")
+
+            # Saltar TBDs
+            if str(ap_ea).startswith("TBD") or str(ap_eb).startswith("TBD"):
+                continue
+
+            # Buscar resultado del partido
+            resultado = mapa_resultados.get((ap_ea, ap_eb))
+            if resultado is None:
+                continue  # partido sin resultado todavía
+
+            ga, gb = resultado
+            datos = DATOS_REALES.get(f"{ap_ea}_{ap_eb}", {})
             am_reales = datos.get("am")
             co_reales = datos.get("co")
 
-            try:
-                # URL-encode manual para nombres con espacios y caracteres especiales
-                import urllib.parse as _up
-                _params = f"ea=eq.{_up.quote(ea)}&eb=eq.{_up.quote(eb)}&select=*"
-                r = _req.get(
-                    f"{SUPABASE_URL}/rest/v1/apuestas_historial?{_params}",
-                    headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
-                    timeout=8
-                )
-                if r.status_code != 200:
+            from supabase_preds import _evaluar_acierto
+            nuevo_acierto = _evaluar_acierto(
+                ap, ga, gb,
+                am_reales=am_reales, co_reales=co_reales
+            )
+
+            if nuevo_acierto is None:
+                continue  # sin datos suficientes
+
+            acierto_actual = ap.get("acierto")
+            if acierto_actual is None or acierto_actual != nuevo_acierto:
+                try:
+                    _req.patch(
+                        f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                        headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
+                        params={"id": f"eq.{ap['id']}"},
+                        json={
+                            "acierto":          nuevo_acierto,
+                            "goles_a":          ga,
+                            "goles_b":          gb,
+                            "resultado_real":   f"{ga}-{gb}",
+                            "amarillas_reales": am_reales,
+                            "corners_reales":   co_reales,
+                        },
+                        timeout=8
+                    )
+                    actualizadas += 1
+                except Exception:
                     continue
 
-                for ap in r.json():
-                    # Saltar apuestas de TBD (no tienen resultado real)
-                    if str(ap.get("ea", "")).startswith("TBD"):
-                        continue
-
-                    ap_enriquecido = dict(ap)
-                    if am_reales is not None:
-                        ap_enriquecido["amarillas_reales"] = am_reales
-                    if co_reales is not None:
-                        ap_enriquecido["corners_reales"] = co_reales
-
-                    from supabase_preds import _evaluar_acierto
-                    nuevo_acierto = _evaluar_acierto(
-                        ap_enriquecido, ga, gb,
-                        am_reales=am_reales, co_reales=co_reales
-                    )
-
-                    if nuevo_acierto is None:
-                        continue
-
-                    acierto_actual = ap.get("acierto")
-                    if acierto_actual is None or acierto_actual != nuevo_acierto:
-                        _req.patch(
-                            f"{SUPABASE_URL}/rest/v1/apuestas_historial",
-                            headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
-                            params={"id": f"eq.{ap['id']}"},
-                            json={
-                                "acierto":          nuevo_acierto,
-                                "goles_a":          ga,
-                                "goles_b":          gb,
-                                "resultado_real":   f"{ga}-{gb}",
-                                "amarillas_reales": am_reales,
-                                "corners_reales":   co_reales,
-                            },
-                            timeout=8
-                        )
-                        actualizadas += 1
-            except Exception:
-                continue
-
-        # Marcar como completado para este número de partidos jugados
-        st.session_state[_clave] = True
-
         if actualizadas > 0:
-            st.rerun()  # Forzar reload para mostrar datos frescos en el tab
+            # Limpiar cache de Streamlit para que tab_hist_ap cargue datos frescos
+            st.cache_data.clear()
+            st.rerun()
 
     except Exception:
         pass
@@ -1814,6 +1874,61 @@ with tab_apuestas:
         r2 = simular(ea2, eb2, sede2, arbitro=arb2, n=500_000)
         r2["goles_totales_esperados"] = r2["goles_a"] + r2["goles_b"]
         sugerencias = analizar_apuestas(ea2, eb2, r2)
+
+        # ── Guardar apuestas en Supabase para historial ──────────────────────
+        if sugerencias and SUPABASE_DISPONIBLE and SUPABASE_URL and SUPABASE_KEY:
+            try:
+                import requests as _rqs
+                from datetime import datetime as _dts2, timezone as _tzs2, timedelta as _tds2
+                _tz2 = _tzs2(_tds2(hours=-6))
+                _ahora2 = _dts2.now(_tz2)
+                _hor2 = HORARIOS_PARTIDO.get((ea2, eb2)) or HORARIOS_PARTIDO.get((eb2, ea2), "")
+                _fecha_p2 = _hor2[:10] if _hor2 else _ahora2.strftime("%Y-%m-%d")
+                _hdrs2 = {"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}",
+                          "Content-Type": "application/json", "Prefer": "return=minimal"}
+                for _i2, _s2 in enumerate(sugerencias):
+                    if _s2["nivel"] != "ALTA":
+                        continue
+                    _ap_id2 = f"ap_{ea2}_{eb2}_{_i2}_{_fecha_p2}".replace(" ", "_")
+                    # Evaluar acierto inmediatamente si el partido ya terminó
+                    _ga2, _gb2 = res2 if res2 is not None else (None, None)
+                    _acierto2 = None
+                    if _ga2 is not None:
+                        from supabase_preds import _evaluar_acierto
+                        _datos2 = DATOS_REALES.get(f"{ea2}_{eb2}", {})
+                        _acierto2 = _evaluar_acierto(
+                            {"seleccion": _s2["seleccion"].replace("✅ ", ""),
+                             "mercado": _s2["mercado"], "ea": ea2, "eb": eb2},
+                            _ga2, _gb2,
+                            am_reales=_datos2.get("am"),
+                            co_reales=_datos2.get("co")
+                        )
+                    _ap2 = {
+                        "id": _ap_id2, "ea": ea2, "eb": eb2, "grupo": grupo2,
+                        "fecha_partido": _fecha_p2,
+                        "guardada_en": _ahora2.strftime("%Y-%m-%d %H:%M"),
+                        "mercado": _s2["mercado"],
+                        "seleccion": _s2["seleccion"].replace("✅ ", ""),
+                        "confianza": round(_s2["confianza"], 1),
+                        "donde": _s2.get("donde", "Playdoit / Draftea"),
+                        "resultado_real": f"{_ga2}-{_gb2}" if _ga2 is not None else None,
+                        "goles_a": _ga2, "goles_b": _gb2,
+                        "acierto": _acierto2,
+                    }
+                    try:
+                        _chk2 = _rqs.get(
+                            f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                            headers={**_hdrs2, "Prefer": ""},
+                            params={"id": f"eq.{_ap_id2}", "select": "id"}, timeout=5
+                        )
+                        if _chk2.status_code == 200 and not _chk2.json():
+                            _rqs.post(f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                                      headers=_hdrs2, json=_ap2, timeout=5)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
         if not sugerencias:
             st.info("El modelo no encontró señales suficientemente claras. Partido demasiado equilibrado.")
         else:
