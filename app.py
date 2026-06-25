@@ -520,12 +520,12 @@ PARTIDOS = [
     ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       (3, 1),  "Jesus Valenzuela"),
     ("Escocia",              "Brasil",            "C", "Miami",         (0, 3),  "Cesar Ramos Palazuelos"),
     ("Marruecos",            "Haiti",             "C", "Philadelphia",  (4, 2),  "Danny Makkelie"),
-    ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    None),
-    ("Paraguay",             "Australia",         "D", "San Francisco", None,    None),
-    ("Ecuador",              "Alemania",          "E", "Nueva York",    None,    None),
-    ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   None,    None),
-    ("Tunez",                "Paises Bajos",      "F", "Houston",       None,    None),
-    ("Japon",                "Suecia",            "F", "Dallas",        None,    None),
+    ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    "Mustapha Ghorbal"),
+    ("Paraguay",             "Australia",         "D", "San Francisco", None,    "Clement Turpin"),
+    ("Ecuador",              "Alemania",          "E", "Nueva York",    None,    "Tori Penso"),
+    ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   None,    "Glenn Nyberg"),
+    ("Tunez",                "Paises Bajos",      "F", "Houston",       None,    "Katia Garcia"),
+    ("Japon",                "Suecia",            "F", "Dallas",        None,    "Ivan Barton"),
     ("Nueva Zelanda",        "Belgica",           "G", "Vancouver",     None,    None),
     ("Egipto",               "Iran",              "G", "Boston",        None,    None),
     ("Cabo Verde",           "Arabia Saudita",    "H", "Atlanta",       None,    None),
@@ -712,6 +712,7 @@ ARBITROS = {
     "Abdulrahman Al-Jassim":      (3.80, 0.13),
     "Yusuke Araki":               (3.65, 0.11),
     "Campbell-Kirk Kawana-Waugh": (3.85, 0.14),
+    "Katia Garcia":              (3.90, 0.10),  # CONCACAF
 }
 ARBITRO_DEFAULT = (3.80, 0.12)
 
@@ -2107,4 +2108,3 @@ El predictor usa **simulación Monte Carlo con distribución de Poisson** — el
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
-            
