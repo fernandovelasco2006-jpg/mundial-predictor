@@ -514,12 +514,12 @@ PARTIDOS = [
     ("Croacia",         "Panama",                 "L", "Toronto",       (1, 0),  "Pierre Ghislain Atcho"),
 
     # ── JORNADA 3 ─────────────────────────────────────────────────────────────
-    ("Mexico",               "Chequia",           "A", "Azteca",        None,    "Yael Falcon Perez"),
-    ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     None,    "Facundo Tello"),
+    ("Mexico",               "Chequia",           "A", "Azteca",        (3, 0),  "Yael Falcon Perez"),
+    ("Sudafrica",            "Corea del Sur",     "A", "Monterrey",     (1, 0),  "Facundo Tello"),
     ("Suiza",                "Canada",            "B", "Vancouver",     (2, 1),  "Ramon Abatti Abel"),
     ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       (3, 1),  "Jesus Valenzuela"),
-    ("Escocia",              "Brasil",            "C", "Miami",         None,    "Cesar Ramos Palazuelos"),
-    ("Marruecos",            "Haiti",             "C", "Philadelphia",  None,    None),
+    ("Escocia",              "Brasil",            "C", "Miami",         (0, 3),  "Cesar Ramos Palazuelos"),
+    ("Marruecos",            "Haiti",             "C", "Philadelphia",  (4, 2),  "Danny Makkelie"),
     ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    None),
     ("Paraguay",             "Australia",         "D", "San Francisco", None,    None),
     ("Ecuador",              "Alemania",          "E", "Nueva York",    None,    None),
@@ -608,6 +608,11 @@ H2H = {
     # J3 2026
     ("Bosnia y Herzegovina", "Catar"): [(2026, 3, 1, 1, 0)],
     ("Suiza", "Canada"):               [(2026, 2, 1, 1, 0)],
+    # J3 grupo A y C
+    ("Mexico", "Chequia"):            [(2026, 3, 0, 1, 0)],
+    ("Sudafrica", "Corea del Sur"):   [(2026, 1, 0, 2, 0)],
+    ("Marruecos", "Haiti"):           [(2026, 4, 2, 3, 0)],
+    ("Escocia", "Brasil"):            [(2026, 0, 3, 3, 0)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -715,21 +720,21 @@ ARBITRO_DEFAULT = (3.80, 0.12)
 # TARJETAS_MUNDIAL — J1+J2 completa
 # ─────────────────────────────────────────────────────────────────────────────
 TARJETAS_MUNDIAL = {
-    # Grupo A
-    "Mexico":               (2, 0, 2),
-    "Sudafrica":            (2, 0, 2),
-    "Corea del Sur":        (4, 0, 2),
-    "Chequia":              (2, 0, 2),
+    # Grupo A — J1+J2+J3 completa
+    "Mexico":               (3, 0, 3),   # 2 J1+J2 + 1 J3
+    "Sudafrica":            (3, 0, 3),   # 2 J1+J2 + 1 J3
+    "Corea del Sur":        (5, 0, 3),   # 4 J1+J2 + 1 J3
+    "Chequia":              (2, 0, 3),   # 2 J1+J2 + 0 J3
     # Grupo B — J1+J2+J3 completa
     "Canada":               (3, 0, 3),   # 1 J1 + 0 J2 + 2 J3
     "Bosnia y Herzegovina": (4, 1, 3),   # 3 J1+J2 + 1 J3
     "Catar":                (3, 2, 3),   # 2 J1+J2 + 1 J3
     "Suiza":                (3, 0, 3),   # 2 J1+J2 + 1 J3
-    # Grupo C
-    "Brasil":               (1, 0, 2),
-    "Marruecos":            (2, 0, 2),
-    "Haiti":                (1, 0, 2),
-    "Escocia":              (1, 0, 2),
+    # Grupo C — J1+J2+J3 completa
+    "Brasil":               (3, 0, 3),   # 1 J1+J2 + 2 J3
+    "Marruecos":            (2, 0, 3),   # 2 J1+J2 + 0 J3
+    "Haiti":                (4, 0, 3),   # 1 J1+J2 + 3 J3
+    "Escocia":              (2, 0, 3),   # 1 J1+J2 + 1 J3
     # Grupo D
     "Estados Unidos":       (1, 0, 2),
     "Paraguay":             (4, 1, 2),
@@ -788,21 +793,21 @@ TARJETAS_MUNDIAL = {
 # FORMA_MUNDIAL — J1+J2 completa para todos los grupos
 # ─────────────────────────────────────────────────────────────────────────────
 FORMA_MUNDIAL = {
-    # Grupo A
-    "Mexico":               (3, 0, 2),
-    "Sudafrica":            (1, 3, 2),
-    "Corea del Sur":        (2, 2, 2),
-    "Chequia":              (2, 3, 2),
+    # Grupo A — J1+J2+J3 completa
+    "Mexico":               (6, 0, 3),   # 2-0 + 1-0 + 3-0
+    "Sudafrica":            (2, 3, 3),   # 0-2 + 1-1 + 1-0
+    "Corea del Sur":        (2, 3, 3),   # 2-1 + 0-1 + 0-1
+    "Chequia":              (2, 6, 3),   # 1-2 + 1-1 + 0-3
     # Grupo B
     "Canada":               (7, 1, 2),
     "Bosnia y Herzegovina": (2, 5, 2),
     "Catar":                (1, 7, 2),
     "Suiza":                (5, 2, 2),
-    # Grupo C
-    "Brasil":               (4, 1, 2),
-    "Marruecos":            (2, 1, 2),
-    "Haiti":                (0, 4, 2),
-    "Escocia":              (1, 2, 2),
+    # Grupo C — J1+J2+J3 completa
+    "Brasil":               (7, 1, 3),   # 1-1 + 3-0 + 3-0
+    "Marruecos":            (6, 3, 3),   # 1-1 + 1-0 + 4-2
+    "Haiti":                (2, 8, 3),   # 0-1 + 0-3 + 2-4
+    "Escocia":              (1, 4, 3),   # 1-0 + 0-1 + 0-3
     # Grupo D
     "Estados Unidos":       (6, 1, 2),
     "Paraguay":             (1, 5, 2),
@@ -1484,6 +1489,11 @@ DATOS_REALES = {
     # Jornada 3
     "Bosnia y Herzegovina_Catar":    {"am": 2,  "co": 10},  # BIH 1 + QAT 1
     "Suiza_Canada":                  {"am": 3,  "co": 9},   # SUI 1 + CAN 2
+    # Jornada 3 — 24 junio tarde/noche
+    "Marruecos_Haiti":               {"am": 3,  "co": 10},  # MAR 0 + HAI 3 | 9 MAR + 1 HAI
+    "Escocia_Brasil":                {"am": 3,  "co": 13},  # ESC 1 + BRA 2 | 7 ESC + 6 BRA
+    "Mexico_Chequia":                {"am": 1,  "co": 6},   # MEX 1 + CHE 0 | 1 MEX + 5 CHE
+    "Sudafrica_Corea del Sur":       {"am": 2,  "co": 10},  # SUF 1 + COR 1 | 4 SUF + 6 COR
 }
 
 
