@@ -2107,3 +2107,4 @@ El predictor usa **simulación Monte Carlo con distribución de Poisson** — el
     for i, (equipo, elo) in enumerate(sorted_elo):
         with cols[i % 3]:
             st.markdown(f"{flag(equipo)} **{equipo}** — `{elo}`")
+            
