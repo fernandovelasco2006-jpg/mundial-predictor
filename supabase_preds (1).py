@@ -43,7 +43,7 @@ def guardar_prediccion(url: str, key: str, pred: dict) -> bool:
 
 def cargar_predicciones(url: str, key: str, fecha: str = None) -> dict:
     try:
-        params = {"select": "*", "order": "created_at.desc"}
+        params = {"select": "*", "order": "fecha_partido.desc,guardada_en.desc"}
         if fecha:
             params["fecha_partido"] = f"eq.{fecha}"
         r = requests.get(
@@ -256,14 +256,11 @@ def actualizar_aciertos(url: str, key: str, partidos_con_resultado: list) -> int
         try:
             # Buscar TODAS las apuestas de este partido (con y sin acierto)
             # para poder re-evaluar las que estaban mal
+            import urllib.parse as _up
+            _params = f"ea=eq.{_up.quote(ea)}&eb=eq.{_up.quote(eb)}&select=*"
             r = requests.get(
-                f"{url}/rest/v1/apuestas_historial",
+                f"{url}/rest/v1/apuestas_historial?{_params}",
                 headers={**_headers(key), "Prefer": ""},
-                params={
-                    "ea":     f"eq.{ea}",
-                    "eb":     f"eq.{eb}",
-                    "select": "*"
-                },
                 timeout=10
             )
             if r.status_code != 200:
@@ -298,7 +295,7 @@ def actualizar_aciertos(url: str, key: str, partidos_con_resultado: list) -> int
     return actualizadas
 
 
-def _evaluar_acierto(ap: dict, ga: int, gb: int) -> bool:
+def _evaluar_acierto(ap: dict, ga: int, gb: int, am_reales: int = None, co_reales: int = None) -> bool:
     """
     Evalúa si una apuesta acertó dado el resultado real (ga-gb).
 
@@ -360,11 +357,11 @@ def _evaluar_acierto(ap: dict, ga: int, gb: int) -> bool:
     # Se usan los campos opcionales "amarillas_reales" si existen.
     # Si no existen, retorna None → la apuesta queda como "pendiente manual".
     elif merc == "Tarjetas Amarillas":
-        am_reales = ap.get("amarillas_reales")  # campo opcional en Supabase
+        # Prioridad: parámetro directo > campo en Supabase
         if am_reales is None:
-            # No tenemos el dato — no podemos evaluar automáticamente
-            # Retornar None para que quede como pendiente
-            return None
+            am_reales = ap.get("amarillas_reales")
+        if am_reales is None:
+            return None  # sin dato, queda pendiente
         am_reales = int(am_reales)
         if "over 1.5" in sel: return am_reales >= 2
         if "over 2.5" in sel: return am_reales >= 3
@@ -375,9 +372,10 @@ def _evaluar_acierto(ap: dict, ga: int, gb: int) -> bool:
 
     # ── CÓRNERS ───────────────────────────────────────────────────────────────
     elif merc == "Córners":
-        corners_reales = ap.get("corners_reales")  # campo opcional en Supabase
+        # Prioridad: parámetro directo > campo en Supabase
+        corners_reales = co_reales if co_reales is not None else ap.get("corners_reales")
         if corners_reales is None:
-            return None  # pendiente manual
+            return None  # sin dato, queda pendiente
         corners_reales = int(corners_reales)
         if "over 6.5"  in sel: return corners_reales >= 7
         if "over 7.5"  in sel: return corners_reales >= 8
@@ -394,7 +392,7 @@ def cargar_historial_apuestas(url: str, key: str) -> list:
         r = requests.get(
             f"{url}/rest/v1/apuestas_historial",
             headers={**_headers(key), "Prefer": ""},
-            params={"select": "*", "order": "created_at.desc"},
+            params={"select": "*", "order": "fecha_partido.desc,guardada_en.desc"},
             timeout=10
         )
         if r.status_code == 200:
