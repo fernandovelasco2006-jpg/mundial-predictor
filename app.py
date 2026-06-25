@@ -1518,7 +1518,7 @@ def _auto_actualizar_aciertos():
 
     # Guard: solo re-corre si el número de partidos jugados cambió desde la última vez
     _n_jugados = len(partidos_jugados)
-    _clave = f"aciertos_n_{_n_jugados}"
+    _clave = f"aciertos_{_hoy_auto}_n_{_n_jugados}"  # resetea cada día
     if st.session_state.get(_clave):
         return
 
@@ -1539,10 +1539,12 @@ def _auto_actualizar_aciertos():
             co_reales = datos.get("co")
 
             try:
+                # URL-encode manual para nombres con espacios y caracteres especiales
+                import urllib.parse as _up
+                _params = f"ea=eq.{_up.quote(ea)}&eb=eq.{_up.quote(eb)}&select=*"
                 r = _req.get(
-                    f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                    f"{SUPABASE_URL}/rest/v1/apuestas_historial?{_params}",
                     headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
-                    params={"ea": f"eq.{ea}", "eb": f"eq.{eb}", "select": "*"},
                     timeout=8
                 )
                 if r.status_code != 200:
@@ -1560,7 +1562,10 @@ def _auto_actualizar_aciertos():
                         ap_enriquecido["corners_reales"] = co_reales
 
                     from supabase_preds import _evaluar_acierto
-                    nuevo_acierto = _evaluar_acierto(ap_enriquecido, ga, gb)
+                    nuevo_acierto = _evaluar_acierto(
+                        ap_enriquecido, ga, gb,
+                        am_reales=am_reales, co_reales=co_reales
+                    )
 
                     if nuevo_acierto is None:
                         continue
