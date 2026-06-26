@@ -1576,9 +1576,10 @@ def _auto_actualizar_aciertos():
     if not partidos_jugados:
         return
 
-    # Guard: resetea cada día y cada vez que cambia el número de partidos
+    # Guard: resetea cuando cambia nº partidos jugados O cuando se agregan datos reales nuevos
     _n_jugados = len(partidos_jugados)
-    _clave = f"aciertos_{_hoy_auto}_n_{_n_jugados}"
+    _n_datos = len(DATOS_REALES)  # cambia cada vez que agrego datos de Sofascore
+    _clave = f"aciertos_{_hoy_auto}_n{_n_jugados}_d{_n_datos}"
     if st.session_state.get(_clave):
         return
 
