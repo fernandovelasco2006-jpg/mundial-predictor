@@ -264,22 +264,23 @@ ALTITUD = {
 
 CORNERS_EQUIPO = {
     # Calibrado con datos reales Mundial 2026 (60% real + 40% histórico)
-    "Espana":          5.9,  "Alemania":       5.9,  "Brasil":         5.8,
-    "Inglaterra":      7.5,  "Paises Bajos":   5.5,  "Marruecos":      7.2,
-    "Japon":           5.0,  "Escocia":        5.6,  "Canada":         5.9,
-    "Corea del Sur":   5.4,  "Ecuador":        7.0,  "Panama":         5.5,
+    # J2+J3 desglosados disponibles
+    "Espana":          5.9,  "Alemania":       4.4,  "Brasil":         5.8,
+    "Inglaterra":      7.5,  "Paises Bajos":   5.8,  "Marruecos":      7.2,
+    "Japon":           3.8,  "Escocia":        5.6,  "Canada":         5.9,
+    "Corea del Sur":   5.4,  "Ecuador":        5.6,  "Panama":         5.5,
     "Noruega":         4.8,  "Colombia":       4.8,  "Belgica":        4.4,
     "Bosnia y Herzegovina": 4.4, "Francia":    4.3,  "Chequia":        4.6,
-    "Suecia":          4.2,  "Australia":      4.4,  "Senegal":        4.2,
+    "Suecia":          5.8,  "Australia":      4.4,  "Senegal":        4.2,
     "Catar":           4.2,  "Cabo Verde":     3.6,  "Turquia":        4.1,
     "Algeria":         3.6,  "Sudafrica":      3.6,  "Paraguay":       3.6,
-    "Nueva Zelanda":   3.6,  "Portugal":       3.9,  "Costa de Marfil":3.9,
-    "Jordania":        3.8,  "Egipto":         3.3,  "Tunez":          3.3,
+    "Nueva Zelanda":   3.6,  "Portugal":       3.9,  "Costa de Marfil":4.7,
+    "Jordania":        3.8,  "Egipto":         3.3,  "Tunez":          3.6,
     "RD Congo":        3.3,  "Croacia":        3.1,  "Suiza":          3.0,
     "Uruguay":         8.4,  "Estados Unidos": 4.6,  "Mexico":         2.6,
     "Argentina":       2.5,  "Uzbekistan":     2.5,  "Irak":           2.6,
     "Ghana":           2.8,  "Iran":           2.8,  "Haiti":          1.8,
-    "Arabia Saudita":  1.6,  "Arabia Saudi":   1.6,  "Curazao":        1.1,
+    "Arabia Saudita":  1.6,  "Arabia Saudi":   1.6,  "Curazao":        2.2,
     "Austria":         3.5,  "Argelia":        3.6,
 }
 CORNERS_DEFAULT = 4.0
@@ -523,10 +524,10 @@ PARTIDOS = [
     ("Marruecos",            "Haiti",             "C", "Philadelphia",  (4, 2),  "Danny Makkelie"),
     ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    "Mustapha Ghorbal"),
     ("Paraguay",             "Australia",         "D", "San Francisco", None,    "Clement Turpin"),
-    ("Ecuador",              "Alemania",          "E", "Nueva York",    None,    "Tori Penso"),
-    ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   None,    "Glenn Nyberg"),
-    ("Tunez",                "Paises Bajos",      "F", "Houston",       None,    "Katia Garcia"),
-    ("Japon",                "Suecia",            "F", "Dallas",        None,    "Ivan Barton"),
+    ("Ecuador",              "Alemania",          "E", "Nueva York",    (2, 1),  "Tori Penso"),
+    ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   (0, 2),  "Glenn Nyberg"),
+    ("Tunez",                "Paises Bajos",      "F", "Houston",       (1, 3),  "Katia Garcia"),
+    ("Japon",                "Suecia",            "F", "Dallas",        (1, 1),  "Ivan Barton"),
     ("Nueva Zelanda",        "Belgica",           "G", "Vancouver",     None,    None),
     ("Egipto",               "Iran",              "G", "Boston",        None,    None),
     ("Cabo Verde",           "Arabia Saudita",    "H", "Atlanta",       None,    None),
@@ -614,6 +615,11 @@ H2H = {
     ("Sudafrica", "Corea del Sur"):   [(2026, 1, 0, 2, 0)],
     ("Marruecos", "Haiti"):           [(2026, 4, 2, 3, 0)],
     ("Escocia", "Brasil"):            [(2026, 0, 3, 3, 0)],
+    # J3 grupos E y F
+    ("Tunez", "Paises Bajos"):        [(2026, 1, 3, 0, 0)],
+    ("Curazao", "Costa de Marfil"):   [(2026, 0, 2, 2, 0)],
+    ("Ecuador", "Alemania"):          [(2026, 2, 1, 4, 0)],
+    ("Japon", "Suecia"):              [(2026, 1, 1, 3, 0)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -815,11 +821,11 @@ FORMA_MUNDIAL = {
     "Paraguay":             (1, 5, 2),
     "Australia":            (2, 4, 2),
     "Turquia":              (2, 3, 2),
-    # Grupo E
-    "Alemania":             (9, 2, 2),
-    "Curazao":              (1, 7, 1),
-    "Costa de Marfil":      (2, 2, 2),
-    "Ecuador":              (0, 1, 2),
+    # Grupo E — J1+J2+J3 completa
+    "Alemania":             (10, 3, 3),   # 4-0 CUR + 2-1 CIV + 1-2 ECU
+    "Ecuador":              (2, 1, 3),    # 0-0 + 2-1 ALE (actualizar con J1 real)
+    "Costa de Marfil":      (4, 2, 3),   # 1-2 + 2-1 ALE + 2-0 CUR
+    "Curazao":              (1, 9, 3),   # 0-4 + 1-2 + 0-2
     # Grupo F
     "Paises Bajos":         (7, 3, 2),
     "Japon":                (6, 2, 2),
@@ -1543,6 +1549,11 @@ DATOS_REALES = {
     "Escocia_Brasil":                {"am": 3,  "co": 13},  # ESC 1 + BRA 2 | 7 ESC + 6 BRA
     "Mexico_Chequia":                {"am": 1,  "co": 6},   # MEX 1 + CHE 0 | 1 MEX + 5 CHE
     "Sudafrica_Corea del Sur":       {"am": 2,  "co": 10},  # SUF 1 + COR 1 | 4 SUF + 6 COR
+    # Jornada 3 — 25 junio
+    "Curazao_Costa de Marfil":       {"am": 3,  "co": 10},  # CUR 2 + CIV 1 | 4 CUR + 6 CIV
+    "Ecuador_Alemania":              {"am": 4,  "co": 5},   # ECU 3 + ALE 1 | 3 ECU + 2 ALE
+    "Tunez_Paises Bajos":            {"am": 0,  "co": 10},  # TUN 0 + PB 0  | 4 TUN + 6 PB
+    "Japon_Suecia":                  {"am": 3,  "co": 10},  # JAP 1 + SUE 2 | 2 JAP + 8 SUE
 }
 
 
