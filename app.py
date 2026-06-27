@@ -270,17 +270,17 @@ CORNERS_EQUIPO = {
     "Japon":           3.8,  "Escocia":        5.6,  "Canada":         5.9,
     "Corea del Sur":   5.4,  "Ecuador":        5.6,  "Panama":         5.5,
     "Noruega":         4.8,  "Colombia":       4.8,  "Belgica":        4.4,
-    "Bosnia y Herzegovina": 4.4, "Francia":    4.3,  "Chequia":        4.6,
-    "Suecia":          5.8,  "Australia":      4.4,  "Senegal":        4.2,
-    "Catar":           4.2,  "Cabo Verde":     3.6,  "Turquia":        4.1,
+    "Bosnia y Herzegovina": 4.4, "Francia":    4.5,  "Chequia":        4.6,
+    "Suecia":          5.8,  "Australia":      3.8,  "Senegal":        7.2,
+    "Catar":           4.2,  "Cabo Verde":     3.8,  "Turquia":        3.0,
     "Algeria":         3.6,  "Sudafrica":      3.6,  "Paraguay":       3.6,
     "Nueva Zelanda":   3.6,  "Portugal":       3.9,  "Costa de Marfil":4.7,
     "Jordania":        3.8,  "Egipto":         3.3,  "Tunez":          3.6,
     "RD Congo":        3.3,  "Croacia":        3.1,  "Suiza":          3.0,
-    "Uruguay":         8.4,  "Estados Unidos": 4.6,  "Mexico":         2.6,
+    "Uruguay":         5.5,  "Estados Unidos": 6.5,  "Mexico":         2.6,
     "Argentina":       2.5,  "Uzbekistan":     2.5,  "Irak":           2.6,
     "Ghana":           2.8,  "Iran":           2.8,  "Haiti":          1.8,
-    "Arabia Saudita":  1.6,  "Arabia Saudi":   1.6,  "Curazao":        2.2,
+    "Arabia Saudita":  1.5,  "Arabia Saudi":   1.6,  "Curazao":        2.2,
     "Austria":         3.5,  "Argelia":        3.6,
 }
 CORNERS_DEFAULT = 4.0
@@ -522,18 +522,18 @@ PARTIDOS = [
     ("Bosnia y Herzegovina", "Catar",             "B", "Seattle",       (3, 1),  "Jesus Valenzuela"),
     ("Escocia",              "Brasil",            "C", "Miami",         (0, 3),  "Cesar Ramos Palazuelos"),
     ("Marruecos",            "Haiti",             "C", "Philadelphia",  (4, 2),  "Danny Makkelie"),
-    ("Turquia",              "Estados Unidos",    "D", "Seattle",       None,    "Mustapha Ghorbal"),
-    ("Paraguay",             "Australia",         "D", "San Francisco", None,    "Clement Turpin"),
+    ("Turquia",              "Estados Unidos",    "D", "Seattle",       (3, 2),  "Mustapha Ghorbal"),
+    ("Paraguay",             "Australia",         "D", "San Francisco", (0, 0),  "Clement Turpin"),
     ("Ecuador",              "Alemania",          "E", "Nueva York",    (2, 1),  "Tori Penso"),
     ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   (0, 2),  "Glenn Nyberg"),
     ("Tunez",                "Paises Bajos",      "F", "Houston",       (1, 3),  "Katia Garcia"),
     ("Japon",                "Suecia",            "F", "Dallas",        (1, 1),  "Ivan Barton"),
     ("Nueva Zelanda",        "Belgica",           "G", "Vancouver",     None,    None),
     ("Egipto",               "Iran",              "G", "Boston",        None,    None),
-    ("Cabo Verde",           "Arabia Saudita",    "H", "Atlanta",       None,    None),
-    ("Uruguay",              "Espana",            "H", "Guadalajara",   None,    None),
-    ("Senegal",              "Irak",              "I", "Kansas City",   None,    None),
-    ("Noruega",              "Francia",           "I", "Nueva York",    None,    None),
+    ("Cabo Verde",           "Arabia Saudita",    "H", "Atlanta",       (0, 0),  "Francois Letexier"),
+    ("Uruguay",              "Espana",            "H", "Guadalajara",   (0, 1),  "Ismail Elfath"),
+    ("Senegal",              "Irak",              "I", "Kansas City",   (5, 0),  "Anthony Taylor"),
+    ("Noruega",              "Francia",           "I", "Nueva York",    (1, 4),  "Michael Oliver"),
     ("Algeria",              "Austria",           "J", "Dallas",        None,    None),
     ("Jordania",             "Argentina",         "J", "Dallas",        None,    None),
     ("RD Congo",             "Uzbekistan",        "K", "Azteca",        None,    None),
@@ -620,6 +620,12 @@ H2H = {
     ("Curazao", "Costa de Marfil"):   [(2026, 0, 2, 2, 0)],
     ("Ecuador", "Alemania"):          [(2026, 2, 1, 4, 0)],
     ("Japon", "Suecia"):              [(2026, 1, 1, 3, 0)],
+    ("Paraguay", "Australia"):        [(2026, 0, 0, 2, 0)],
+    ("Turquia", "Estados Unidos"):    [(2026, 3, 2, 1, 0)],
+    ("Noruega", "Francia"):           [(2026, 1, 4, 2, 0)],
+    ("Senegal", "Irak"):              [(2026, 5, 0, 4, 1)],
+    ("Cabo Verde", "Arabia Saudita"): [(2026, 0, 0, 4, 0)],
+    ("Uruguay", "Espana"):            [(2026, 0, 1, 4, 1)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -746,8 +752,8 @@ TARJETAS_MUNDIAL = {
     # Grupo D
     "Estados Unidos":       (1, 0, 2),
     "Paraguay":             (4, 1, 2),
-    "Australia":            (1, 0, 2),
-    "Turquia":              (4, 0, 2),
+    "Australia":            (1, 1, 3),
+    "Turquia":              (7, 2, 3),
     # Grupo E
     "Alemania":             (3, 0, 2),
     "Curazao":              (2, 0, 1),
@@ -767,13 +773,13 @@ TARJETAS_MUNDIAL = {
     "Espana":               (1, 0, 2),   # 1 J1 + 0 J2
     "Cabo Verde":           (4, 0, 2),
     "Arabia Saudi":         (4, 0, 2),   # 2 J1 + 2 J2
-    "Arabia Saudita":       (4, 0, 2),
-    "Uruguay":              (3, 0, 2),
+    "Arabia Saudita":       (4, 0, 3),
+    "Uruguay":              (3, 1, 3),
     # Grupo I — J1+J2 completa
     "Francia":              (1, 0, 2),   # 1 J1 + 0 J2
-    "Senegal":              (2, 0, 2),   # 2 J1 + 0 J2
-    "Irak":                 (3, 1, 2),   # 2+roja J1 + 1 J2
-    "Noruega":              (1, 0, 2),   # 1 J1 + 0 J2
+    "Senegal":              (7, 0, 3),   # 2 J1 + 0 J2
+    "Irak":                 (3, 6, 3),   # 2+roja J1 + 1 J2
+    "Noruega":              (2, 4, 3),   # 1 J1 + 0 J2
     # Grupo J — J1+J2 completa
     "Argentina":            (2, 0, 2),   # 0 J1 + 2 J2
     "Algeria":              (3, 0, 2),   # 2 J1 + 1 J2
@@ -817,8 +823,8 @@ FORMA_MUNDIAL = {
     "Haiti":                (2, 8, 3),   # 0-1 + 0-3 + 2-4
     "Escocia":              (1, 4, 3),   # 1-0 + 0-1 + 0-3
     # Grupo D
-    "Estados Unidos":       (6, 1, 2),
-    "Paraguay":             (1, 5, 2),
+    "Estados Unidos":       (8, 4, 3),
+    "Paraguay":             (1, 5, 3),
     "Australia":            (2, 4, 2),
     "Turquia":              (2, 3, 2),
     # Grupo E — J1+J2+J3 completa
@@ -837,13 +843,13 @@ FORMA_MUNDIAL = {
     "Iran":                 (2, 2, 2),
     "Nueva Zelanda":        (3, 5, 2),
     # Grupo H — J1+J2 completa
-    "Espana":               (4, 0, 2),   # 0-0 Cabo Verde + 4-0 Arabia Saudita
-    "Cabo Verde":           (2, 2, 2),
+    "Espana":               (5, 0, 3),   # 0-0 Cabo Verde + 4-0 Arabia Saudita
+    "Cabo Verde":           (2, 2, 3),
     "Arabia Saudi":         (1, 5, 2),   # 1-1 Uruguay + 0-4 España
     "Arabia Saudita":       (1, 5, 2),
     "Uruguay":              (3, 3, 2),
     # Grupo I — J1+J2 completa
-    "Francia":              (6, 1, 2),   # 3-1 Senegal + 3-0 Irak
+    "Francia":              (10, 2, 3),   # 3-1 Senegal + 3-0 Irak
     "Senegal":              (3, 4, 2),   # 1-3 Francia + 2-3 Noruega
     "Irak":                 (1, 7, 2),   # 1-4 Noruega + 0-3 Francia
     "Noruega":              (7, 3, 2),   # 4-1 Irak + 3-2 Senegal
@@ -1554,6 +1560,13 @@ DATOS_REALES = {
     "Ecuador_Alemania":              {"am": 4,  "co": 5},   # ECU 3 + ALE 1 | 3 ECU + 2 ALE
     "Tunez_Paises Bajos":            {"am": 0,  "co": 10},  # TUN 0 + PB 0  | 4 TUN + 6 PB
     "Japon_Suecia":                  {"am": 3,  "co": 10},  # JAP 1 + SUE 2 | 2 JAP + 8 SUE
+    # J3 noche 25/26 junio
+    "Paraguay_Australia":            {"am": 2,  "co": 4},   # 1 PAR + 3 AUS
+    "Turquia_Estados Unidos":        {"am": 1,  "co": 11},  # 2 TUR + 9 EEUU
+    "Noruega_Francia":               {"am": 2,  "co": 9},   # 4 NOR + 5 FRA
+    "Senegal_Irak":                  {"am": 4,  "co": 15},  # 12 SEN + 3 IRQ
+    "Cabo Verde_Arabia Saudita":     {"am": 4,  "co": 6},   # 4 CPV + 2 KSA
+    "Uruguay_Espana":                {"am": 4,  "co": 7},   # 1 URU + 6 ESP
 }
 
 
