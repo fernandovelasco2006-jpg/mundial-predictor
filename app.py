@@ -1442,8 +1442,24 @@ if partidos_hoy:
                                         headers={**_hdrd, "Prefer": ""},
                                         params={"id": f"eq.{_apid}", "select": "id"}, timeout=5)
                                     if _ck.status_code == 200 and not _ck.json():
+                                        # No existe — insertar
                                         _rqd.post(f"{SUPABASE_URL}/rest/v1/apuestas_historial",
                                                   headers=_hdrd, json=_apd, timeout=5)
+                                    elif _ck.status_code == 200 and _ck.json():
+                                        # Ya existe — actualizar confianza y selección si el partido no tiene resultado
+                                        _existing = _ck.json()[0]
+                                        if _existing.get("acierto") is None:
+                                            _rqd.patch(
+                                                f"{SUPABASE_URL}/rest/v1/apuestas_historial",
+                                                headers={**_hdrd, "Prefer": ""},
+                                                params={"id": f"eq.{_apid}"},
+                                                json={
+                                                    "confianza": _apd["confianza"],
+                                                    "seleccion": _apd["seleccion"],
+                                                    "mercado":   _apd["mercado"],
+                                                },
+                                                timeout=5
+                                            )
                                 except Exception:
                                     pass
                         except Exception:
