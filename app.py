@@ -269,7 +269,7 @@ CORNERS_EQUIPO = {
     "Inglaterra":      7.5,  "Paises Bajos":   5.8,  "Marruecos":      7.2,
     "Japon":           3.8,  "Escocia":        5.6,  "Canada":         5.9,
     "Corea del Sur":   5.4,  "Ecuador":        5.6,  "Panama":         5.5,
-    "Noruega":         4.8,  "Colombia":       4.8,  "Belgica":        5.8,
+    "Noruega":         4.8,  "Colombia":       5.5,  "Belgica":        5.8,
     "Bosnia y Herzegovina": 4.4, "Francia":    4.5,  "Chequia":        4.6,
     "Suecia":          5.8,  "Australia":      3.8,  "Senegal":        7.2,
     "Catar":           4.2,  "Cabo Verde":     3.8,  "Turquia":        3.0,
@@ -327,22 +327,22 @@ HORARIOS_PARTIDO = {
     ('Croacia', 'Ghana'): '2026-06-27 16:00',
     ('Colombia', 'Portugal'): '2026-06-27 19:00',
     ('RD Congo', 'Uzbekistan'): '2026-06-27 19:00',
-    ("TBD-R32-1A",  "TBD-R32-1B"):  "2026-06-28 14:00",
-    ("TBD-R32-2A",  "TBD-R32-2B"):  "2026-06-29 12:00",
-    ("TBD-R32-3A",  "TBD-R32-3B"):  "2026-06-29 20:00",
-    ("TBD-R32-4A",  "TBD-R32-4B"):  "2026-06-29 12:00",
-    ("TBD-R32-5A",  "TBD-R32-5B"):  "2026-06-30 16:00",
-    ("TBD-R32-6A",  "TBD-R32-6B"):  "2026-06-30 12:00",
-    ("TBD-R32-7A",  "TBD-R32-7B"):  "2026-06-30 20:00",
-    ("TBD-R32-8A",  "TBD-R32-8B"):  "2026-07-01 11:00",
-    ("TBD-R32-9A",  "TBD-R32-9B"):  "2026-07-01 19:00",
-    ("TBD-R32-10A", "TBD-R32-10B"): "2026-07-01 15:00",
-    ("TBD-R32-11A", "TBD-R32-11B"): "2026-07-02 18:00",
-    ("TBD-R32-12A", "TBD-R32-12B"): "2026-07-02 14:00",
-    ("TBD-R32-13A", "TBD-R32-13B"): "2026-07-02 20:00",
-    ("TBD-R32-14A", "TBD-R32-14B"): "2026-07-03 17:00",
-    ("TBD-R32-15A", "TBD-R32-15B"): "2026-07-03 20:30",
-    ("TBD-R32-16A", "TBD-R32-16B"): "2026-07-03 13:00",
+    ("Sudafrica",           "Canada"):            "2026-06-28 13:00",
+    ("Alemania",            "Paraguay"):          "2026-06-29 14:30",
+    ("Paises Bajos",        "Marruecos"):         "2026-06-29 19:00",
+    ("Brasil",              "Japon"):             "2026-06-29 11:00",
+    ("Costa de Marfil",     "Noruega"):           "2026-06-30 11:00",
+    ("Francia",             "Suecia"):            "2026-06-30 15:00",
+    ("Mexico",              "Ecuador"):           "2026-06-30 19:00",
+    ("Inglaterra",          "RD Congo"):          "2026-07-01 10:00",
+    ("Belgica",             "Senegal"):           "2026-07-01 14:00",
+    ("Estados Unidos",      "Bosnia y Herzegovina"): "2026-07-01 18:00",
+    ("Espana",              "Austria"):           "2026-07-02 13:00",
+    ("Portugal",            "Croacia"):           "2026-07-02 17:00",
+    ("Suiza",               "Algeria"):           "2026-07-02 21:00",
+    ("Australia",           "Egipto"):            "2026-07-03 12:00",
+    ("Argentina",           "Cabo Verde"):        "2026-07-03 16:00",
+    ("Colombia",            "Ghana"):             "2026-07-03 19:30",
     ("TBD-R16-1A",  "TBD-R16-1B"):  "2026-07-04 16:00",
     ("TBD-R16-2A",  "TBD-R16-2B"):  "2026-07-04 12:00",
     ("TBD-R16-3A",  "TBD-R16-3B"):  "2026-07-05 15:00",
@@ -534,30 +534,30 @@ PARTIDOS = [
     ("Uruguay",              "Espana",            "H", "Guadalajara",   (0, 1),  "Ismail Elfath"),
     ("Senegal",              "Irak",              "I", "Kansas City",   (5, 0),  "Anthony Taylor"),
     ("Noruega",              "Francia",           "I", "Nueva York",    (1, 4),  "Michael Oliver"),
-    ("Algeria",              "Austria",           "J", "Dallas",        None,    None),
-    ("Jordania",             "Argentina",         "J", "Dallas",        None,    None),
-    ("RD Congo",             "Uzbekistan",        "K", "Azteca",        None,    None),
-    ("Colombia",             "Portugal",          "K", "Miami",         None,    None),
+    ("Algeria",              "Austria",           "J", "Dallas",        (3, 3),  "Ilgiz Tantashev"),
+    ("Jordania",             "Argentina",         "J", "Dallas",        (1, 3),  "Istvan Kovacs"),
+    ("RD Congo",             "Uzbekistan",        "K", "Azteca",        (3, 1),  "Felix Zwayer"),
+    ("Colombia",             "Portugal",          "K", "Miami",         (0, 0),  "Alireza Faghani"),
     ("Croacia",              "Ghana",             "L", "Toronto",       (2, 1),  "Drew Fischer"),
     ("Panama",               "Inglaterra",        "L", "Guadalajara",   (0, 2),  "Abdulrahman Al-Jassim"),
 
     # ── ELIMINATORIAS ─────────────────────────────────────────────────────────
-    ("TBD-R32-1A",  "TBD-R32-1B",  "R32", "Los Angeles",    None, None),
-    ("TBD-R32-2A",  "TBD-R32-2B",  "R32", "Boston",         None, None),
-    ("TBD-R32-3A",  "TBD-R32-3B",  "R32", "Monterrey",      None, None),
-    ("TBD-R32-4A",  "TBD-R32-4B",  "R32", "Houston",        None, None),
-    ("TBD-R32-5A",  "TBD-R32-5B",  "R32", "Nueva York",     None, None),
-    ("TBD-R32-6A",  "TBD-R32-6B",  "R32", "Dallas",         None, None),
-    ("TBD-R32-7A",  "TBD-R32-7B",  "R32", "Azteca",         None, None),
-    ("TBD-R32-8A",  "TBD-R32-8B",  "R32", "Atlanta",        None, None),
-    ("TBD-R32-9A",  "TBD-R32-9B",  "R32", "San Francisco",  None, None),
-    ("TBD-R32-10A", "TBD-R32-10B", "R32", "Seattle",        None, None),
-    ("TBD-R32-11A", "TBD-R32-11B", "R32", "Toronto",        None, None),
-    ("TBD-R32-12A", "TBD-R32-12B", "R32", "Los Angeles",    None, None),
-    ("TBD-R32-13A", "TBD-R32-13B", "R32", "Vancouver",      None, None),
-    ("TBD-R32-14A", "TBD-R32-14B", "R32", "Miami",          None, None),
-    ("TBD-R32-15A", "TBD-R32-15B", "R32", "Kansas City",    None, None),
-    ("TBD-R32-16A", "TBD-R32-16B", "R32", "Dallas",         None, None),
+    ("Sudafrica",           "Canada",             "R32", "Los Angeles",   None, None),
+    ("Alemania",            "Paraguay",           "R32", "Boston",        None, None),
+    ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     None, None),
+    ("Brasil",              "Japon",              "R32", "Houston",       None, None),
+    ("Costa de Marfil",     "Noruega",            "R32", "Nueva York",     None, None),
+    ("Francia",             "Suecia",             "R32", "Dallas",         None, None),
+    ("Mexico",              "Ecuador",            "R32", "Azteca",        None, None),
+    ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       None, None),
+    ("Belgica",             "Senegal",            "R32", "San Francisco",  None, None),
+    ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        None, None),
+    ("Espana",              "Austria",            "R32", "Toronto",        None, None),
+    ("Portugal",            "Croacia",            "R32", "Los Angeles",    None, None),
+    ("Suiza",               "Algeria",            "R32", "Vancouver",     None, None),
+    ("Australia",           "Egipto",             "R32", "Miami",          None, None),
+    ("Argentina",           "Cabo Verde",         "R32", "Kansas City",    None, None),
+    ("Colombia",            "Ghana",              "R32", "Dallas",         None, None),
     ("TBD-R16-1A",  "TBD-R16-1B",  "R16", "Philadelphia",   None, None),
     ("TBD-R16-2A",  "TBD-R16-2B",  "R16", "Houston",        None, None),
     ("TBD-R16-3A",  "TBD-R16-3B",  "R16", "Nueva York",     None, None),
@@ -630,6 +630,10 @@ H2H = {
     ("Nueva Zelanda", "Belgica"):     [(2026, 1, 5, 2, 0)],
     ("Egipto", "Iran"):               [(2026, 1, 1, 7, 0)],
     ("Panama", "Inglaterra"):         [(2026, 0, 2, 3, 0)],
+    ("Algeria", "Austria"):           [(2026, 3, 3, 1, 0)],
+    ("Jordania", "Argentina"):        [(2026, 1, 3, 2, 0)],
+    ("Colombia", "Portugal"):         [(2026, 0, 0, 1, 0)],
+    ("RD Congo", "Uzbekistan"):       [(2026, 3, 1, 5, 0)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -857,11 +861,11 @@ FORMA_MUNDIAL = {
     "Irak":                 (1, 7, 2),   # 1-4 Noruega + 0-3 Francia
     "Noruega":              (7, 3, 2),   # 4-1 Irak + 3-2 Senegal
     # Grupo J — J1+J2 completa
-    "Argentina":            (5, 0, 2),   # 3-0 Argelia + 2-0 Austria
-    "Algeria":              (2, 4, 2),   # 0-3 Argentina + 2-1 Jordania
+    "Argentina":            (8, 1, 3),   # 3-0 Argelia + 2-0 Austria
+    "Algeria":              (5, 7, 3),   # 0-3 Argentina + 2-1 Jordania
     "Argelia":              (2, 4, 2),
-    "Austria":              (3, 3, 2),   # 3-1 Jordania + 0-2 Argentina
-    "Jordania":             (2, 5, 2),   # 1-3 Austria + 1-2 Argelia
+    "Austria":              (6, 6, 3),   # 3-1 Jordania + 0-2 Argentina
+    "Jordania":             (3, 8, 3),   # 1-3 Austria + 1-2 Argelia
     # Grupo K — J1+J2 completa
     "Portugal":             (6, 1, 3),   # 1-1 RD Congo + 5-0 Uzbekistán
     "RD Congo":             (4, 3, 3),   # 1-1 Portugal + 0-1 Colombia
@@ -1572,6 +1576,11 @@ DATOS_REALES = {
     "Nueva Zelanda_Belgica":         {"am": 2,  "co": 13},  # 5 NZ + 8 BEL
     "Egipto_Iran":                   {"am": 7,  "co": 10},  # 8 EGY + 2 IRN
     "Panama_Inglaterra":             {"am": 3,  "co": 10},  # 3 PAN + 7 ENG
+    # J3 grupos J y K — 27 junio
+    "Algeria_Austria":               {"am": 1,  "co": 3},   # 0 ALG + 1 AUT | 0 ALG + 3 AUT
+    "Jordania_Argentina":            {"am": 2,  "co": 5},   # estimado
+    "Colombia_Portugal":             {"am": 1,  "co": 7},   # 1 COL + 0 POR | 5 COL + 2 POR
+    "RD Congo_Uzbekistan":           {"am": 5,  "co": 6},   # 3 RDC + 2 UZB | 2 RDC + 4 UZB
 }
 
 
