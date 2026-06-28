@@ -543,9 +543,9 @@ PARTIDOS = [
 
     # ── ELIMINATORIAS ─────────────────────────────────────────────────────────
     ("Sudafrica",           "Canada",             "R32", "Los Angeles",   None, None),
-    ("Alemania",            "Paraguay",           "R32", "Boston",        None, None),
-    ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     None, None),
-    ("Brasil",              "Japon",              "R32", "Houston",       None, None),
+    ("Alemania",            "Paraguay",           "R32", "Boston",        None,    "Jalal Jayed"),
+    ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     None,    "Wilton Pereira Sampaio"),
+    ("Brasil",              "Japon",              "R32", "Houston",       None,    "Maurizio Mariani"),
     ("Costa de Marfil",     "Noruega",            "R32", "Nueva York",     None, None),
     ("Francia",             "Suecia",             "R32", "Dallas",         None, None),
     ("Mexico",              "Ecuador",            "R32", "Azteca",        None, None),
@@ -723,7 +723,7 @@ ARBITROS = {
     "Dahane Beida":               (4.15, 0.17),
     "Amin Mohamed Omar":          (4.10, 0.16),
     "Mustapha Ghorbal":           (4.05, 0.14),
-    "Jalal Jayed":                (3.95, 0.15),
+    "Jalal Jayed":          (3.75, 0.17),
     "Ma Ning":                    (4.95, 0.29),
     "Adham Makhadmeh":            (4.50, 0.22),
     "Alireza Faghani":            (4.40, 0.20),
@@ -735,6 +735,7 @@ ARBITROS = {
     "Campbell-Kirk Kawana-Waugh": (3.85, 0.14),
     "Katia Garcia":              (3.90, 0.10),  # CONCACAF
     "Adham Mohammad":         (3.64, 0.13),  # AFC
+    "Wilton Pereira Sampaio": (5.09, 0.24),  # CONMEBOL
 }
 ARBITRO_DEFAULT = (3.80, 0.12)
 
@@ -1101,7 +1102,59 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     prob_corners_under75 = float(np.mean(corners_sim <= 7) * 100)
     prob_corners_under65 = float(np.mean(corners_sim <= 6) * 100)
 
-    lam_am_arb, lam_ro_arb = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
+    lam_am_arb_raw, lam_ro_arb_raw = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
+    # Promedios REALES de cada árbitro en este Mundial 2026
+    # Formato: {nombre: (am_promedio_real, partidos_pitados)}
+    # Si el árbitro ya pitó en el torneo, usamos su promedio real
+    # Si no, usamos histórico * 0.65 (factor de ajuste del torneo)
+    ARBITROS_MUNDIAL_2026 = {
+        "Abdulrahman Al-Jassim":   (3.0,  2),  # Brasil-Marruecos + Panamá-Inglaterra
+        "Adham Mohammad":          (2.0,  1),  # NZ-Bélgica
+        "Alireza Faghani":         (1.0,  1),  # Colombia-Portugal
+        "Anthony Taylor":          (4.0,  1),  # Senegal-Irak
+        "Campbell-Kirk Kawana-Waugh": (3.0, 1), # Ghana-Panamá
+        "Cesar Ramos Palazuelos":  (3.0,  1),  # Escocia-Brasil
+        "Clement Turpin":          (2.0,  1),  # Paraguay-Australia
+        "Danny Makkelie":          (3.0,  1),  # Marruecos-Haití
+        "Drew Fischer":            (2.0,  1),  # Croacia-Ghana
+        "Facundo Tello":           (2.0,  1),  # Sudáfrica-Corea
+        "Felix Zwayer":            (5.0,  1),  # RD Congo-Uzbekistan
+        "Fernando Rapallini":      (3.0,  1),  # Inglaterra-Croacia
+        "Francois Letexier":       (4.0,  1),  # Cabo Verde-Arabia Saudita
+        "Glenn Nyberg":            (2.5,  2),  # Haití-Escocia + Curazao-CIV
+        "Ilgiz Tantashev":         (1.0,  1),  # Algeria-Austria
+        "Ismail Elfath":           (4.0,  1),  # Uruguay-España
+        "Istvan Kovacs":           (3.0,  2),  # Argentina-Algeria + Jordania-Argentina
+        "Ivan Barton":             (2.0,  2),  # Francia-Irak + Japón-Suecia
+        "Jalal Jayed":             (0.0,  1),  # Portugal-Uzbekistan
+        "Jesus Valenzuela":        (2.0,  1),  # Bosnia-Catar
+        "Katia Garcia":            (0.0,  1),  # Túnez-PB
+        "Maurizio Mariani":        (3.0,  1),  # Colombia-RD Congo
+        "Michael Oliver":          (2.0,  1),  # Noruega-Francia
+        "Mustapha Ghorbal":        (1.0,  1),  # Turquía-EEUU
+        "Pierre Ghislain Atcho":   (2.0,  1),  # Croacia-Panamá
+        "Ramon Abatti Abel":       (3.0,  1),  # Suiza-Canadá
+        "Raphael Claus":           (3.0,  1),  # México-Sudáfrica
+        "Said Martinez":           (2.0,  2),  # España-KSA + Inglaterra-Ghana
+        "Slavko Vincic":           (2.0,  1),  # Algeria-Jordania
+        "Szymon Marciniak":        (7.0,  1),  # Egipto-Irán (outlier)
+        "Tori Penso":              (4.0,  1),  # Ecuador-Alemania
+        "Wilton Pereira Sampaio":  (0.0,  1),  # Senegal-Noruega
+        "Yael Falcon Perez":       (1.0,  1),  # México-Chequia
+        "Yusuke Araki":            (4.0,  1),  # Corea-Chequia
+    }
+    # Factor ajuste para árbitros sin datos del torneo
+    FACTOR_ARB_MUNDIAL = 0.65
+
+    if arbitro and arbitro in ARBITROS_MUNDIAL_2026:
+        am_real, n_partidos = ARBITROS_MUNDIAL_2026[arbitro]
+        # Con más partidos, más peso al dato real; con 1 partido, 60% real + 40% histórico
+        peso_real = min(0.9, 0.6 + n_partidos * 0.15)
+        lam_am_arb = am_real * peso_real + lam_am_arb_raw * FACTOR_ARB_MUNDIAL * (1 - peso_real)
+        lam_ro_arb = lam_ro_arb_raw * FACTOR_ARB_MUNDIAL  # rojas: pocos datos, usar histórico ajustado
+    else:
+        lam_am_arb = lam_am_arb_raw * FACTOR_ARB_MUNDIAL
+        lam_ro_arb = lam_ro_arb_raw * FACTOR_ARB_MUNDIAL
 
     def factor_tarjetas_equipo(equipo):
         datos = TARJETAS_MUNDIAL.get(equipo)
