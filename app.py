@@ -754,57 +754,55 @@ TARJETAS_MUNDIAL = {
     "Marruecos":            (2, 0, 3),   # 2 J1+J2 + 0 J3
     "Haiti":                (4, 0, 3),   # 1 J1+J2 + 3 J3
     "Escocia":              (2, 0, 3),   # 1 J1+J2 + 1 J3
-    # Grupo D
-    "Estados Unidos":       (1, 0, 2),
-    "Paraguay":             (4, 1, 2),
-    "Australia":            (1, 1, 3),
-    "Turquia":              (7, 2, 3),
-    # Grupo E
-    "Alemania":             (3, 0, 2),
-    "Curazao":              (2, 0, 1),
-    "Costa de Marfil":      (3, 1, 2),
-    "Ecuador":              (2, 0, 1),
-    # Grupo F
-    "Paises Bajos":         (4, 0, 2),
-    "Japon":                (2, 0, 2),
-    "Suecia":               (2, 0, 2),
-    "Tunez":                (3, 1, 2),
-    # Grupo G
-    "Belgica":              (2, 0, 2),
-    "Egipto":               (2, 0, 2),
-    "Iran":                 (2, 0, 2),
-    "Nueva Zelanda":        (2, 9, 3),
-    # Grupo H — J1+J2 completa
-    "Espana":               (1, 0, 2),   # 1 J1 + 0 J2
-    "Cabo Verde":           (4, 0, 2),
-    "Arabia Saudi":         (4, 0, 2),   # 2 J1 + 2 J2
-    "Arabia Saudita":       (4, 0, 3),
-    "Uruguay":              (3, 1, 3),
-    # Grupo I — J1+J2 completa
-    "Francia":              (1, 0, 2),   # 1 J1 + 0 J2
-    "Senegal":              (7, 0, 3),   # 2 J1 + 0 J2
-    "Irak":                 (3, 6, 3),   # 2+roja J1 + 1 J2
-    "Noruega":              (2, 4, 3),   # 1 J1 + 0 J2
-    # Grupo J — J1+J2 completa
-    "Argentina":            (2, 0, 2),   # 0 J1 + 2 J2
-    "Algeria":              (3, 0, 2),   # 2 J1 + 1 J2
+    # Grupo D — J1+J2+J3 completa
+    "Estados Unidos":       (2, 0, 3),   # 1+0+1
+    "Paraguay":             (3, 1, 3),   # 2+1 J3: 1am
+    "Australia":            (2, 0, 3),   # 1+1 J3: 1am
+    "Turquia":              (1, 0, 3),   # 0+0 J3: 0am (Ghorbal permisivo)
+    # Grupo E — J1+J2+J3 completa
+    "Alemania":             (2, 0, 3),   # 1+0 J3: 1am
+    "Curazao":              (3, 0, 3),   # 2+1 J3: 2am
+    "Costa de Marfil":      (4, 0, 3),   # 3+1 J3: 1am
+    "Ecuador":              (4, 0, 3),   # 1+3 J3: 3am
+    # Grupo F — J1+J2+J3 completa
+    "Paises Bajos":         (4, 0, 3),   # 3+0 J3: 0am
+    "Japon":                (4, 0, 3),   # 2+1 J3: 1am
+    "Suecia":               (5, 0, 3),   # 2+2 J3: 2am
+    "Tunez":                (3, 1, 3),   # 3+0 J3: 0am
+    # Grupo G — J1+J2+J3 completa
+    "Belgica":              (4, 0, 3),   # 2+2 J3: 2am NZ
+    "Egipto":               (6, 0, 3),   # 2+3 J3: 3am
+    "Iran":                 (8, 0, 3),   # 4+4 J3: 4am
+    "Nueva Zelanda":        (4, 0, 3),   # 2+2 J3: 2am
+    # Grupo H — J1+J2+J3 completa
+    "Espana":               (2, 0, 3),   # 1+1 J3: 1am
+    "Cabo Verde":           (5, 0, 3),   # 4+1 J3: 1am
+    "Arabia Saudi":         (1, 0, 2),
+    "Arabia Saudita":       (7, 0, 3),   # 4+3 J3: 3am
+    "Uruguay":              (6, 1, 3),   # 2+3+roja J3
+    # Grupo I — J1+J2+J3 completa
+    "Francia":              (3, 0, 3),   # 2+1 J3: 1am
+    "Senegal":              (6, 0, 3),   # 4+2 J3: 2am
+    "Irak":                 (5, 1, 3),   # 3+2 J3: 2am (+ roja J3)
+    "Noruega":              (5, 0, 3),   # 4+1 J3: 1am
+    # Grupo J — J1+J2 completa (J3 pendiente 27 jun)
+    "Argentina":            (2, 0, 2),
+    "Algeria":              (3, 0, 2),
     "Argelia":              (3, 0, 2),
-    "Austria":              (3, 0, 2),   # 1 J1 + 2 J2
-    "Jordania":             (4, 0, 2),   # 3 J1 + 1 J2
-    # Grupo K — J1+J2 completa
-    # Portugal 0 am J2, Uzbekistan 0 am J2 (árbitro Jalal Jayed muy permisivo)
-    # Colombia 2 am J2 (Lerma + otra), RD Congo 1 am J2 (Pickel)
-    "Portugal":             (1, 0, 2),   # 1 J1 + 0 J2
-    "RD Congo":             (3, 0, 2),   # 2 J1 + 1 J2
-    "Uzbekistan":           (3, 1, 2),   # 3+roja J1 + 0 J2
-    "Colombia":             (3, 0, 2),   # 1 J1 + 2 J2
+    "Austria":              (3, 0, 2),
+    "Jordania":             (4, 0, 2),
+    # Grupo K — J1+J2+J3 completa
+    "Portugal":             (3, 0, 3),   # 1+0+2 J3
+    "RD Congo":             (5, 0, 3),   # 3+2 J3
+    "Uzbekistan":           (3, 1, 3),   # sin amarillas J3
+    "Colombia":             (6, 0, 3),   # 1+2+3 J3
     # Grupo L — J1+J2 completa
     # Inglaterra 1 am J2, Ghana 1 am J2 (Said Martinez 4.2 prom)
     # Croacia 1 am J2 (Sučić), Panamá 1 am J2
-    "Inglaterra":           (2, 0, 2),   # 1 J1 + 1 J2
-    "Croacia":              (3, 0, 2),   # 2 J1 + 1 J2
-    "Ghana":                (3, 0, 2),   # 2 J1 + 1 J2
-    "Panama":               (2, 0, 2),   # 1 J1 + 1 J2
+    "Inglaterra":           (3, 0, 3),   # 1 J1 + 1 J2
+    "Croacia":              (4, 0, 3),   # 2 J1 + 1 J2
+    "Ghana":                (4, 0, 3),   # 2 J1 + 1 J2
+    "Panama":               (4, 0, 3),   # 1 J1 + 1 J2
 }
 
 
@@ -829,12 +827,12 @@ FORMA_MUNDIAL = {
     "Escocia":              (1, 4, 3),   # 1-0 + 0-1 + 0-3
     # Grupo D
     "Estados Unidos":       (8, 4, 3),
-    "Paraguay":             (1, 5, 3),
+    "Paraguay":             (2, 4, 3),
     "Australia":            (2, 4, 2),
     "Turquia":              (2, 3, 2),
     # Grupo E — J1+J2+J3 completa
-    "Alemania":             (10, 3, 3),   # 4-0 CUR + 2-1 CIV + 1-2 ECU
-    "Ecuador":              (2, 1, 3),    # 0-0 + 2-1 ALE (actualizar con J1 real)
+    "Alemania":             (10, 4, 3),   # 4-0 CUR + 2-1 CIV + 1-2 ECU
+    "Ecuador":              (2, 2, 3),    # 0-0 + 2-1 ALE (actualizar con J1 real)
     "Costa de Marfil":      (4, 2, 3),   # 1-2 + 2-1 ALE + 2-0 CUR
     "Curazao":              (1, 9, 3),   # 0-4 + 1-2 + 0-2
     # Grupo F
@@ -854,7 +852,7 @@ FORMA_MUNDIAL = {
     "Arabia Saudita":       (1, 5, 2),
     "Uruguay":              (3, 3, 2),
     # Grupo I — J1+J2 completa
-    "Francia":              (10, 2, 3),   # 3-1 Senegal + 3-0 Irak
+    "Francia":             (10, 2, 3),   # 3-1 Senegal + 3-0 Irak
     "Senegal":              (3, 4, 2),   # 1-3 Francia + 2-3 Noruega
     "Irak":                 (1, 7, 2),   # 1-4 Noruega + 0-3 Francia
     "Noruega":              (7, 3, 2),   # 4-1 Irak + 3-2 Senegal
@@ -865,10 +863,10 @@ FORMA_MUNDIAL = {
     "Austria":              (3, 3, 2),   # 3-1 Jordania + 0-2 Argentina
     "Jordania":             (2, 5, 2),   # 1-3 Austria + 1-2 Argelia
     # Grupo K — J1+J2 completa
-    "Portugal":             (6, 1, 2),   # 1-1 RD Congo + 5-0 Uzbekistán
-    "RD Congo":             (1, 2, 2),   # 1-1 Portugal + 0-1 Colombia
-    "Uzbekistan":           (1, 8, 2),   # 1-3 Colombia + 0-5 Portugal
-    "Colombia":             (4, 1, 2),   # 3-1 Uzbekistán + 1-0 RD Congo
+    "Portugal":             (6, 1, 3),   # 1-1 RD Congo + 5-0 Uzbekistán
+    "RD Congo":             (4, 3, 3),   # 1-1 Portugal + 0-1 Colombia
+    "Uzbekistan":           (2, 11, 3),   # 1-3 Colombia + 0-5 Portugal
+    "Colombia":             (4, 1, 3),   # 3-1 Uzbekistán + 1-0 RD Congo
     # Grupo L — J1+J2 completa
     "Inglaterra":           (6, 2, 3),   # 4-2 Croacia + 0-0 Ghana
     "Croacia":              (5, 5, 3),   # 2-4 Inglaterra + 1-0 Panamá
