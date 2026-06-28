@@ -226,7 +226,7 @@ ELO = {
     "Suecia":                1600,
     "Tunez":                 1530,
     "RD Congo":              1474,
-    "Ghana":                 1347,
+    "Ghana":          2.3,
     "Catar":                 1420,
     "Arabia Saudita":        1424,
     "Jordania":              1388,
@@ -236,7 +236,7 @@ ELO = {
     "Cabo Verde":            1500,
     "Sudafrica":             1480,
     "Haiti":                 1380,
-    "Nueva Zelanda":         1450,
+    "Nueva Zelanda":  3.8,
     "Curazao":               1320,
     # aliases
     "Algeria":               1571,
@@ -269,17 +269,17 @@ CORNERS_EQUIPO = {
     "Inglaterra":      7.5,  "Paises Bajos":   5.8,  "Marruecos":      7.2,
     "Japon":           3.8,  "Escocia":        5.6,  "Canada":         5.9,
     "Corea del Sur":   5.4,  "Ecuador":        5.6,  "Panama":         5.5,
-    "Noruega":         4.8,  "Colombia":       4.8,  "Belgica":        4.4,
+    "Noruega":         4.8,  "Colombia":       4.8,  "Belgica":        5.8,
     "Bosnia y Herzegovina": 4.4, "Francia":    4.5,  "Chequia":        4.6,
     "Suecia":          5.8,  "Australia":      3.8,  "Senegal":        7.2,
     "Catar":           4.2,  "Cabo Verde":     3.8,  "Turquia":        3.0,
     "Algeria":         3.6,  "Sudafrica":      3.6,  "Paraguay":       3.6,
     "Nueva Zelanda":   3.6,  "Portugal":       3.9,  "Costa de Marfil":4.7,
-    "Jordania":        3.8,  "Egipto":         3.3,  "Tunez":          3.6,
-    "RD Congo":        3.3,  "Croacia":        3.1,  "Suiza":          3.0,
+    "Jordania":        3.8,  "Egipto":         5.2,  "Tunez":          3.6,
+    "RD Congo":        3.3,  "Croacia":        2.7,  "Suiza":          3.0,
     "Uruguay":         5.5,  "Estados Unidos": 6.5,  "Mexico":         2.6,
     "Argentina":       2.5,  "Uzbekistan":     2.5,  "Irak":           2.6,
-    "Ghana":           2.8,  "Iran":           2.8,  "Haiti":          1.8,
+    "Ghana":           2.8,  "Iran":           2.3,  "Haiti":          1.8,
     "Arabia Saudita":  1.5,  "Arabia Saudi":   1.6,  "Curazao":        2.2,
     "Austria":         3.5,  "Argelia":        3.6,
 }
@@ -528,8 +528,8 @@ PARTIDOS = [
     ("Curazao",              "Costa de Marfil",   "E", "Kansas City",   (0, 2),  "Glenn Nyberg"),
     ("Tunez",                "Paises Bajos",      "F", "Houston",       (1, 3),  "Katia Garcia"),
     ("Japon",                "Suecia",            "F", "Dallas",        (1, 1),  "Ivan Barton"),
-    ("Nueva Zelanda",        "Belgica",           "G", "Vancouver",     None,    None),
-    ("Egipto",               "Iran",              "G", "Boston",        None,    None),
+    ("Nueva Zelanda",        "Belgica",           "G", "Vancouver",     (1, 5),  "Adham Mohammad"),
+    ("Egipto",               "Iran",              "G", "Boston",        (1, 1),  "Szymon Marciniak"),
     ("Cabo Verde",           "Arabia Saudita",    "H", "Atlanta",       (0, 0),  "Francois Letexier"),
     ("Uruguay",              "Espana",            "H", "Guadalajara",   (0, 1),  "Ismail Elfath"),
     ("Senegal",              "Irak",              "I", "Kansas City",   (5, 0),  "Anthony Taylor"),
@@ -538,8 +538,8 @@ PARTIDOS = [
     ("Jordania",             "Argentina",         "J", "Dallas",        None,    None),
     ("RD Congo",             "Uzbekistan",        "K", "Azteca",        None,    None),
     ("Colombia",             "Portugal",          "K", "Miami",         None,    None),
-    ("Croacia",              "Ghana",             "L", "Toronto",       None,    None),
-    ("Panama",               "Inglaterra",        "L", "Guadalajara",   None,    None),
+    ("Croacia",              "Ghana",             "L", "Toronto",       (2, 1),  "Drew Fischer"),
+    ("Panama",               "Inglaterra",        "L", "Guadalajara",   (0, 2),  "Abdulrahman Al-Jassim"),
 
     # ── ELIMINATORIAS ─────────────────────────────────────────────────────────
     ("TBD-R32-1A",  "TBD-R32-1B",  "R32", "Los Angeles",    None, None),
@@ -626,6 +626,10 @@ H2H = {
     ("Senegal", "Irak"):              [(2026, 5, 0, 4, 1)],
     ("Cabo Verde", "Arabia Saudita"): [(2026, 0, 0, 4, 0)],
     ("Uruguay", "Espana"):            [(2026, 0, 1, 4, 1)],
+    ("Croacia", "Ghana"):             [(2026, 2, 1, 2, 0)],
+    ("Nueva Zelanda", "Belgica"):     [(2026, 1, 5, 2, 0)],
+    ("Egipto", "Iran"):               [(2026, 1, 1, 7, 0)],
+    ("Panama", "Inglaterra"):         [(2026, 0, 2, 3, 0)],
 }
 
 def calcular_factor_h2h(ea: str, eb: str) -> tuple:
@@ -726,6 +730,7 @@ ARBITROS = {
     "Yusuke Araki":               (3.65, 0.11),
     "Campbell-Kirk Kawana-Waugh": (3.85, 0.14),
     "Katia Garcia":              (3.90, 0.10),  # CONCACAF
+    "Adham Mohammad":         (3.64, 0.13),  # AFC
 }
 ARBITRO_DEFAULT = (3.80, 0.12)
 
@@ -768,7 +773,7 @@ TARJETAS_MUNDIAL = {
     "Belgica":              (2, 0, 2),
     "Egipto":               (2, 0, 2),
     "Iran":                 (2, 0, 2),
-    "Nueva Zelanda":        (3, 0, 2),
+    "Nueva Zelanda":        (2, 9, 3),
     # Grupo H — J1+J2 completa
     "Espana":               (1, 0, 2),   # 1 J1 + 0 J2
     "Cabo Verde":           (4, 0, 2),
@@ -838,9 +843,9 @@ FORMA_MUNDIAL = {
     "Suecia":               (6, 3, 2),
     "Tunez":                (1, 9, 2),
     # Grupo G
-    "Belgica":              (1, 1, 2),
-    "Egipto":               (4, 2, 2),
-    "Iran":                 (2, 2, 2),
+    "Belgica":              (6, 2, 3),
+    "Egipto":               (5, 3, 3),
+    "Iran":                 (3, 3, 3),
     "Nueva Zelanda":        (3, 5, 2),
     # Grupo H — J1+J2 completa
     "Espana":               (5, 0, 3),   # 0-0 Cabo Verde + 4-0 Arabia Saudita
@@ -865,10 +870,10 @@ FORMA_MUNDIAL = {
     "Uzbekistan":           (1, 8, 2),   # 1-3 Colombia + 0-5 Portugal
     "Colombia":             (4, 1, 2),   # 3-1 Uzbekistán + 1-0 RD Congo
     # Grupo L — J1+J2 completa
-    "Inglaterra":           (4, 2, 2),   # 4-2 Croacia + 0-0 Ghana
-    "Croacia":              (3, 4, 2),   # 2-4 Inglaterra + 1-0 Panamá
-    "Ghana":                (1, 1, 2),   # 1-0 Panamá + 0-0 Inglaterra
-    "Panama":               (0, 2, 2),   # 0-1 Ghana + 0-1 Croacia
+    "Inglaterra":           (6, 2, 3),   # 4-2 Croacia + 0-0 Ghana
+    "Croacia":              (5, 5, 3),   # 2-4 Inglaterra + 1-0 Panamá
+    "Ghana":                (2, 4, 3),   # 1-0 Panamá + 0-0 Inglaterra
+    "Panama":               (0, 4, 3),   # 0-1 Ghana + 0-1 Croacia
 }
 
 
@@ -1271,7 +1276,49 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
         ap("Córners", "✅ Under 7.5 córners (máx 7)", p_c_under75, f"{p_c_under75:.1f}% · {corners_esp:.1f} esp.", "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under")
 
     apuestas.sort(key=lambda x: x["confianza"], reverse=True)
-    return apuestas
+
+    # ── Filtro: solo la mejor apuesta por categoría ───────────────────────
+    # Para Over tarjetas: solo la línea más alta que supere el umbral
+    # Para Over córners: solo la línea más alta que supere el umbral
+    # Para Under tarjetas/córners: solo la línea más baja (más fácil de cumplir)
+    # Para Total Goles Over: solo la línea más alta
+    filtradas = []
+    categorias_vistas = set()
+
+    for a in apuestas:
+        merc = a["mercado"]
+        sel  = a["seleccion"].lower()
+
+        # Definir clave de categoría
+        if merc == "Tarjetas Amarillas":
+            if "over" in sel:
+                cat = "am_over"   # solo la más alta (ya viene ordenada por confianza → línea más alta primero si empatan)
+            elif "under" in sel:
+                cat = "am_under"
+            else:
+                cat = merc
+        elif merc == "Córners":
+            if "over" in sel:
+                cat = "co_over"
+            elif "under" in sel:
+                cat = "co_under"
+            else:
+                cat = merc
+        elif merc == "Total Goles":
+            if "over" in sel:
+                cat = "goles_over"
+            elif "under" in sel:
+                cat = "goles_under"
+            else:
+                cat = merc
+        else:
+            cat = merc  # Resultado, Doble Oportunidad, Ambos Marcan — se muestran todos
+
+        if cat not in categorias_vistas:
+            categorias_vistas.add(cat)
+            filtradas.append(a)
+
+    return filtradas
 
 
 def tag(cls, txt):
@@ -1567,6 +1614,11 @@ DATOS_REALES = {
     "Senegal_Irak":                  {"am": 4,  "co": 15},  # 12 SEN + 3 IRQ
     "Cabo Verde_Arabia Saudita":     {"am": 4,  "co": 6},   # 4 CPV + 2 KSA
     "Uruguay_Espana":                {"am": 4,  "co": 7},   # 1 URU + 6 ESP
+    # J3 grupos G y L — 26/27 junio
+    "Croacia_Ghana":                 {"am": 2,  "co": 5},   # 3 CRO + 2 GHA
+    "Nueva Zelanda_Belgica":         {"am": 2,  "co": 13},  # 5 NZ + 8 BEL
+    "Egipto_Iran":                   {"am": 7,  "co": 10},  # 8 EGY + 2 IRN
+    "Panama_Inglaterra":             {"am": 3,  "co": 10},  # 3 PAN + 7 ENG
 }
 
 
