@@ -297,6 +297,13 @@ def actualizar_aciertos(url: str, key: str, partidos_con_resultado: list) -> int
 
 def _evaluar_acierto(ap: dict, ga: int, gb: int, am_reales: int = None, co_reales: int = None) -> bool:
     """
+    IMPORTANTE: ga, gb y am_reales/co_reales corresponden a los 90 MINUTOS reglamentarios.
+    En partidos que van a prórroga o penales:
+    - goles = resultado al final de los 90min (el empate)
+    - am_reales = tarjetas solo de los 90min (NO incluir las de prórroga/ET)
+    - La clasificación se evalúa por quién ganó finalmente (penales incluidos)
+    """
+    """
     Evalúa si una apuesta acertó dado el resultado real (ga-gb).
 
     Mercados soportados:
@@ -386,23 +393,25 @@ def _evaluar_acierto(ap: dict, ga: int, gb: int, am_reales: int = None, co_reale
 
     elif merc == "Clasificación":
         # Evaluar si el equipo predicho clasificó
-        # La selección es "Clasifica {equipo}"
+        # ga/gb = resultado 90min. Si hay empate, queda null hasta actualizar manualmente
+        # con el ganador de penales vía SQL en Supabase
         ea = ap.get("ea", "")
         eb = ap.get("eb", "")
         sel_lower = ap.get("seleccion", "").lower()
+        ganador_penales = ap.get("ganador_penales")  # campo opcional para penales
         if f"clasifica {ea.lower()}" in sel_lower:
-            # Clasificó ea si ga > gb (ganó) o si ga == gb (penales — resultado_real sigue 0-0 o X-X)
-            # Para penales, goles_a y goles_b reflejan el resultado normal
-            # Si hay empate en 90min, acierto queda null hasta saber quién ganó penales
-            if ga != gb:
-                return ga > gb  # ganó en 90min o ET
-            else:
-                return None  # empate — pendiente resultado penales
+            if ga > gb: return True
+            if gb > ga: return False
+            # Empate en 90min → revisar penales
+            if ganador_penales:
+                return ganador_penales.lower() == ea.lower()
+            return None  # pendiente
         elif f"clasifica {eb.lower()}" in sel_lower:
-            if ga != gb:
-                return gb > ga
-            else:
-                return None
+            if gb > ga: return True
+            if ga > gb: return False
+            if ganador_penales:
+                return ganador_penales.lower() == eb.lower()
+            return None  # pendiente
     return None  # mercado no reconocido → pendiente
 
 
