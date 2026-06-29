@@ -1961,6 +1961,66 @@ with tab_pred:
                 if ODDS_DISPONIBLE and ODDS_KEY:
                     mostrar_comparacion_odds(ea, eb, r, ODDS_KEY)
 
+                # ── Clasificación (solo en R32 y fases eliminatorias) ─────
+                _pd_item_sel = next((p for p in PARTIDOS
+                    if (p[0]==ea and p[1]==eb) or (p[0]==eb and p[1]==ea)), None)
+                _grupo_sel = _pd_item_sel[2] if _pd_item_sel else "?"
+                if _grupo_sel in ("R32", "QF", "SF", "F", "3rd"):
+                    # Calcular probabilidad de clasificación con extra time + penales
+                    # En eliminación directa: gana → clasifica
+                    # Empate → extra time (~50/50 con ligera ventaja al que iba ganando)
+                    # En penales estadísticamente: 50% cada equipo pero con factor forma
+                    _prob_pen_a = 50.0  # base penales
+                    _prob_pen_b = 50.0
+                    # Ajuste por ELO si hay diferencia grande
+                    _elo_a = ELO.get(ea, 1500)
+                    _elo_b = ELO.get(eb, 1500)
+                    _diff_elo = _elo_a - _elo_b
+                    _prob_pen_a = max(35, min(65, 50 + _diff_elo * 0.008))
+                    _prob_pen_b = 100 - _prob_pen_a
+
+                    # P(clasifica A) = P(gana 90min) + P(empate) * [P(gana ET≈55%) + P(empate ET≈45%) * P(pen_a)]
+                    _p_clasifica_a = pa + pd_ * (0.55 * _prob_pen_a/100 + 0.45 * _prob_pen_a/100)
+                    _p_clasifica_b = pb + pd_ * (0.55 * _prob_pen_b/100 + 0.45 * _prob_pen_b/100)
+
+                    # Normalizar
+                    _total = _p_clasifica_a + _p_clasifica_b
+                    _p_clasifica_a = _p_clasifica_a / _total * 100
+                    _p_clasifica_b = _p_clasifica_b / _total * 100
+
+                    st.markdown("<div style='margin:1.2rem 0 0.4rem'>", unsafe_allow_html=True)
+                    st.markdown(
+                        f'<div style="background:linear-gradient(135deg,#0d1b2a,#1a2d45);border:1px solid #2a4a6b;'
+                        f'border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem">'
+                        f'<div style="font-size:0.65rem;color:#4a90d9;letter-spacing:2px;text-transform:uppercase;'
+                        f'margin-bottom:0.8rem">🏆 Probabilidad de clasificación — incluye prórroga y penales</div>'
+                        f'<div style="display:flex;align-items:center;gap:1rem">'
+                        f'<div style="text-align:center;flex:1">'
+                        f'{flag_img(ea,40)}'
+                        f'<div style="color:#e8eaf0;font-weight:700;font-size:0.9rem;margin-top:0.3rem">{ea}</div>'
+                        f'<div style="font-size:2rem;font-weight:900;color:{"#4ade80" if _p_clasifica_a > _p_clasifica_b else "#94a3b8"};'
+                        f'font-family:Bebas Neue,sans-serif">{_p_clasifica_a:.0f}%</div>'
+                        f'</div>'
+                        f'<div style="text-align:center;color:#4a5568;font-size:0.8rem">'
+                        f'<div style="font-size:1.2rem">⚔️</div>'
+                        f'<div style="font-size:0.65rem;margin-top:0.2rem">partido<br>único</div>'
+                        f'</div>'
+                        f'<div style="text-align:center;flex:1">'
+                        f'{flag_img(eb,40)}'
+                        f'<div style="color:#e8eaf0;font-weight:700;font-size:0.9rem;margin-top:0.3rem">{eb}</div>'
+                        f'<div style="font-size:2rem;font-weight:900;color:{"#4ade80" if _p_clasifica_b > _p_clasifica_a else "#94a3b8"};'
+                        f'font-family:Bebas Neue,sans-serif">{_p_clasifica_b:.0f}%</div>'
+                        f'</div>'
+                        f'</div>'
+                        f'<div style="margin-top:0.6rem;background:#0a1628;border-radius:6px;height:8px;overflow:hidden">'
+                        f'<div style="background:linear-gradient(90deg,#4ade80,#22d3ee);height:100%;width:{_p_clasifica_a:.1f}%"></div>'
+                        f'</div>'
+                        f'<div style="font-size:0.6rem;color:#4a5568;margin-top:0.3rem;text-align:center">'
+                        f'90min + prórroga + penales · ELO {ea}: {_elo_a} vs {eb}: {_elo_b}</div>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
                 bajas_activas = [e for e in [ea, eb] if e in BAJAS]
                 _bajas_html = (" · ⚠️ Bajas: " + ", ".join(bajas_activas)) if bajas_activas else ""
                 st.markdown(f'<div class="model-note">{r["modelo"]} · ELO: {r["elo_a"]} ({ea}) vs {r["elo_b"]} ({eb}) · λ_a={r["lam_a"]} · λ_b={r["lam_b"]} · Altitud: {r["alt"]:,} m · Árbitro: {r["arbitro"]} ({r["arbitro_am"]} T.A. / {r["arbitro_ro"]} T.R.) · Tarjetas: {r["fuente_tarj"]} · H2H: {r["h2h_desc"]}{_bajas_html}</div>', unsafe_allow_html=True)
