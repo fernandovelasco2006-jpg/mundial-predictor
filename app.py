@@ -542,7 +542,7 @@ PARTIDOS = [
     ("Panama",               "Inglaterra",        "L", "Guadalajara",   (0, 2),  "Abdulrahman Al-Jassim"),
 
     # ── ELIMINATORIAS ─────────────────────────────────────────────────────────
-    ("Sudafrica",           "Canada",             "R32", "Los Angeles",   None, None),
+    ("Sudafrica",           "Canada",             "R32", "Los Angeles",   (0, 1),  "Joao Pedro Pinheiro"),
     ("Alemania",            "Paraguay",           "R32", "Boston",        None,    "Jalal Jayed"),
     ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     None,    "Wilton Pereira Sampaio"),
     ("Brasil",              "Japon",              "R32", "Houston",       None,    "Maurizio Mariani"),
@@ -736,6 +736,7 @@ ARBITROS = {
     "Katia Garcia":              (3.90, 0.10),  # CONCACAF
     "Adham Mohammad":         (3.64, 0.13),  # AFC
     "Wilton Pereira Sampaio": (5.09, 0.24),  # CONMEBOL
+    "Joao Pedro Pinheiro":      (4.72, 0.20),  # UEFA
 }
 ARBITRO_DEFAULT = (3.80, 0.12)
 
@@ -1142,6 +1143,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "Wilton Pereira Sampaio":  (0.0,  1),  # Senegal-Noruega
         "Yael Falcon Perez":       (1.0,  1),  # México-Chequia
         "Yusuke Araki":            (4.0,  1),  # Corea-Chequia
+        "Joao Pedro Pinheiro":     (2.0,  1),  # Sudáfrica-Canadá (0 SUF + 2 CAN)
     }
     # Factor ajuste para árbitros sin datos del torneo
     FACTOR_ARB_MUNDIAL = 0.65
@@ -1634,6 +1636,8 @@ DATOS_REALES = {
     "Jordania_Argentina":            {"am": 2,  "co": 5},   # estimado
     "Colombia_Portugal":             {"am": 1,  "co": 7},   # 1 COL + 0 POR | 5 COL + 2 POR
     "RD Congo_Uzbekistan":           {"am": 5,  "co": 6},   # 3 RDC + 2 UZB | 2 RDC + 4 UZB
+    # Dieciseisavos de final
+    "Sudafrica_Canada":              {"am": 2,  "co": 5},   # 0 SUF + 2 CAN | 1 SUF + 4 CAN
 }
 
 
