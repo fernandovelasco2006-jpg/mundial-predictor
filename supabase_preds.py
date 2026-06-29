@@ -384,6 +384,25 @@ def _evaluar_acierto(ap: dict, ga: int, gb: int, am_reales: int = None, co_reale
         if "under 7.5" in sel: return corners_reales <= 7
         if "under 8.5" in sel: return corners_reales <= 8
 
+    elif merc == "Clasificación":
+        # Evaluar si el equipo predicho clasificó
+        # La selección es "Clasifica {equipo}"
+        ea = ap.get("ea", "")
+        eb = ap.get("eb", "")
+        sel_lower = ap.get("seleccion", "").lower()
+        if f"clasifica {ea.lower()}" in sel_lower:
+            # Clasificó ea si ga > gb (ganó) o si ga == gb (penales — resultado_real sigue 0-0 o X-X)
+            # Para penales, goles_a y goles_b reflejan el resultado normal
+            # Si hay empate en 90min, acierto queda null hasta saber quién ganó penales
+            if ga != gb:
+                return ga > gb  # ganó en 90min o ET
+            else:
+                return None  # empate — pendiente resultado penales
+        elif f"clasifica {eb.lower()}" in sel_lower:
+            if ga != gb:
+                return gb > ga
+            else:
+                return None
     return None  # mercado no reconocido → pendiente
 
 
@@ -503,4 +522,3 @@ def actualizar_datos_partido(url: str, key: str,
         pass
 
     return actualizadas
-                                  
