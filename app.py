@@ -380,6 +380,21 @@ CLIMA = {
     "Vancouver":    (20, 68),
 }
 
+# Condiciones climáticas específicas por día — se actualiza diariamente
+# lluvia: reduce córners (-8%), aumenta amarillas (+8%), aumenta goles ligeramente (+4%)
+# calor_extremo: reduce intensidad (-6% goles, -5% córners)
+CLIMA_HOY = {
+    # 29 junio
+    "Houston":    {"lluvia": False, "calor_extremo": False},
+    "Boston":     {"lluvia": True,  "calor_extremo": False},
+    "Monterrey":  {"lluvia": True,  "calor_extremo": True},
+    # 30 junio
+    "Dallas":     {"lluvia": False, "calor_extremo": False},
+    "Nueva York": {"lluvia": False, "calor_extremo": False},
+    "Azteca":     {"lluvia": False, "calor_extremo": False},
+}
+
+
 EQUIPOS_CALOR = {
     "Brasil", "Senegal", "Costa de Marfil", "Ghana", "Camerun",
     "Nigeria", "RD Congo", "Marruecos", "Egipto", "Arabia Saudi",
@@ -546,9 +561,9 @@ PARTIDOS = [
     ("Alemania",            "Paraguay",           "R32", "Boston",        None,    "Jalal Jayed"),
     ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     None,    "Wilton Pereira Sampaio"),
     ("Brasil",              "Japon",              "R32", "Houston",       None,    "Maurizio Mariani"),
-    ("Costa de Marfil",     "Noruega",            "R32", "Nueva York",     None, None),
-    ("Francia",             "Suecia",             "R32", "Dallas",         None, None),
-    ("Mexico",              "Ecuador",            "R32", "Azteca",        None, None),
+    ("Costa de Marfil",     "Noruega",            "R32", "Dallas",        None,    "Jesus Valenzuela"),
+    ("Francia",             "Suecia",             "R32", "Nueva York",    None,    "Danny Makkelie"),
+    ("Mexico",              "Ecuador",            "R32", "Azteca",        None,    "Slavko Vincic"),
     ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       None, None),
     ("Belgica",             "Senegal",            "R32", "San Francisco",  None, None),
     ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        None, None),
@@ -686,14 +701,14 @@ ARBITROS = {
     "Maurizio Mariani":           (4.65, 0.25),
     "Felix Zwayer":               (4.40, 0.16),
     "Sandro Scharer":             (4.35, 0.21),
-    "Slavko Vincic":              (4.20, 0.17),
+    "Slavko Vincic":              (4.17, 0.20),
     "Anthony Taylor":             (3.95, 0.14),
     "Espen Eskas":                (3.90, 0.13),
     "Francois Letexier":          (3.85, 0.19),
     "Glenn Nyberg":               (3.80, 0.11),
     "Michael Oliver":             (3.70, 0.12),
     "Clement Turpin":             (3.60, 0.22),
-    "Danny Makkelie":             (3.45, 0.15),
+    "Danny Makkelie":             (3.41, 0.20),
     "Dario Herrera":              (5.40, 0.35),
     "Kevin Ortega":               (5.05, 0.33),
     "Wilton Sampaio":             (5.08, 0.28),
@@ -706,7 +721,7 @@ ARBITROS = {
     "Andres Rojas":               (4.80, 0.28),
     "Yael Falcon Perez":          (4.75, 0.24),
     "Juan Benitez":               (4.70, 0.26),
-    "Jesus Valenzuela":           (4.60, 0.22),
+    "Jesus Valenzuela":           (4.83, 0.26),
     "Ramon Abatti Abel":          (4.55, 0.20),
     "Cesar Ramos Palazuelos":     (4.50, 0.22),
     "Ivan Barton":                (4.70, 0.25),
@@ -1094,6 +1109,13 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     corners_a = CORNERS_EQUIPO.get(ea, CORNERS_DEFAULT)
     corners_b = CORNERS_EQUIPO.get(eb, CORNERS_DEFAULT)
     corners_total_esp = corners_a + corners_b
+    # Ajuste climático en corners: lluvia reduce corners (menos presión alta)
+    # calor extremo también reduce ligeramente
+    _clima_c = CLIMA_HOY.get(sede, {})
+    if _clima_c.get("lluvia"):
+        corners_total_esp *= 0.92
+    if _clima_c.get("calor_extremo"):
+        corners_total_esp *= 0.95
     corners_sim = rng.poisson(corners_total_esp, n).astype(np.int32)
     prob_corners_over65  = float(np.mean(corners_sim > 6) * 100)
     prob_corners_over75  = float(np.mean(corners_sim > 7) * 100)
@@ -1109,41 +1131,53 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     # Si el árbitro ya pitó en el torneo, usamos su promedio real
     # Si no, usamos histórico * 0.65 (factor de ajuste del torneo)
     ARBITROS_MUNDIAL_2026 = {
-        "Abdulrahman Al-Jassim":   (3.0,  2),  # Brasil-Marruecos + Panamá-Inglaterra
-        "Adham Mohammad":          (2.0,  1),  # NZ-Bélgica
-        "Alireza Faghani":         (1.0,  1),  # Colombia-Portugal
-        "Anthony Taylor":          (4.0,  1),  # Senegal-Irak
-        "Campbell-Kirk Kawana-Waugh": (3.0, 1), # Ghana-Panamá
-        "Cesar Ramos Palazuelos":  (3.0,  1),  # Escocia-Brasil
-        "Clement Turpin":          (2.0,  1),  # Paraguay-Australia
-        "Danny Makkelie":          (3.0,  1),  # Marruecos-Haití
-        "Drew Fischer":            (2.0,  1),  # Croacia-Ghana
-        "Facundo Tello":           (2.0,  1),  # Sudáfrica-Corea
-        "Felix Zwayer":            (5.0,  1),  # RD Congo-Uzbekistan
-        "Fernando Rapallini":      (3.0,  1),  # Inglaterra-Croacia
-        "Francois Letexier":       (4.0,  1),  # Cabo Verde-Arabia Saudita
-        "Glenn Nyberg":            (2.5,  2),  # Haití-Escocia + Curazao-CIV
-        "Ilgiz Tantashev":         (1.0,  1),  # Algeria-Austria
-        "Ismail Elfath":           (4.0,  1),  # Uruguay-España
-        "Istvan Kovacs":           (3.0,  2),  # Argentina-Algeria + Jordania-Argentina
-        "Ivan Barton":             (2.0,  2),  # Francia-Irak + Japón-Suecia
-        "Jalal Jayed":             (0.0,  1),  # Portugal-Uzbekistan
-        "Jesus Valenzuela":        (2.0,  1),  # Bosnia-Catar
-        "Katia Garcia":            (0.0,  1),  # Túnez-PB
-        "Maurizio Mariani":        (3.0,  1),  # Colombia-RD Congo
-        "Michael Oliver":          (2.0,  1),  # Noruega-Francia
-        "Mustapha Ghorbal":        (1.0,  1),  # Turquía-EEUU
-        "Pierre Ghislain Atcho":   (2.0,  1),  # Croacia-Panamá
-        "Ramon Abatti Abel":       (3.0,  1),  # Suiza-Canadá
-        "Raphael Claus":           (3.0,  1),  # México-Sudáfrica
-        "Said Martinez":           (2.0,  2),  # España-KSA + Inglaterra-Ghana
-        "Slavko Vincic":           (2.0,  1),  # Algeria-Jordania
-        "Szymon Marciniak":        (7.0,  1),  # Egipto-Irán (outlier)
-        "Tori Penso":              (4.0,  1),  # Ecuador-Alemania
-        "Wilton Pereira Sampaio":  (0.0,  1),  # Senegal-Noruega
-        "Yael Falcon Perez":       (1.0,  1),  # México-Chequia
-        "Yusuke Araki":            (4.0,  1),  # Corea-Chequia
-        "Joao Pedro Pinheiro":     (2.0,  1),  # Sudáfrica-Canadá (0 SUF + 2 CAN)
+        # ── Árbitros con datos reales del Mundial 2026 ────────────────────
+        # Formato: (am_promedio_real, partidos_pitados)
+        # Promedio general del torneo: 2.5 am/partido (vs 4.2 histórico)
+        # Factor global implícito: ~0.60
+
+        # 0-1 amarillas por partido — muy permisivos en este torneo
+        "Jalal Jayed":             (0.5,  2),  # 0am Uzb + dará Ger-Par
+        "Katia Garcia":            (0.5,  2),  # 0am Tun + dará otro
+        "Wilton Pereira Sampaio":  (0.5,  2),  # 0am Sen + dará PB-Mar
+        "Mustapha Ghorbal":        (1.0,  1),  # 1am Tur
+        "Ilgiz Tantashev":         (1.0,  1),  # 1am Alg-Aut
+        "Yael Falcon Perez":       (1.0,  1),  # 1am Mex-Che
+        "Alireza Faghani":         (1.0,  1),  # 1am Col-Por
+
+        # 2 amarillas por partido — permisivos
+        "Glenn Nyberg":            (2.5,  2),  # 2+3am (Hai+CIV)
+        "Slavko Vincic":           (2.0,  1),  # 2am Alg-Jor — pitará Mex-Ecu
+        "Danny Makkelie":          (3.0,  1),  # 3am Mar-Hai — pitará Fra-Sue
+        "Jesus Valenzuela":        (2.0,  1),  # 2am Bos-Cat — pitará CIV-Nor
+        "Clement Turpin":          (2.0,  1),  # 2am Par-Aus
+        "Facundo Tello":           (2.0,  1),  # 2am Sud-Cor
+        "Drew Fischer":            (2.0,  1),  # 2am Cro-Gha
+        "Michael Oliver":          (2.0,  1),  # 2am Nor-Fra
+        "Adham Mohammad":          (2.0,  1),  # 2am NZ-Bel
+        "Said Martinez":           (2.0,  2),  # 2am Esp-KSA + 2am Ing-Gha
+        "Ivan Barton":             (2.0,  2),  # 1am Fra-Ira + 3am Jap-Sue
+        "Joao Pedro Pinheiro":     (2.0,  1),  # 2am Sud-Can
+        "Pierre Ghislain Atcho":   (2.0,  1),  # 2am Cro-Pan
+        "Abdulrahman Al-Jassim":   (3.0,  2),  # 3am Bra-Mar + 3am Pan-Ing
+
+        # 3 amarillas por partido — moderados
+        "Cesar Ramos Palazuelos":  (3.0,  1),  # 3am Esc-Bra
+        "Ramon Abatti Abel":       (3.0,  1),  # 3am Sui-Can
+        "Raphael Claus":           (3.0,  1),  # 3am Mex-Sud
+        "Fernando Rapallini":      (3.0,  1),  # 3am Ing-Cro
+        "Campbell-Kirk Kawana-Waugh": (3.0, 1), # 3am Gha-Pan
+        "Maurizio Mariani":        (3.0,  1),  # 3am Col-RDC — pitará Bra-Jap
+        "Istvan Kovacs":           (3.0,  2),  # 4am Arg-Aut + 2am Jor-Arg
+
+        # 4+ amarillas — los más estrictos del torneo (aun así bajo su histórico)
+        "Tori Penso":              (4.0,  1),  # 4am Ecu-Ale
+        "Anthony Taylor":          (4.0,  1),  # 4am Sen-Ira
+        "Francois Letexier":       (4.0,  1),  # 4am CPV-KSA
+        "Ismail Elfath":           (4.0,  1),  # 4am Uru-Esp
+        "Yusuke Araki":            (4.0,  1),  # 4am Cor-Che
+        "Felix Zwayer":            (5.0,  1),  # 5am RDC-Uzb
+        "Szymon Marciniak":        (7.0,  1),  # 7am Egi-Ira (outlier claro)
     }
     # Factor ajuste para árbitros sin datos del torneo
     FACTOR_ARB_MUNDIAL = 0.65
