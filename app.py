@@ -1456,10 +1456,30 @@ if partidos_hoy:
                 r_d["goles_totales_esperados"] = r_d["goles_a"] + r_d["goles_b"]
                 sugs_d = [s for s in analizar_apuestas(ea_d, eb_d, r_d) if s["nivel"] == "ALTA"]
                 if sugs_d:
-                    partidos_con_apuestas.append({"ea": ea_d, "eb": eb_d, "grupo": gr_d, "hora": hora_str, "apuestas": sugs_d})
+                    # Calcular predicción de clasificación para eliminatorias
+                    _clas_info = None
+                    if gr_d in ("R32", "QF", "SF", "F", "3rd"):
+                        _pa_d = r_d["prob_a"]
+                        _pd_d = r_d["prob_emp"]
+                        _pb_d = r_d["prob_b"]
+                        _elo_a_d = ELO.get(ea_d, 1500)
+                        _elo_b_d = ELO.get(eb_d, 1500)
+                        _pen_a_d = max(35, min(65, 50 + (_elo_a_d - _elo_b_d) * 0.008))
+                        _pclas_a = _pa_d + _pd_d * _pen_a_d / 100
+                        _pclas_b = _pb_d + _pd_d * (100 - _pen_a_d) / 100
+                        _tot_d = _pclas_a + _pclas_b
+                        _pclas_a = _pclas_a / _tot_d * 100
+                        _pclas_b = _pclas_b / _tot_d * 100
+                        _fav_clas = ea_d if _pclas_a >= _pclas_b else eb_d
+                        _prob_clas_d = max(_pclas_a, _pclas_b)
+                        _clas_info = {"favorito": _fav_clas, "prob": _prob_clas_d,
+                                      "prob_a": _pclas_a, "prob_b": _pclas_b}
+                    partidos_con_apuestas.append({"ea": ea_d, "eb": eb_d, "grupo": gr_d,
+                        "hora": hora_str, "apuestas": sugs_d, "clas": _clas_info,
+                        "prob_a": r_d["prob_a"], "prob_b": r_d["prob_b"]})
                     total_apuestas += len(sugs_d)
                     # ── Guardar en Supabase ────────────────────────────────
-                    _guardar_apuestas_supabase(ea_d, eb_d, gr_d, sugs_d, p[4])
+                    _guardar_apuestas_supabase(ea_d, eb_d, gr_d, sugs_d, p[4], probs=(r_d["prob_a"], r_d["prob_emp"], r_d["prob_b"]))
             except Exception:
                 continue
         if not partidos_con_apuestas:
@@ -1469,7 +1489,36 @@ if partidos_hoy:
             for pd_item in partidos_con_apuestas:
                 ea_d, eb_d = pd_item["ea"], pd_item["eb"]
                 _hora_html = f'<span style="font-size:0.7rem;color:#6677aa">⏰ {pd_item["hora"]}h</span>' if pd_item["hora"] else ""
-                st.markdown(f'<div style="display:flex;align-items:center;gap:0.5rem;margin:1rem 0 0.5rem;padding-bottom:0.4rem;border-bottom:1px solid #1e2d45"><span style="font-size:0.6rem;background:#2a1a00;color:#f0c040;border:1px solid #5a3a00;border-radius:20px;padding:2px 8px">Grupo {pd_item["grupo"]}</span><span style="font-size:0.85rem;color:#e8eaf0;font-weight:600">{flag_img(ea_d,20)} {ea_d} vs {flag_img(eb_d,20)} {eb_d}</span>{_hora_html}</div>', unsafe_allow_html=True)
+                _grupo_label = pd_item["grupo"]
+                _grupo_badge_style = 'background:#1a0d2e;color:#c084fc;border:1px solid #6d28d9' if _grupo_label in ("R32","QF","SF","F") else 'background:#2a1a00;color:#f0c040;border:1px solid #5a3a00'
+                _grupo_text = {"R32":"Dieciseisavos","QF":"Cuartos","SF":"Semis","F":"Final"}.get(_grupo_label, f"Grupo {_grupo_label}")
+                st.markdown(f'<div style="display:flex;align-items:center;gap:0.5rem;margin:1rem 0 0.5rem;padding-bottom:0.4rem;border-bottom:1px solid #1e2d45"><span style="font-size:0.6rem;{_grupo_badge_style};border-radius:20px;padding:2px 8px">{_grupo_text}</span><span style="font-size:0.85rem;color:#e8eaf0;font-weight:600">{flag_img(ea_d,20)} {ea_d} vs {flag_img(eb_d,20)} {eb_d}</span>{_hora_html}</div>', unsafe_allow_html=True)
+
+                # Mostrar predicción de clasificación si es eliminatoria
+                if pd_item.get("clas"):
+                    _ci = pd_item["clas"]
+                    _fav = _ci["favorito"]
+                    _otro = eb_d if _fav == ea_d else ea_d
+                    _prob_fav = _ci["prob"]
+                    _prob_otro = 100 - _prob_fav
+                    _bar_fav = _ci["prob_a"] if _fav == ea_d else _ci["prob_b"]
+                    st.markdown(
+                        f'<div style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border:1px solid #4c1d95;border-radius:10px;padding:0.6rem 0.9rem;margin-bottom:0.6rem">' +
+                        f'<div style="font-size:0.55rem;color:#a78bfa;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.4rem">🏆 Más probable que clasifique</div>' +
+                        f'<div style="display:flex;align-items:center;gap:0.5rem">' +
+                        f'{flag_img(ea_d,20)} <span style="font-size:0.75rem;color:#e8eaf0">{ea_d}</span>' +
+                        f'<div style="flex:1;background:#1e1b4b;border-radius:4px;height:6px;margin:0 0.3rem;overflow:hidden">' +
+                        f'<div style="width:{_ci["prob_a"]:.0f}%;height:6px;background:linear-gradient(90deg,#8b5cf6,#06b6d4);border-radius:4px"></div></div>' +
+                        f'<span style="font-size:0.75rem;color:#e8eaf0">{eb_d} {flag_img(eb_d,20)}</span></div>' +
+                        f'<div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:700;margin-top:0.2rem">' +
+                        f'<span style="color:{"#a78bfa" if _fav==ea_d else "#64748b"}">{_ci["prob_a"]:.0f}%</span>' +
+                        f'<span style="color:#4a5568;font-size:0.65rem">clasificación</span>' +
+                        f'<span style="color:{"#a78bfa" if _fav==eb_d else "#64748b"}">{_ci["prob_b"]:.0f}%</span></div>' +
+                        f'<div style="font-size:0.65rem;color:#7c3aed;margin-top:0.3rem">✨ Favorito: {flag_img(_fav,14)} <b>{_fav}</b> ({_prob_fav:.0f}%) — incluye prórroga y penales</div>' +
+                        '</div>',
+                        unsafe_allow_html=True
+                    )
+
                 cols_ap = st.columns(min(len(pd_item["apuestas"]), 3))
                 for i_ap, ap_d in enumerate(pd_item["apuestas"]):
                     with cols_ap[i_ap % 3]:
@@ -1765,7 +1814,7 @@ _auto_actualizar_aciertos()
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPER — Guardar apuestas en Supabase (reutilizable desde cualquier tab)
 # ══════════════════════════════════════════════════════════════════════════════
-def _guardar_apuestas_supabase(ea, eb, grupo, sugerencias, res=None):
+def _guardar_apuestas_supabase(ea, eb, grupo, sugerencias, res=None, probs=None):
     """
     Guarda todas las apuestas de nivel ALTA en Supabase.
     Si el partido ya terminó (res != None), evalúa el acierto inmediatamente.
@@ -1784,7 +1833,47 @@ def _guardar_apuestas_supabase(ea, eb, grupo, sugerencias, res=None):
     _ga, _gb = (res[0], res[1]) if res is not None else (None, None)
     guardadas = 0
 
-    for _i, _s in enumerate(sugerencias):
+    # ── Agregar apuesta de clasificación para fases eliminatorias ─────────
+    sugerencias_con_clas = list(sugerencias)
+    if grupo in ("R32", "QF", "SF", "F", "3rd"):
+        # Calcular probabilidad de clasificación (igual que en el predictor)
+        _pa = 0.0
+        _pb = 0.0
+        _pd = 0.0
+        for _s in sugerencias:
+            # Los datos del partido están en el dict de simulación
+            pass
+        # Buscar en PARTIDOS los datos del partido para obtener probs
+        _part = next((p for p in PARTIDOS
+                      if (p[0]==ea and p[1]==eb) or (p[0]==eb and p[1]==ea)), None)
+        # Usar probs reales de simulación si disponibles, sino ELO
+        _elo_a = ELO.get(ea, 1500)
+        _elo_b = ELO.get(eb, 1500)
+        _diff = _elo_a - _elo_b
+        _prob_pen_a = max(35, min(65, 50 + _diff * 0.008))
+        if probs:
+            _p_a_90, _p_d_90, _p_b_90 = probs[0], probs[1], probs[2]
+        else:
+            _p_a_90 = max(15, min(75, 50 + _diff * 0.03))
+            _p_b_90 = max(15, min(75, 50 - _diff * 0.03))
+            _p_d_90 = max(10, 100 - _p_a_90 - _p_b_90)
+        _p_clas_a = _p_a_90 + _p_d_90 * _prob_pen_a / 100
+        _p_clas_b = _p_b_90 + _p_d_90 * (100 - _prob_pen_a) / 100
+        _tot = _p_clas_a + _p_clas_b
+        _p_clas_a = _p_clas_a / _tot * 100
+        _p_clas_b = _p_clas_b / _tot * 100
+        _favorito_clas = ea if _p_clas_a >= _p_clas_b else eb
+        _prob_clas = max(_p_clas_a, _p_clas_b)
+        if _prob_clas >= 60:  # solo guardar si hay diferencia clara
+            sugerencias_con_clas = list(sugerencias) + [{
+                "mercado":    "Clasificación",
+                "seleccion":  f"Clasifica {_favorito_clas}",
+                "confianza":  round(_prob_clas, 1),
+                "nivel":      "ALTA",
+                "donde":      "Predictor — eliminatoria directa",
+            }]
+
+    for _i, _s in enumerate(sugerencias_con_clas):
         if _s["nivel"] != "ALTA":
             continue
         _apid = f"ap_{ea}_{eb}_{_i}_{_fecha}".replace(" ", "_")
@@ -2114,7 +2203,7 @@ with tab_apuestas:
         sugerencias = analizar_apuestas(ea2, eb2, r2)
 
         # ── Guardar apuestas en Supabase para historial ──────────────────────
-        _guardar_apuestas_supabase(ea2, eb2, grupo2, sugerencias, res2)
+        _guardar_apuestas_supabase(ea2, eb2, grupo2, sugerencias, res2, probs=(r2["prob_a"], r2["prob_emp"], r2["prob_b"]))
 
         if not sugerencias:
             st.info("El modelo no encontró señales suficientemente claras. Partido demasiado equilibrado.")
