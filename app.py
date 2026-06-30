@@ -323,24 +323,24 @@ def flag(t): return BANDERAS.get(t, "🏳️")
 PARTIDOS = [
     ("Mexico",          "Sudafrica",              "A", "Azteca",        (2, 0),  "Wilton Sampaio"),
     ("Corea del Sur",   "Chequia",                "A", "Guadalajara",   (2, 1),  "Amin Mohamed Omar"),
-    ("Canada",          "Bosnia y Herzegovina",   "B", "Toronto",       (1, 1),  None),
+    ("Canada",          "Bosnia y Herzegovina",   "B", "Toronto",       (1, 1),  "Facundo Tello"),
     ("Estados Unidos",  "Paraguay",               "D", "Los Angeles",   (4, 1),  "Felix Zwayer"),
-    ("Catar",           "Suiza",                  "B", "Vancouver",     (1, 1),  None),
+    ("Catar",           "Suiza",                  "B", "Vancouver",     (1, 1),  "Said Martinez"),
     ("Brasil",          "Marruecos",              "C", "Nueva York",    (1, 1),  "Mustapha Ghorbal"),
-    ("Haiti",           "Escocia",                "C", "Boston",        (0, 1),  None),
-    ("Australia",       "Turquia",                "D", "Kansas City",   (2, 0),  None),
-    ("Alemania",        "Curazao",                "E", "Houston",       (7, 1),  None),
-    ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 0),  None),
+    ("Haiti",           "Escocia",                "C", "Boston",        (0, 1),  "Mustapha Ghorbal"),
+    ("Australia",       "Turquia",                "D", "Kansas City",   (2, 0),  "Jesus Valenzuela"),
+    ("Alemania",        "Curazao",                "E", "Houston",       (7, 1),  "Jalal Jayed"),
+    ("Costa de Marfil", "Ecuador",                "E", "Philadelphia",  (1, 0),  "Francois Letexier"),
     ("Paises Bajos",    "Japon",                  "F", "Dallas",        (2, 2),  "Danny Makkelie"),
-    ("Suecia",          "Tunez",                  "F", "Monterrey",     (5, 1),  None),
-    ("Belgica",         "Egipto",                 "G", "Seattle",       (1, 1),  None),
+    ("Suecia",          "Tunez",                  "F", "Monterrey",     (5, 1),  "Yael Falcon Perez"),
+    ("Belgica",         "Egipto",                 "G", "Seattle",       (1, 1),  "Ramon Abatti Abel"),
     ("Iran",            "Nueva Zelanda",          "G", "Los Angeles",   (2, 2),  "Omar Al Ali"),
-    ("Espana",          "Cabo Verde",             "H", "Atlanta",       (0, 0),  None),
-    ("Arabia Saudi",    "Uruguay",                "H", "Miami",         (1, 1),  None),
+    ("Espana",          "Cabo Verde",             "H", "Atlanta",       (0, 0),  "Adham Mohammad"),
+    ("Arabia Saudi",    "Uruguay",                "H", "Miami",         (1, 1),  "Maurizio Mariani"),
     ("Francia",         "Senegal",                "I", "Nueva York",    (3, 1),  "Francois Letexier"),
-    ("Irak",            "Noruega",                "I", "Boston",        (1, 4),  None),
+    ("Irak",            "Noruega",                "I", "Boston",        (1, 4),  "Pierre Ghislain Atcho"),
     ("Argentina",       "Algeria",                "J", "Kansas City",   (3, 0),  "Szymon Marciniak"),
-    ("Austria",         "Jordania",               "J", "San Francisco", (3, 1),  None),
+    ("Austria",         "Jordania",               "J", "San Francisco", (3, 1),  "Dahane Beida"),
     ("Portugal",        "RD Congo",               "K", "Houston",       (1, 1),  "Abdulrahman Al-Jassim"),
     ("Uzbekistan",      "Colombia",               "K", "Azteca",        (1, 3),  "Anthony Taylor"),
     ("Inglaterra",      "Croacia",                "L", "Dallas",        (4, 2),  "Clement Turpin"),
@@ -805,18 +805,18 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     lam_am_arb_raw, lam_ro_arb_raw = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
 
     ARBITROS_MUNDIAL_2026 = {
-        "Jalal Jayed": (0.8, 2), "Katia Garcia": (0.5, 2), "Wilton Pereira Sampaio": (0.5, 2),
-        "Mustapha Ghorbal": (1.0, 1), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.0, 1),
+        "Jalal Jayed": (0.5, 3), "Katia Garcia": (0.5, 2), "Wilton Pereira Sampaio": (0.5, 2),
+        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.0, 2),
         "Alireza Faghani": (1.0, 1),
         "Glenn Nyberg": (2.5, 2), "Slavko Vincic": (2.0, 1), "Danny Makkelie": (3.0, 1),
-        "Jesus Valenzuela": (2.0, 1), "Clement Turpin": (2.0, 1), "Facundo Tello": (2.0, 1),
-        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 1),
-        "Said Martinez": (2.0, 2), "Ivan Barton": (2.0, 2), "Joao Pedro Pinheiro": (2.0, 1),
-        "Pierre Ghislain Atcho": (2.0, 1), "Abdulrahman Al-Jassim": (3.0, 2),
-        "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.0, 1), "Raphael Claus": (3.0, 1),
+        "Jesus Valenzuela": (1.5, 2), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
+        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2),
+        "Said Martinez": (1.3, 3), "Ivan Barton": (2.0, 2), "Joao Pedro Pinheiro": (2.0, 1),
+        "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
+        "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.5, 2), "Raphael Claus": (3.0, 1),
         "Fernando Rapallini": (3.0, 1), "Campbell-Kirk Kawana-Waugh": (3.0, 1),
-        "Maurizio Mariani": (4.0, 2), "Istvan Kovacs": (3.0, 2),
-        "Tori Penso": (4.0, 1), "Anthony Taylor": (4.0, 1), "Francois Letexier": (4.0, 1),
+        "Maurizio Mariani": (3.0, 3), "Istvan Kovacs": (3.0, 2), "Dahane Beida": (1.0, 1),
+        "Tori Penso": (4.0, 1), "Anthony Taylor": (4.0, 1), "Francois Letexier": (4.0, 2),
         "Ismail Elfath": (4.0, 1), "Yusuke Araki": (4.0, 1), "Felix Zwayer": (5.0, 1),
         "Szymon Marciniak": (7.0, 1),
     }
@@ -1158,6 +1158,18 @@ DATOS_REALES = {
     "Colombia_Portugal": {"am": 1, "co": 7},
     "RD Congo_Uzbekistan": {"am": 5, "co": 6},
     "Sudafrica_Canada": {"am": 2, "co": 5},
+    "Canada_Bosnia y Herzegovina": {"am": 5, "co": 10},  # 2 CAN + 3 BIH | 7 CAN + 3 BIH
+    "Catar_Suiza": {"am": 0, "co": 13},  # 0 QAT + 0 SUI | 3 QAT + 10 SUI
+    "Haiti_Escocia": {"am": 4, "co": 7},  # 1 HAI + 3 ESC | 4 HAI + 3 ESC
+    "Australia_Turquia": {"am": 1, "co": 13},  # 0 AUS + 1 TUR | 5 AUS + 8 TUR
+    "Alemania_Curazao": {"am": 0, "co": 9},  # 0 ALE + 0 CUR | 8 ALE + 1 CUR
+    "Costa de Marfil_Ecuador": {"am": 4, "co": 8},  # 3 CIV + 1 ECU | 3 CIV + 5 ECU
+    "Suecia_Tunez": {"am": 1, "co": 6},  # 0 SUE + 1 TUN | 4 SUE + 2 TUN
+    "Belgica_Egipto": {"am": 4, "co": 9},  # 2 BEL + 2 EGY | 2 BEL + 7 EGY
+    "Espana_Cabo Verde": {"am": 2, "co": 12},  # 1 ESP + 1 CPV | 11 ESP + 1 CPV
+    "Arabia Saudi_Uruguay": {"am": 1, "co": 18},  # 0 KSA + 1 URU | 4 KSA + 14 URU
+    "Irak_Noruega": {"am": 1, "co": 7},  # 1 IRQ + 0 NOR | 2 IRQ + 5 NOR
+    "Austria_Jordania": {"am": 1, "co": 7},  # 1 AUT + 0 JOR | 4 AUT + 3 JOR
     "Brasil_Japon": {"am": 5, "co": 8},
     "Alemania_Paraguay": {"am": 2, "co": 16},
 }
@@ -1845,10 +1857,8 @@ with tab_hist_ap:
             _pts = [p for p in PARTIDOS if p[4] is not None]
             if _pts: actualizar_aciertos(SUPABASE_URL, SUPABASE_KEY, _pts)
             _apuestas_hist = [a for a in cargar_historial_apuestas(SUPABASE_URL, SUPABASE_KEY) if not str(a.get("ea","")).startswith("TBD")]
-        except Exception as _e_diag:
-            st.error(f"DEBUG temporal: {type(_e_diag).__name__}: {_e_diag}")
-    else:
-        st.warning(f"DEBUG temporal: SUPABASE_DISPONIBLE={SUPABASE_DISPONIBLE}, SUPABASE_URL={'set' if SUPABASE_URL else 'None'}, SUPABASE_KEY={'set' if SUPABASE_KEY else 'None'}")
+        except Exception:
+            pass
     if not _apuestas_hist:
         st.info("⏳ Aún no hay apuestas registradas. Se guardarán automáticamente al abrir la app el día de los partidos.")
     else:
