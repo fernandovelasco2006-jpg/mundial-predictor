@@ -1529,8 +1529,8 @@ with tab_pred:
         else:
             st.session_state["filtro_hoy"] = False
         grupos = sorted(set(p[2] for p in PARTIDOS))
-        grupo_sel = st.selectbox("Grupo", ["Todos"] + [f"Grupo {g}" for g in grupos])
-        estado_sel = st.radio("Mostrar", ["Todos", "Por jugarse", "Ya jugados"], horizontal=True, label_visibility="collapsed")
+        grupo_sel = st.selectbox("Grupo", ["Todos"] + [f"Grupo {g}" for g in grupos], key="sb_grupo")
+        estado_sel = st.radio("Mostrar", ["Todos", "Por jugarse", "Ya jugados"], horizontal=True, label_visibility="collapsed", key="radio_estado")
         filtrados = PARTIDOS
         if st.session_state.get("filtro_hoy", False):
             filtrados = partidos_pendientes
@@ -1550,7 +1550,7 @@ with tab_pred:
             for p in filtrados:
                 lbl = f"{flag(p[0])} {p[0]}  vs  {flag(p[1])} {p[1]}  [G{p[2]}]"
                 opciones[lbl] = PARTIDOS.index(p)
-            lbl_sel = st.selectbox("Partido", list(opciones.keys()), label_visibility="collapsed")
+            lbl_sel = st.selectbox("Partido", list(opciones.keys()), label_visibility="collapsed", key="sb_partido")
             idx_sel = opciones[lbl_sel]
         st.markdown("---")
         n_sims = 10_000_000
