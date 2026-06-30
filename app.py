@@ -1523,7 +1523,7 @@ with tab_pred:
         st.markdown("#### Elige el partido")
         partidos_pendientes = [p for p in PARTIDOS if p[4] is None and not str(p[0]).startswith('TBD')]
         if partidos_pendientes:
-            if st.button("📅 Partidos de hoy", use_container_width=True):
+            if st.button("📅 Partidos de hoy", use_container_width=True, key="btn_partidos_hoy"):
                 st.session_state["filtro_hoy"] = True
             elif "filtro_hoy" not in st.session_state:
                 st.session_state["filtro_hoy"] = False
@@ -1556,7 +1556,7 @@ with tab_pred:
         st.markdown("---")
         n_sims = 10_000_000
         st.markdown('<div style="font-size:0.65rem;color:#6677aa;letter-spacing:1px;margin-bottom:0.5rem">⚡ 10,000,000 simulaciones automáticas</div>', unsafe_allow_html=True)
-        btn = st.button("⚽ Simular partido")
+        btn = st.button("⚽ Simular partido", key="btn_simular_partido")
 
     with col_der:
         if idx_sel is None:
