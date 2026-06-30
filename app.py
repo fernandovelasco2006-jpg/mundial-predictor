@@ -1507,7 +1507,6 @@ def _auto_actualizar_aciertos():
 
         if actualizadas > 0:
             st.cache_data.clear()
-            st.rerun()
 
     except Exception:
         pass
