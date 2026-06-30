@@ -1845,8 +1845,10 @@ with tab_hist_ap:
             _pts = [p for p in PARTIDOS if p[4] is not None]
             if _pts: actualizar_aciertos(SUPABASE_URL, SUPABASE_KEY, _pts)
             _apuestas_hist = [a for a in cargar_historial_apuestas(SUPABASE_URL, SUPABASE_KEY) if not str(a.get("ea","")).startswith("TBD")]
-        except Exception:
-            pass
+        except Exception as _e_diag:
+            st.error(f"DEBUG temporal: {type(_e_diag).__name__}: {_e_diag}")
+    else:
+        st.warning(f"DEBUG temporal: SUPABASE_DISPONIBLE={SUPABASE_DISPONIBLE}, SUPABASE_URL={'set' if SUPABASE_URL else 'None'}, SUPABASE_KEY={'set' if SUPABASE_KEY else 'None'}")
     if not _apuestas_hist:
         st.info("⏳ Aún no hay apuestas registradas. Se guardarán automáticamente al abrir la app el día de los partidos.")
     else:
