@@ -102,6 +102,18 @@ h1, h2, h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
 .stSelectbox > div > div { background:#111827 !important; border:1px solid #1e2d45 !important; color:#e8eaf0 !important; border-radius:8px !important; }
 .stButton > button { background: linear-gradient(135deg,#1a4a7f,#2a6abf) !important; font-size:1.1rem !important; color:white !important; border:none !important; border-radius:8px !important; font-family:'Bebas Neue', sans-serif !important; font-size:1rem !important; letter-spacing:2px !important; padding:0.6rem 2rem !important; width:100% !important; }
 .stButton > button:hover { background:linear-gradient(135deg,#2a5a8f,#3a7acf) !important; }
+.disclaimer-banner {
+    background: linear-gradient(135deg, #2a1500, #3a1e00);
+    border: 1px solid #5a3a00;
+    border-radius: 10px;
+    padding: 0.7rem 1.2rem;
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    color: #f0c040;
+    line-height: 1.5;
+    text-align: center;
+}
+.disclaimer-banner b { color: #ffd966; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1029,6 +1041,15 @@ def tag(cls, txt):
     return f'<span class="tag {cls}">{txt}</span>'
 
 st.markdown("""
+<div class="disclaimer-banner">
+⚠️ <b>Aviso legal:</b> Esta aplicación es un proyecto independiente, gratuito, sin fines de lucro y de carácter educativo/informativo.
+Las predicciones se generan mediante simulación estadística (Monte Carlo) y <b>no constituyen asesoría de apuestas ni garantía de resultados</b>.
+No estamos afiliados a la FIFA, Playdoit, Draftea ni a ninguna casa de apuestas. El uso es bajo tu propio riesgo y responsabilidad.
+Si decides apostar, hazlo de forma responsable y solo en plataformas legales de tu jurisdicción. Debes ser mayor de edad (18+) para apostar.
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
 <div class="hero">
   <div class="hero-title">Mundial 2026 · Predictor</div>
   <div class="hero-sub">Monte Carlo · 10,000,000 simulaciones · ELO + H2H + Clima + Altitud + Árbitro</div>
@@ -1084,6 +1105,18 @@ for _p in PARTIDOS:
     except Exception:
         pass
     partidos_hoy.append(_p)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# RESULTADOS_PENALES — ganador en penales para partidos eliminatorios empatados
+# Formato: { "ea_eb": "Ganador" }
+# Se usa para resolver automáticamente las apuestas de "Clasificación" cuando
+# el resultado en 90min/ET fue empate y se decidió por penales.
+# ══════════════════════════════════════════════════════════════════════════════
+RESULTADOS_PENALES = {
+    "Alemania_Paraguay": "Paraguay",       # 1-1, pen 3-4
+    "Paises Bajos_Marruecos": "Marruecos", # 1-1, pen 2-3
+}
 
 
 DATOS_REALES = {
@@ -1170,7 +1203,7 @@ DATOS_REALES = {
     "Arabia Saudi_Uruguay": {"am": 1, "co": 18},  # 0 KSA + 1 URU | 4 KSA + 14 URU
     "Irak_Noruega": {"am": 1, "co": 7},  # 1 IRQ + 0 NOR | 2 IRQ + 5 NOR
     "Austria_Jordania": {"am": 1, "co": 7},  # 1 AUT + 0 JOR | 4 AUT + 3 JOR
-    "Paises Bajos_Marruecos": {"am": 1, "co": 6},  # 0 PB + 1 MAR (90min) | 5 PB + 1 MAR
+    "Paises Bajos_Marruecos": {"am": 1, "co": 13},  # 0 PB + 1 MAR | 5 PB + 8 MAR (oficial)
     "Brasil_Japon": {"am": 5, "co": 8},
     "Alemania_Paraguay": {"am": 2, "co": 16},
 }
@@ -1226,9 +1259,11 @@ def _guardar_apuestas_supabase(ea, eb, grupo, sugerencias, res=None, probs=None)
         if _ga is not None:
             from supabase_preds import _evaluar_acierto
             _dd = DATOS_REALES.get(f"{ea}_{eb}", {})
+            _gan_pen = RESULTADOS_PENALES.get(f"{ea}_{eb}")
             _acierto = _evaluar_acierto(
                 {"seleccion": _s["seleccion"].replace("✅ ", ""),
-                 "mercado": _s["mercado"], "ea": ea, "eb": eb},
+                 "mercado": _s["mercado"], "ea": ea, "eb": eb,
+                 "ganador_penales": _gan_pen},
                 _ga, _gb,
                 am_reales=_dd.get("am"), co_reales=_dd.get("co")
             )
@@ -1487,6 +1522,10 @@ def _auto_actualizar_aciertos():
             datos = DATOS_REALES.get(f"{ap_ea}_{ap_eb}", {})
             am_reales = datos.get("am")
             co_reales = datos.get("co")
+
+            _gan_pen = RESULTADOS_PENALES.get(f"{ap_ea}_{ap_eb}")
+            if _gan_pen and "ganador_penales" not in ap:
+                ap["ganador_penales"] = _gan_pen
 
             from supabase_preds import _evaluar_acierto
             nuevo_acierto = _evaluar_acierto(
