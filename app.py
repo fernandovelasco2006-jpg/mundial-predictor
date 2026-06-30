@@ -398,7 +398,7 @@ PARTIDOS = [
 
     ("Sudafrica",           "Canada",             "R32", "Los Angeles",   (0, 1),  "Joao Pedro Pinheiro"),
     ("Alemania",            "Paraguay",           "R32", "Boston",        (1, 1),  "Jalal Jayed"),
-    ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     None,    "Wilton Pereira Sampaio"),
+    ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     (1, 1),  "Wilton Pereira Sampaio"),
     ("Brasil",              "Japon",              "R32", "Houston",       (2, 1),  "Maurizio Mariani"),
     ("Costa de Marfil",     "Noruega",            "R32", "Dallas",        None,    "Jesus Valenzuela"),
     ("Francia",             "Suecia",             "R32", "Nueva York",    None,    "Danny Makkelie"),
@@ -805,7 +805,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     lam_am_arb_raw, lam_ro_arb_raw = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
 
     ARBITROS_MUNDIAL_2026 = {
-        "Jalal Jayed": (0.5, 3), "Katia Garcia": (0.5, 2), "Wilton Pereira Sampaio": (0.5, 2),
+        "Jalal Jayed": (0.5, 3), "Katia Garcia": (0.5, 2), "Wilton Pereira Sampaio": (0.67, 3),
         "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.0, 2),
         "Alireza Faghani": (1.0, 1),
         "Glenn Nyberg": (2.5, 2), "Slavko Vincic": (2.0, 1), "Danny Makkelie": (3.0, 1),
@@ -1170,6 +1170,7 @@ DATOS_REALES = {
     "Arabia Saudi_Uruguay": {"am": 1, "co": 18},  # 0 KSA + 1 URU | 4 KSA + 14 URU
     "Irak_Noruega": {"am": 1, "co": 7},  # 1 IRQ + 0 NOR | 2 IRQ + 5 NOR
     "Austria_Jordania": {"am": 1, "co": 7},  # 1 AUT + 0 JOR | 4 AUT + 3 JOR
+    "Paises Bajos_Marruecos": {"am": 1, "co": 6},  # 0 PB + 1 MAR (90min) | 5 PB + 1 MAR
     "Brasil_Japon": {"am": 5, "co": 8},
     "Alemania_Paraguay": {"am": 2, "co": 16},
 }
