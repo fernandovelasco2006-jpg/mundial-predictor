@@ -412,9 +412,9 @@ PARTIDOS = [
     ("Alemania",            "Paraguay",           "R32", "Boston",        (1, 1),  "Jalal Jayed"),
     ("Paises Bajos",        "Marruecos",          "R32", "Monterrey",     (1, 1),  "Wilton Pereira Sampaio"),
     ("Brasil",              "Japon",              "R32", "Houston",       (2, 1),  "Maurizio Mariani"),
-    ("Costa de Marfil",     "Noruega",            "R32", "Dallas",        None,    "Jesus Valenzuela"),
-    ("Francia",             "Suecia",             "R32", "Nueva York",    None,    "Danny Makkelie"),
-    ("Mexico",              "Ecuador",            "R32", "Azteca",        None,    "Slavko Vincic"),
+    ("Costa de Marfil",     "Noruega",            "R32", "Dallas",        (1, 2),  "Jesus Valenzuela"),
+    ("Francia",             "Suecia",             "R32", "Nueva York",    (3, 0),  "Danny Makkelie"),
+    ("Mexico",              "Ecuador",            "R32", "Azteca",        (2, 0),  "Slavko Vincic"),
     ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       None, None),
     ("Belgica",             "Senegal",            "R32", "San Francisco",  None, None),
     ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        None, None),
@@ -492,6 +492,9 @@ H2H = {
     ("RD Congo", "Uzbekistan"):       [(2026, 3, 1, 5, 0)],
     ("Sudafrica", "Canada"):          [(2026, 0, 1, 2, 0)],
     ("Brasil", "Japon"):              [(2026, 2, 1, 5, 0)],
+    ("Costa de Marfil", "Noruega"):   [(2026, 1, 2, 1, 0)],
+    ("Francia", "Suecia"):            [(2026, 3, 0, 0, 0)],
+    ("Mexico", "Ecuador"):            [(2026, 2, 0, 3, 0)],
 }
 
 def calcular_factor_h2h(ea, eb):
@@ -569,7 +572,7 @@ TARJETAS_MUNDIAL = {
     "Canada": (3, 0, 3), "Bosnia y Herzegovina": (4, 1, 3), "Catar": (3, 2, 3), "Suiza": (3, 0, 3),
     "Brasil": (3, 0, 3), "Marruecos": (2, 0, 3), "Haiti": (4, 0, 3), "Escocia": (2, 0, 3),
     "Estados Unidos": (2, 0, 3), "Paraguay": (3, 1, 3), "Australia": (2, 0, 3), "Turquia": (1, 0, 3),
-    "Alemania": (2, 0, 3), "Curazao": (3, 0, 3), "Costa de Marfil": (4, 0, 3), "Ecuador": (4, 0, 3),
+    "Alemania": (2, 0, 3), "Curazao": (3, 0, 3), "Costa de Marfil": (4, 0, 3), "Ecuador": (7, 1, 4),
     "Paises Bajos": (4, 0, 3), "Japon": (4, 0, 3), "Suecia": (5, 0, 3), "Tunez": (3, 1, 3),
     "Belgica": (4, 0, 3), "Egipto": (6, 0, 3), "Iran": (8, 0, 3), "Nueva Zelanda": (4, 0, 3),
     "Espana": (2, 0, 3), "Cabo Verde": (5, 0, 3), "Arabia Saudi": (1, 0, 2),
@@ -582,16 +585,16 @@ TARJETAS_MUNDIAL = {
 }
 
 FORMA_MUNDIAL = {
-    "Mexico": (6, 0, 3), "Sudafrica": (2, 3, 3), "Corea del Sur": (2, 3, 3), "Chequia": (2, 6, 3),
+    "Mexico": (8, 0, 4), "Sudafrica": (2, 3, 3), "Corea del Sur": (2, 3, 3), "Chequia": (2, 6, 3),
     "Canada": (7, 1, 2), "Bosnia y Herzegovina": (2, 5, 2), "Catar": (1, 7, 2), "Suiza": (5, 2, 2),
     "Brasil": (7, 1, 3), "Marruecos": (6, 3, 3), "Haiti": (2, 8, 3), "Escocia": (1, 4, 3),
     "Estados Unidos": (8, 4, 3), "Paraguay": (2, 4, 3), "Australia": (2, 4, 2), "Turquia": (2, 3, 2),
-    "Alemania": (10, 4, 3), "Ecuador": (2, 2, 3), "Costa de Marfil": (4, 2, 3), "Curazao": (1, 9, 3),
-    "Paises Bajos": (7, 3, 2), "Japon": (6, 2, 2), "Suecia": (6, 3, 2), "Tunez": (1, 9, 2),
+    "Alemania": (10, 4, 3), "Ecuador": (2, 4, 4), "Costa de Marfil": (5, 4, 4), "Curazao": (1, 9, 3),
+    "Paises Bajos": (7, 3, 2), "Japon": (6, 2, 2), "Suecia": (6, 6, 3), "Tunez": (1, 9, 2),
     "Belgica": (6, 2, 3), "Egipto": (5, 3, 3), "Iran": (3, 3, 3), "Nueva Zelanda": (3, 5, 2),
     "Espana": (5, 0, 3), "Cabo Verde": (2, 2, 3), "Arabia Saudi": (1, 5, 2),
     "Arabia Saudita": (1, 5, 2), "Uruguay": (3, 3, 2),
-    "Francia": (10, 2, 3), "Senegal": (3, 4, 2), "Irak": (1, 7, 2), "Noruega": (7, 3, 2),
+    "Francia": (13, 2, 4), "Senegal": (3, 4, 2), "Irak": (1, 7, 2), "Noruega": (9, 4, 3),
     "Argentina": (8, 1, 3), "Algeria": (5, 7, 3), "Argelia": (2, 4, 2),
     "Austria": (6, 6, 3), "Jordania": (3, 8, 3),
     "Portugal": (6, 1, 3), "RD Congo": (4, 3, 3), "Uzbekistan": (2, 11, 3), "Colombia": (4, 1, 3),
@@ -820,8 +823,8 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "Jalal Jayed": (0.5, 3), "Katia Garcia": (0.5, 2), "Wilton Pereira Sampaio": (0.67, 3),
         "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.0, 2),
         "Alireza Faghani": (1.0, 1),
-        "Glenn Nyberg": (2.5, 2), "Slavko Vincic": (2.0, 1), "Danny Makkelie": (3.0, 1),
-        "Jesus Valenzuela": (1.5, 2), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
+        "Glenn Nyberg": (2.5, 2), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
+        "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
         "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2),
         "Said Martinez": (1.3, 3), "Ivan Barton": (2.0, 2), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
@@ -1204,6 +1207,10 @@ DATOS_REALES = {
     "Irak_Noruega": {"am": 1, "co": 7},  # 1 IRQ + 0 NOR | 2 IRQ + 5 NOR
     "Austria_Jordania": {"am": 1, "co": 7},  # 1 AUT + 0 JOR | 4 AUT + 3 JOR
     "Paises Bajos_Marruecos": {"am": 1, "co": 13},  # 0 PB + 1 MAR | 5 PB + 8 MAR (oficial)
+    # R32 — 30 junio
+    "Costa de Marfil_Noruega":       {"am": 1,  "co": 17},  # 0 CIV + 1 NOR | 14 CIV + 3 NOR
+    "Francia_Suecia":                {"am": 0,  "co": 10},  # 0 FRA + 0 SUE | 9 FRA + 1 SUE
+    "Mexico_Ecuador":                {"am": 3,  "co": 11, "ro": 1},  # 0 MEX + 3 ECU | 3 MEX + 8 ECU | 1 roja Hincapié 90+5'
     "Brasil_Japon": {"am": 5, "co": 8},
     "Alemania_Paraguay": {"am": 2, "co": 16},
 }
@@ -1522,10 +1529,13 @@ def _auto_actualizar_aciertos():
             datos = DATOS_REALES.get(f"{ap_ea}_{ap_eb}", {})
             am_reales = datos.get("am")
             co_reales = datos.get("co")
+            ro_reales = datos.get("ro", 0)
 
             _gan_pen = RESULTADOS_PENALES.get(f"{ap_ea}_{ap_eb}")
             if _gan_pen and "ganador_penales" not in ap:
                 ap["ganador_penales"] = _gan_pen
+            if ro_reales:
+                ap["ro_reales"] = ro_reales
 
             from supabase_preds import _evaluar_acierto
             nuevo_acierto = _evaluar_acierto(
