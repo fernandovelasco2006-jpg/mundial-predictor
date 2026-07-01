@@ -1104,31 +1104,7 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     if p_c_under75 >= UMBRAL_CORN:
         ap("Córners", "✅ Under 7.5 córners (máx 7)", p_c_under75, f"{p_c_under75:.1f}% · {corners_esp:.1f} esp.", "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under")
 
-    # ── REMATES A PUERTA ─────────────────────────────────────────────────────
-    UMBRAL_REM = 80.0
-    p_rem_over35 = r.get("prob_rem_over35", 50.0)
-    p_rem_over45 = r.get("prob_rem_over45", 50.0)
-    p_rem_over55 = r.get("prob_rem_over55", 50.0)
-    p_rem_over65 = r.get("prob_rem_over65", 30.0)
-    p_rem_over75 = r.get("prob_rem_over75", 20.0)
-    p_rem_under55 = r.get("prob_rem_under55", 50.0)
-    p_rem_under65 = r.get("prob_rem_under65", 50.0)
-    remates_esp = r.get("remates_esp", 6.0)
 
-    if p_rem_over35 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Over 3.5 remates a puerta (4+)", p_rem_over35, f"{p_rem_over35:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 3.5' → Over")
-    if p_rem_over45 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Over 4.5 remates a puerta (5+)", p_rem_over45, f"{p_rem_over45:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 4.5' → Over")
-    if p_rem_over55 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Over 5.5 remates a puerta (6+)", p_rem_over55, f"{p_rem_over55:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 5.5' → Over")
-    if p_rem_over65 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Over 6.5 remates a puerta (7+)", p_rem_over65, f"{p_rem_over65:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 6.5' → Over")
-    if p_rem_over75 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Over 7.5 remates a puerta (8+)", p_rem_over75, f"{p_rem_over75:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 7.5' → Over")
-    if p_rem_under55 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Under 5.5 remates a puerta (máx 5)", p_rem_under55, f"{p_rem_under55:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 5.5' → Under")
-    if p_rem_under65 >= UMBRAL_REM:
-        ap("Remates a Puerta", "✅ Under 6.5 remates a puerta (máx 6)", p_rem_under65, f"{p_rem_under65:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 6.5' → Under")
 
     apuestas.sort(key=lambda x: x["confianza"], reverse=True)
 
@@ -1141,8 +1117,7 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             cat = "am_over" if "over" in sel else ("am_under" if "under" in sel else merc)
         elif merc == "Córners":
             cat = "co_over" if "over" in sel else ("co_under" if "under" in sel else merc)
-        elif merc == "Remates a Puerta":
-            cat = "rem_over" if "over" in sel else ("rem_under" if "under" in sel else merc)
+
         elif merc == "Total Goles":
             cat = "goles_over" if "over" in sel else ("goles_under" if "under" in sel else merc)
         else:
