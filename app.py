@@ -1923,8 +1923,6 @@ with tab_hist_ap:
     _apuestas_hist = []
     if SUPABASE_DISPONIBLE and SUPABASE_URL and SUPABASE_KEY:
         try:
-            _pts = [p for p in PARTIDOS if p[4] is not None]
-            if _pts: actualizar_aciertos(SUPABASE_URL, SUPABASE_KEY, _pts)
             _apuestas_hist = [a for a in cargar_historial_apuestas(SUPABASE_URL, SUPABASE_KEY) if not str(a.get("ea","")).startswith("TBD")]
         except Exception:
             pass
