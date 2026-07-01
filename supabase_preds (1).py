@@ -360,22 +360,23 @@ def _evaluar_acierto(ap: dict, ga: int, gb: int, am_reales: int = None, co_reale
         return ga > 0 and gb > 0  # "Sí"
 
     # ── TARJETAS AMARILLAS ────────────────────────────────────────────────────
-    # Las tarjetas reales no se guardan automáticamente en Supabase.
-    # Se usan los campos opcionales "amarillas_reales" si existen.
-    # Si no existen, retorna None → la apuesta queda como "pendiente manual".
+    # Las casas de apuestas (Playdoit/Draftea) usan tarjetas COMBINADAS:
+    # roja directa = 2 puntos, amarilla = 1 punto.
+    # Ejemplo: 3 amarillas + 1 roja directa = 3 + 2 = 5 puntos totales.
     elif merc == "Tarjetas Amarillas":
-        # Prioridad: parámetro directo > campo en Supabase
         if am_reales is None:
             am_reales = ap.get("amarillas_reales")
         if am_reales is None:
-            return None  # sin dato, queda pendiente
+            return None
         am_reales = int(am_reales)
-        if "over 1.5" in sel: return am_reales >= 2
-        if "over 2.5" in sel: return am_reales >= 3
-        if "over 3.5" in sel: return am_reales >= 4
-        if "over 4.5" in sel: return am_reales >= 5
-        if "under 2.5" in sel: return am_reales <= 2
-        if "under 3.5" in sel: return am_reales <= 3
+        ro_reales = ap.get("ro_reales", 0) or 0
+        total_tarjetas = am_reales + int(ro_reales) * 2
+        if "over 1.5" in sel: return total_tarjetas >= 2
+        if "over 2.5" in sel: return total_tarjetas >= 3
+        if "over 3.5" in sel: return total_tarjetas >= 4
+        if "over 4.5" in sel: return total_tarjetas >= 5
+        if "under 2.5" in sel: return total_tarjetas <= 2
+        if "under 3.5" in sel: return total_tarjetas <= 3
 
     # ── CÓRNERS ───────────────────────────────────────────────────────────────
     elif merc == "Córners":
