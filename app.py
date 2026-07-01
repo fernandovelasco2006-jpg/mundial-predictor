@@ -1547,20 +1547,39 @@ def _auto_actualizar_aciertos():
                 continue
 
             acierto_actual = ap.get("acierto")
+
+            # Para apuestas de Clasificación con empate en 90min,
+            # forzar re-evaluación con ganador_penales inyectado
+            if nuevo_acierto is None and ap.get("mercado") == "Clasificación":
+                _gan_pen2 = RESULTADOS_PENALES.get(f"{ap_ea}_{ap_eb}")
+                if _gan_pen2:
+                    ap["ganador_penales"] = _gan_pen2
+                    nuevo_acierto = _evaluar_acierto(
+                        ap, ga, gb,
+                        am_reales=am_reales, co_reales=co_reales
+                    )
+
+            if nuevo_acierto is None:
+                continue
+
             if acierto_actual is None or acierto_actual != nuevo_acierto:
                 try:
+                    _patch_data = {
+                        "acierto": nuevo_acierto,
+                        "goles_a": ga,
+                        "goles_b": gb,
+                        "resultado_real": f"{ga}-{gb}",
+                        "amarillas_reales": am_reales,
+                        "corners_reales": co_reales,
+                    }
+                    _gan_final = RESULTADOS_PENALES.get(f"{ap_ea}_{ap_eb}")
+                    if _gan_final:
+                        _patch_data["ganador_penales"] = _gan_final
                     _req.patch(
                         f"{SUPABASE_URL}/rest/v1/apuestas_historial",
                         headers={**_hdrs(SUPABASE_KEY), "Prefer": ""},
                         params={"id": f"eq.{ap['id']}"},
-                        json={
-                            "acierto": nuevo_acierto,
-                            "goles_a": ga,
-                            "goles_b": gb,
-                            "resultado_real": f"{ga}-{gb}",
-                            "amarillas_reales": am_reales,
-                            "corners_reales": co_reales,
-                        },
+                        json=_patch_data,
                         timeout=8
                     )
                     actualizadas += 1
