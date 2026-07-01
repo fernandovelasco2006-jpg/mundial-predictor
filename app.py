@@ -157,6 +157,66 @@ CORNERS_EQUIPO = {
 }
 CORNERS_DEFAULT = 4.0
 
+# Remates a puerta (on target) por partido — fuentes oficiales FotMob/Sofascore
+# Solo equipos con datos confirmados. Para el resto usamos DEFAULT conservador.
+# NOTA: estos son remates a puerta (tiros al arco que el portero debe parar o entran)
+# NO remates totales (que incluyen tiros desviados y bloqueados)
+REMATES_PUERTA_EQUIPO = {
+    # Fuente: FotMob/Sofascore — promedios on-target por partido, 3-4 partidos jugados
+    "Francia":           7.3,   # 29 on-target / 4 partidos
+    "Alemania":          7.3,   # 29 on-target / 4 partidos
+    "Canada":            7.0,   # 21 on-target / 3 partidos
+    "Paises Bajos":      6.7,   # 27 on-target / 4 partidos
+    "Suecia":            6.7,   # 20 on-target / 3 partidos
+    "Inglaterra":        6.7,   # 20 on-target / 3 partidos
+    "Belgica":           6.7,   # 20 on-target / 3 partidos
+    "Brasil":            6.3,   # 25 on-target / 4 partidos
+    "Colombia":          6.3,   # 19 on-target / 3 partidos
+    "Ecuador":           6.3,   # 19 on-target / 3 partidos — revisado vs dato manual
+    "Senegal":           6.0,   # 18 on-target / 3 partidos
+    # Estimados conservadores basados en remates totales conocidos
+    "Espana":            5.5,   # 16.3 totales → ~34% on-target
+    "Turquia":           5.0,   # 15.5 totales → ~32% on-target
+    "Estados Unidos":    5.0,   # 14.7 totales → ~34% on-target
+    "Mexico":            4.5,   # 11.7 totales → ~38% on-target
+    "Argentina":         4.0,   # 9.3 totales → ~43% on-target (alta precisión histórica)
+    "Portugal":          4.0,   # 9.7 totales → ~41% on-target
+    "Marruecos":         3.5,   # 8.7 totales → ~40% on-target
+    "Uruguay":           3.5,   # 8.3 totales → ~42% on-target
+    "Croacia":           3.5,   # 8.3 totales → ~42% on-target
+    "Noruega":           3.5,   # estimado
+    "Japon":             3.3,   # 6.7 totales → ~49% on-target (precisos)
+    "Suiza":             3.0,   # 7.7 totales → ~39% on-target
+    "Bosnia y Herzegovina": 3.0,# 7.7 totales
+    "Costa de Marfil":   3.0,   # estimado
+    "Corea del Sur":     2.5,   # 6.0 totales → ~42% on-target
+    "RD Congo":          2.0,   # 5.3 totales → ~38% on-target
+    "Iran":              2.0,   # 6.3 totales → ~32% on-target
+    "Paraguay":          2.5,   # estimado conservador
+    "Austria":           3.0,   # estimado
+    "Chequia":           4.0,   # 11.3 totales → ~35% on-target
+    "Australia":         2.5,   # estimado
+    "Escocia":           2.5,   # estimado
+    "Ghana":             2.5,   # estimado
+    "Sudafrica":         2.0,   # estimado
+    "Algeria":           2.5,   # estimado
+    "Argelia":           2.5,
+    "Arabia Saudita":    2.0,   # estimado
+    "Arabia Saudi":      2.0,
+    "Egipto":            3.0,   # estimado
+    "Haiti":             1.5,   # estimado
+    "Irak":              1.5,   # estimado
+    "Jordania":          2.0,   # estimado
+    "Catar":             1.5,   # estimado
+    "Curazao":           1.0,   # estimado
+    "Uzbekistan":        1.5,   # estimado
+    "Panama":            1.5,   # estimado
+    "Tunez":             2.0,   # estimado
+    "Nueva Zelanda":     1.5,   # estimado
+    "Cabo Verde":        1.5,   # estimado
+}
+REMATES_PUERTA_DEFAULT = 2.5  # conservador para equipos sin dato
+
 HORARIOS_PARTIDO = {
     ('Turquia', 'Paraguay'): '2026-06-19 21:00',
     ('Paises Bajos', 'Suecia'): '2026-06-20 11:00',
@@ -249,6 +309,10 @@ CLIMA_HOY = {
     "Dallas": {"lluvia": False, "calor_extremo": False},
     "Nueva York": {"lluvia": False, "calor_extremo": False},
     "Azteca": {"lluvia": False, "calor_extremo": False},
+    # 1 julio
+    "Atlanta": {"lluvia": False, "calor_extremo": True},    # 34°C techo retráctil
+    "San Francisco": {"lluvia": False, "calor_extremo": False},  # 18-19°C fresco
+    "Seattle": {"lluvia": False, "calor_extremo": False},   # 22°C despejado
 }
 
 EQUIPOS_CALOR = {
@@ -415,9 +479,9 @@ PARTIDOS = [
     ("Costa de Marfil",     "Noruega",            "R32", "Dallas",        (1, 2),  "Jesus Valenzuela"),
     ("Francia",             "Suecia",             "R32", "Nueva York",    (3, 0),  "Danny Makkelie"),
     ("Mexico",              "Ecuador",            "R32", "Azteca",        (2, 0),  "Slavko Vincic"),
-    ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       None, None),
-    ("Belgica",             "Senegal",            "R32", "San Francisco",  None, None),
-    ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        None, None),
+    ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       None, "Adham Makhadmeh"),
+    ("Belgica",             "Senegal",            "R32", "San Francisco",  None, "Said Martinez"),
+    ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        None, "Raphael Claus"),
     ("Espana",              "Austria",            "R32", "Toronto",        None, None),
     ("Portugal",            "Croacia",            "R32", "Los Angeles",    None, None),
     ("Suiza",               "Algeria",            "R32", "Vancouver",     None, None),
@@ -817,6 +881,19 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     prob_corners_under75 = float(np.mean(corners_sim <= 7) * 100)
     prob_corners_under65 = float(np.mean(corners_sim <= 6) * 100)
 
+    # ── REMATES A PUERTA ──────────────────────────────────────────────────────
+    rem_a = REMATES_PUERTA_EQUIPO.get(ea, REMATES_PUERTA_DEFAULT)
+    rem_b = REMATES_PUERTA_EQUIPO.get(eb, REMATES_PUERTA_DEFAULT)
+    rem_total_esp = rem_a + rem_b
+    rem_sim = rng.poisson(rem_total_esp, n).astype(np.int32)
+    prob_rem_over35  = float(np.mean(rem_sim > 3) * 100)
+    prob_rem_over45  = float(np.mean(rem_sim > 4) * 100)
+    prob_rem_over55  = float(np.mean(rem_sim > 5) * 100)
+    prob_rem_over65  = float(np.mean(rem_sim > 6) * 100)
+    prob_rem_over75  = float(np.mean(rem_sim > 7) * 100)
+    prob_rem_under55 = float(np.mean(rem_sim <= 5) * 100)
+    prob_rem_under65 = float(np.mean(rem_sim <= 6) * 100)
+
     lam_am_arb_raw, lam_ro_arb_raw = ARBITROS.get(arbitro, ARBITRO_DEFAULT) if arbitro else ARBITRO_DEFAULT
 
     ARBITROS_MUNDIAL_2026 = {
@@ -825,7 +902,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "Alireza Faghani": (1.0, 1),
         "Glenn Nyberg": (2.5, 2), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
         "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
-        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2),
+        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0),
         "Said Martinez": (1.3, 3), "Ivan Barton": (2.0, 2), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
         "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.5, 2), "Raphael Claus": (3.0, 1),
@@ -878,7 +955,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
     _ga_mean = float(np.mean(ga))
     _gb_mean = float(np.mean(gb))
-    del ga, gb, goles_tot, corners_sim, tarjetas_am_sim, tarjetas_ro_sim
+    del ga, gb, goles_tot, corners_sim, tarjetas_am_sim, tarjetas_ro_sim, rem_sim
 
     return {
         "prob_a": prob_a, "prob_b": prob_b, "prob_emp": prob_emp,
@@ -912,6 +989,14 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "prob_am_over45": prob_am_over45,
         "prob_am_under35": prob_am_under35,
         "prob_am_under25": prob_am_under25,
+        "remates_esp": rem_total_esp,
+        "prob_rem_over35": prob_rem_over35,
+        "prob_rem_over45": prob_rem_over45,
+        "prob_rem_over55": prob_rem_over55,
+        "prob_rem_over65": prob_rem_over65,
+        "prob_rem_over75": prob_rem_over75,
+        "prob_rem_under55": prob_rem_under55,
+        "prob_rem_under65": prob_rem_under65,
     }
 
 
@@ -1019,6 +1104,32 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
     if p_c_under75 >= UMBRAL_CORN:
         ap("Córners", "✅ Under 7.5 córners (máx 7)", p_c_under75, f"{p_c_under75:.1f}% · {corners_esp:.1f} esp.", "Playdoit / Draftea → Esquinas → 'Más/Menos 7.5' → Under")
 
+    # ── REMATES A PUERTA ─────────────────────────────────────────────────────
+    UMBRAL_REM = 80.0
+    p_rem_over35 = r.get("prob_rem_over35", 50.0)
+    p_rem_over45 = r.get("prob_rem_over45", 50.0)
+    p_rem_over55 = r.get("prob_rem_over55", 50.0)
+    p_rem_over65 = r.get("prob_rem_over65", 30.0)
+    p_rem_over75 = r.get("prob_rem_over75", 20.0)
+    p_rem_under55 = r.get("prob_rem_under55", 50.0)
+    p_rem_under65 = r.get("prob_rem_under65", 50.0)
+    remates_esp = r.get("remates_esp", 6.0)
+
+    if p_rem_over35 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Over 3.5 remates a puerta (4+)", p_rem_over35, f"{p_rem_over35:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 3.5' → Over")
+    if p_rem_over45 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Over 4.5 remates a puerta (5+)", p_rem_over45, f"{p_rem_over45:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 4.5' → Over")
+    if p_rem_over55 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Over 5.5 remates a puerta (6+)", p_rem_over55, f"{p_rem_over55:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 5.5' → Over")
+    if p_rem_over65 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Over 6.5 remates a puerta (7+)", p_rem_over65, f"{p_rem_over65:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 6.5' → Over")
+    if p_rem_over75 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Over 7.5 remates a puerta (8+)", p_rem_over75, f"{p_rem_over75:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 7.5' → Over")
+    if p_rem_under55 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Under 5.5 remates a puerta (máx 5)", p_rem_under55, f"{p_rem_under55:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 5.5' → Under")
+    if p_rem_under65 >= UMBRAL_REM:
+        ap("Remates a Puerta", "✅ Under 6.5 remates a puerta (máx 6)", p_rem_under65, f"{p_rem_under65:.1f}% · {remates_esp:.1f} esp.", "Playdoit / Draftea → Remates a puerta → 'Más/Menos 6.5' → Under")
+
     apuestas.sort(key=lambda x: x["confianza"], reverse=True)
 
     filtradas = []
@@ -1030,6 +1141,8 @@ def analizar_apuestas(ea: str, eb: str, r: dict) -> list:
             cat = "am_over" if "over" in sel else ("am_under" if "under" in sel else merc)
         elif merc == "Córners":
             cat = "co_over" if "over" in sel else ("co_under" if "under" in sel else merc)
+        elif merc == "Remates a Puerta":
+            cat = "rem_over" if "over" in sel else ("rem_under" if "under" in sel else merc)
         elif merc == "Total Goles":
             cat = "goles_over" if "over" in sel else ("goles_under" if "under" in sel else merc)
         else:
