@@ -313,6 +313,10 @@ CLIMA_HOY = {
     "Atlanta": {"lluvia": False, "calor_extremo": True},    # 34°C techo retráctil
     "San Francisco": {"lluvia": False, "calor_extremo": False},  # 18-19°C fresco
     "Seattle": {"lluvia": False, "calor_extremo": False},   # 22°C despejado
+    # 2 julio
+    "Los Angeles": {"lluvia": False, "calor_extremo": True},    # 33°C despejado
+    "Toronto":     {"lluvia": True,  "calor_extremo": True},    # 35°C bochornoso, tormentas
+    "Vancouver":   {"lluvia": False, "calor_extremo": False},   # 27°C soleado
 }
 
 EQUIPOS_CALOR = {
@@ -479,13 +483,13 @@ PARTIDOS = [
     ("Costa de Marfil",     "Noruega",            "R32", "Dallas",        (1, 2),  "Jesus Valenzuela"),
     ("Francia",             "Suecia",             "R32", "Nueva York",    (3, 0),  "Danny Makkelie"),
     ("Mexico",              "Ecuador",            "R32", "Azteca",        (2, 0),  "Slavko Vincic"),
-    ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       None, "Adham Makhadmeh"),
-    ("Belgica",             "Senegal",            "R32", "San Francisco",  None, "Said Martinez"),
-    ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        None, "Raphael Claus"),
-    ("Espana",              "Austria",            "R32", "Toronto",        None, None),
-    ("Portugal",            "Croacia",            "R32", "Los Angeles",    None, None),
-    ("Suiza",               "Algeria",            "R32", "Vancouver",     None, None),
-    ("Australia",           "Egipto",             "R32", "Miami",          None, None),
+    ("Inglaterra",          "RD Congo",           "R32", "Atlanta",       (2, 1), "Adham Makhadmeh"),
+    ("Belgica",             "Senegal",            "R32", "San Francisco",  (2, 2), "Said Martinez"),
+    ("Estados Unidos",      "Bosnia y Herzegovina","R32","Seattle",        (2, 0), "Raphael Claus"),
+    ("Espana",              "Austria",            "R32", "Los Angeles",    None, "Glenn Nyberg"),
+    ("Portugal",            "Croacia",            "R32", "Toronto",        None, "Espen Eskas"),
+    ("Suiza",               "Algeria",            "R32", "Vancouver",     None, "Yael Falcon Perez"),
+    ("Australia",           "Egipto",             "R32", "Miami",          None, "Gustavo Tejera"),
     ("Argentina",           "Cabo Verde",         "R32", "Kansas City",    None, None),
     ("Colombia",            "Ghana",              "R32", "Dallas",         None, None),
     ("TBD-R16-1A",  "TBD-R16-1B",  "R16", "Philadelphia",   None, None),
@@ -559,6 +563,9 @@ H2H = {
     ("Costa de Marfil", "Noruega"):   [(2026, 1, 2, 1, 0)],
     ("Francia", "Suecia"):            [(2026, 3, 0, 0, 0)],
     ("Mexico", "Ecuador"):            [(2026, 2, 0, 3, 0)],
+    ("Inglaterra", "RD Congo"):       [(2026, 2, 1, 2, 0)],
+    ("Belgica", "Senegal"):           [(2026, 2, 2, 2, 0)],
+    ("Estados Unidos", "Bosnia y Herzegovina"): [(2026, 2, 0, 0, 0)],
 }
 
 def calcular_factor_h2h(ea, eb):
@@ -650,19 +657,19 @@ TARJETAS_MUNDIAL = {
 
 FORMA_MUNDIAL = {
     "Mexico": (8, 0, 4), "Sudafrica": (2, 3, 3), "Corea del Sur": (2, 3, 3), "Chequia": (2, 6, 3),
-    "Canada": (7, 1, 2), "Bosnia y Herzegovina": (2, 5, 2), "Catar": (1, 7, 2), "Suiza": (5, 2, 2),
+    "Canada": (7, 1, 2), "Bosnia y Herzegovina": (2, 7, 3), "Catar": (1, 7, 2), "Suiza": (5, 2, 2),
     "Brasil": (7, 1, 3), "Marruecos": (6, 3, 3), "Haiti": (2, 8, 3), "Escocia": (1, 4, 3),
-    "Estados Unidos": (8, 4, 3), "Paraguay": (2, 4, 3), "Australia": (2, 4, 2), "Turquia": (2, 3, 2),
+    "Estados Unidos": (10, 4, 4), "Paraguay": (2, 4, 3), "Australia": (2, 4, 2), "Turquia": (2, 3, 2),
     "Alemania": (10, 4, 3), "Ecuador": (2, 4, 4), "Costa de Marfil": (5, 4, 4), "Curazao": (1, 9, 3),
     "Paises Bajos": (7, 3, 2), "Japon": (6, 2, 2), "Suecia": (6, 6, 3), "Tunez": (1, 9, 2),
-    "Belgica": (6, 2, 3), "Egipto": (5, 3, 3), "Iran": (3, 3, 3), "Nueva Zelanda": (3, 5, 2),
+    "Belgica": (8, 4, 4), "Egipto": (5, 3, 3), "Iran": (3, 3, 3), "Nueva Zelanda": (3, 5, 2),
     "Espana": (5, 0, 3), "Cabo Verde": (2, 2, 3), "Arabia Saudi": (1, 5, 2),
     "Arabia Saudita": (1, 5, 2), "Uruguay": (3, 3, 2),
-    "Francia": (13, 2, 4), "Senegal": (3, 4, 2), "Irak": (1, 7, 2), "Noruega": (9, 4, 3),
+    "Francia": (13, 2, 4), "Senegal": (5, 6, 3), "Irak": (1, 7, 2), "Noruega": (9, 4, 3),
     "Argentina": (8, 1, 3), "Algeria": (5, 7, 3), "Argelia": (2, 4, 2),
     "Austria": (6, 6, 3), "Jordania": (3, 8, 3),
-    "Portugal": (6, 1, 3), "RD Congo": (4, 3, 3), "Uzbekistan": (2, 11, 3), "Colombia": (4, 1, 3),
-    "Inglaterra": (6, 2, 3), "Croacia": (5, 5, 3), "Ghana": (2, 4, 3), "Panama": (0, 4, 3),
+    "Portugal": (6, 1, 3), "RD Congo": (5, 5, 4), "Uzbekistan": (2, 11, 3), "Colombia": (4, 1, 3),
+    "Inglaterra": (8, 3, 4), "Croacia": (5, 5, 3), "Ghana": (2, 4, 3), "Panama": (0, 4, 3),
 }
 
 BAJAS = {
@@ -898,14 +905,15 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
     ARBITROS_MUNDIAL_2026 = {
         "Jalal Jayed": (0.5, 3), "Katia Garcia": (0.5, 2), "Wilton Pereira Sampaio": (0.67, 3),
-        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.0, 2),
+        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.0, 2),  # 3er partido hoy Sui-Alg
         "Alireza Faghani": (1.0, 1),
-        "Glenn Nyberg": (2.5, 2), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
+        "Glenn Nyberg": (2.5, 2),  # 3er partido hoy Esp-Aut "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
         "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
-        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0),
-        "Said Martinez": (1.3, 3), "Ivan Barton": (2.0, 2), "Joao Pedro Pinheiro": (2.0, 1),
+        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0), "Gustavo Tejera": (3.0, 0),
+        "Said Martinez": (1.5, 4), "Ivan Barton": (2.0, 2), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
-        "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.5, 2), "Raphael Claus": (3.0, 1),
+        "Espen Eskas": (2.0, 0), "Gustavo Tejera": (3.0, 0),
+        "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.5, 2), "Raphael Claus": (1.5, 2),
         "Fernando Rapallini": (3.0, 1), "Campbell-Kirk Kawana-Waugh": (3.0, 1),
         "Maurizio Mariani": (3.0, 3), "Istvan Kovacs": (3.0, 2), "Dahane Beida": (1.0, 1),
         "Tori Penso": (4.0, 1), "Anthony Taylor": (4.0, 1), "Francois Letexier": (4.0, 2),
@@ -916,9 +924,15 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
     if arbitro and arbitro in ARBITROS_MUNDIAL_2026:
         am_real, n_partidos = ARBITROS_MUNDIAL_2026[arbitro]
-        peso_real = min(0.9, 0.6 + n_partidos * 0.15)
-        lam_am_arb = am_real * peso_real + lam_am_arb_raw * FACTOR_ARB_MUNDIAL * (1 - peso_real)
-        lam_ro_arb = lam_ro_arb_raw * FACTOR_ARB_MUNDIAL
+        if n_partidos == 0:
+            # Sin partidos en este torneo — usar solo histórico ajustado
+            lam_am_arb = lam_am_arb_raw * FACTOR_ARB_MUNDIAL
+            lam_ro_arb = lam_ro_arb_raw * FACTOR_ARB_MUNDIAL
+        else:
+            # Con partidos reales — más peso al dato real según cantidad de partidos pitados
+            peso_real = min(0.9, 0.6 + n_partidos * 0.15)
+            lam_am_arb = am_real * peso_real + lam_am_arb_raw * FACTOR_ARB_MUNDIAL * (1 - peso_real)
+            lam_ro_arb = lam_ro_arb_raw * FACTOR_ARB_MUNDIAL
     else:
         lam_am_arb = lam_am_arb_raw * FACTOR_ARB_MUNDIAL
         lam_ro_arb = lam_ro_arb_raw * FACTOR_ARB_MUNDIAL
@@ -1207,6 +1221,7 @@ for _p in PARTIDOS:
 RESULTADOS_PENALES = {
     "Alemania_Paraguay": "Paraguay",       # 1-1, pen 3-4
     "Paises Bajos_Marruecos": "Marruecos", # 1-1, pen 2-3
+    "Belgica_Senegal": "Belgica",          # 2-2 ET, pen (Tielemans 120+5)
 }
 
 
@@ -1294,6 +1309,10 @@ DATOS_REALES = {
     "Arabia Saudi_Uruguay": {"am": 1, "co": 18},  # 0 KSA + 1 URU | 4 KSA + 14 URU
     "Irak_Noruega": {"am": 1, "co": 7},  # 1 IRQ + 0 NOR | 2 IRQ + 5 NOR
     "Austria_Jordania": {"am": 1, "co": 7},  # 1 AUT + 0 JOR | 4 AUT + 3 JOR
+    # R32 — 1 julio
+    "Inglaterra_RD Congo":              {"am": 2,  "co": 8},   # 1 ENG + 1 RDC | 5 ENG + 3 RDC
+    "Belgica_Senegal":                  {"am": 2,  "co": 6},   # 1 BEL + 1 SEN | 4 BEL + 2 SEN
+    "Estados Unidos_Bosnia y Herzegovina": {"am": 0, "co": 7}, # 0 EEUU + 0 BIH | 4 EEUU + 3 BIH
     "Paises Bajos_Marruecos": {"am": 1, "co": 13},  # 0 PB + 1 MAR | 5 PB + 8 MAR (oficial)
     # R32 — 30 junio
     "Costa de Marfil_Noruega":       {"am": 1,  "co": 17},  # 0 CIV + 1 NOR | 14 CIV + 3 NOR
