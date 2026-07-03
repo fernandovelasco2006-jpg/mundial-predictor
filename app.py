@@ -217,6 +217,29 @@ REMATES_PUERTA_EQUIPO = {
 }
 REMATES_PUERTA_DEFAULT = 2.5  # conservador para equipos sin dato
 
+# xG diferencial en R32 — fuente: CSV mundial2026_octavos_datos.csv
+# Solo equipos con dato confiable de FotMob/Opta
+# NaN para equipos sin dato — NO se inventan valores
+# Por ahora informativo, no ajusta lambdas hasta tener más cobertura
+XG_DIFERENCIAL_R32 = {
+    "Francia":   +2.54,  # 3.24 favor vs 0.70 contra — dominó completamente
+    "Belgica":   -1.84,  # 1.74 favor vs 3.58 contra — clasificó con suerte/penales
+    "Senegal":   +1.84,  # eliminada
+    "Suecia":    -2.54,  # eliminada
+    # Resto: NaN — datos xG por jugador no localizados (ver CSV)
+}
+
+# Minutos promedio titulares en R32 — fuente: CSV
+# Usado para calcular factor fatiga en octavos
+MINUTOS_R32 = {
+    "Francia":   62,   # rotó bastante, titulares frescos para octavos
+    "Belgica":   120,  # todos jugaron 120min → ya en BAJAS con 0.97
+    "Paraguay":  120,  # 120min → ya en BAJAS con 0.97
+    "Marruecos": 120,  # 120min → ya en BAJAS con 0.97
+    "Alemania":  110,  # eliminada
+    # Resto sin dato confiable del CSV
+}
+
 HORARIOS_PARTIDO = {
     ('Turquia', 'Paraguay'): '2026-06-19 21:00',
     ('Paises Bajos', 'Suecia'): '2026-06-20 11:00',
@@ -275,12 +298,12 @@ HORARIOS_PARTIDO = {
     ("Australia", "Egipto"): "2026-07-03 12:00",
     ("Argentina", "Cabo Verde"): "2026-07-03 16:00",
     ("Colombia", "Ghana"): "2026-07-03 19:30",
-    ("TBD-R16-1A", "TBD-R16-1B"): "2026-07-04 16:00",
-    ("TBD-R16-2A", "TBD-R16-2B"): "2026-07-04 12:00",
-    ("TBD-R16-3A", "TBD-R16-3B"): "2026-07-05 15:00",
-    ("TBD-R16-4A", "TBD-R16-4B"): "2026-07-05 19:00",
-    ("TBD-R16-5A", "TBD-R16-5B"): "2026-07-06 14:00",
-    ("TBD-R16-6A", "TBD-R16-6B"): "2026-07-06 19:00",
+    ("Canada", "Marruecos"): "2026-07-04 16:00",
+    ("Francia", "Paraguay"): "2026-07-04 12:00",
+    ("Brasil", "Noruega"): "2026-07-05 15:00",
+    ("Mexico", "Inglaterra"): "2026-07-05 19:00",
+    ("Portugal", "Espana"): "2026-07-06 14:00",
+    ("Estados Unidos", "Belgica"): "2026-07-06 19:00",
     ("TBD-R16-7A", "TBD-R16-7B"): "2026-07-06 11:00",
     ("TBD-R16-8A", "TBD-R16-8B"): "2026-07-07 15:00",
     ("TBD-QF-1A", "TBD-QF-1B"): "2026-07-09 15:00",
@@ -496,14 +519,14 @@ PARTIDOS = [
     ("Australia",           "Egipto",             "R32", "Miami",          None, "Said Martinez"),
     ("Argentina",           "Cabo Verde",         "R32", "Kansas City",    None, "Katia Garcia"),
     ("Colombia",            "Ghana",              "R32", "Dallas",         None, "Ivan Barton"),
-    ("TBD-R16-1A",  "TBD-R16-1B",  "R16", "Philadelphia",   None, None),
-    ("TBD-R16-2A",  "TBD-R16-2B",  "R16", "Houston",        None, None),
-    ("TBD-R16-3A",  "TBD-R16-3B",  "R16", "Nueva York",     None, None),
-    ("TBD-R16-4A",  "TBD-R16-4B",  "R16", "Azteca",         None, None),
-    ("TBD-R16-5A",  "TBD-R16-5B",  "R16", "Dallas",         None, None),
-    ("TBD-R16-6A",  "TBD-R16-6B",  "R16", "Seattle",        None, None),
-    ("TBD-R16-7A",  "TBD-R16-7B",  "R16", "Atlanta",        None, None),
-    ("TBD-R16-8A",  "TBD-R16-8B",  "R16", "Vancouver",      None, None),
+    ("Canada",         "Marruecos",   "R16", "Houston",        None, None),
+    ("Francia",        "Paraguay",    "R16", "Philadelphia",   None, None),
+    ("Brasil",         "Noruega",     "R16", "Nueva York",     None, None),
+    ("Mexico",         "Inglaterra",  "R16", "Azteca",         None, None),
+    ("Portugal",       "Espana",      "R16", "Dallas",         None, None),
+    ("Estados Unidos", "Belgica",     "R16", "Seattle",        None, None),
+    ("TBD-R16-7A",    "TBD-R16-7B",  "R16", "Atlanta",        None, None),
+    ("Suiza",          "TBD-R16-8B",  "R16", "Vancouver",      None, None),
     ("TBD-QF-1A",   "TBD-QF-1B",   "QF",  "Boston",         None, None),
     ("TBD-QF-2A",   "TBD-QF-2B",   "QF",  "Los Angeles",    None, None),
     ("TBD-QF-3A",   "TBD-QF-3B",   "QF",  "Miami",          None, None),
@@ -684,6 +707,15 @@ BAJAS = {
     'Marruecos': 0.94, 'Portugal': 0.95, 'Chequia': 0.96, 'Ghana': 0.95,
     'Espana': 0.96, 'Paraguay': 0.95, 'Panama': 0.96, 'Suiza': 0.97,
     'Canada': 0.97, 'Argelia': 0.96, 'Noruega': 0.97,
+    # ── Fatiga por prórroga en R32 (120 min jugados) ──────────────────────
+    # Fuente: CSV mundial2026_octavos_datos.csv — minutos reales por jugador
+    # Fórmula: max(0.94, 1 - (120-90)*0.002) = 0.94 mínimo
+    'Belgica':    0.97,  # 120min vs Senegal — promedio titulares 120min
+    'Paraguay':   0.97,  # 120min vs Alemania — promedio titulares 120min
+    'Marruecos':  0.97,  # 120min vs PaísesBajos — promedio titulares 120min
+    # Alemania: eliminada, sin efecto
+    # PaísesBajos: eliminada, sin efecto
+    # Senegal: eliminada, sin efecto
 }
 
 def h2h_mundial_2026(ea, eb):
