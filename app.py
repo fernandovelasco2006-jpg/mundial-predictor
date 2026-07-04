@@ -344,6 +344,9 @@ CLIMA_HOY = {
     "Dallas":      {"lluvia": False, "calor_extremo": True},    # 37°C calor extremo, 40°C sensación
     "Miami":       {"lluvia": True,  "calor_extremo": True},    # 32°C, 60% tormentas, 39-42°C sensación
     "Kansas City": {"lluvia": False, "calor_extremo": True},    # 31°C, alerta calor extremo
+    # 4 julio
+    "Houston":     {"lluvia": False, "calor_extremo": True},    # 35°C, 40°C sensación, 40% tormentas tarde
+    "Philadelphia":{"lluvia": False, "calor_extremo": True},    # 37°C, 39-40°C sensación, calor extremo
 }
 
 EQUIPOS_CALOR = {
@@ -519,8 +522,8 @@ PARTIDOS = [
     ("Australia",           "Egipto",             "R32", "Miami",          (1, 1), "Said Martinez"),
     ("Argentina",           "Cabo Verde",         "R32", "Kansas City",    (3, 2), "Katia Garcia"),
     ("Colombia",            "Ghana",              "R32", "Dallas",         (1, 0), "Ivan Barton"),
-    ("Canada",         "Marruecos",   "R16", "Houston",        None, None),
-    ("Francia",        "Paraguay",    "R16", "Philadelphia",   None, None),
+    ("Canada",         "Marruecos",   "R16", "Houston",        None, "Michael Oliver"),
+    ("Francia",        "Paraguay",    "R16", "Philadelphia",   None, "Ilgiz Tantashev"),
     ("Brasil",         "Noruega",     "R16", "Nueva York",     None, None),
     ("Mexico",         "Inglaterra",  "R16", "Azteca",         None, None),
     ("Portugal",       "Espana",      "R16", "Dallas",         None, None),
@@ -951,11 +954,11 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
     ARBITROS_MUNDIAL_2026 = {
         "Jalal Jayed": (0.5, 3), "Katia Garcia": (1.0, 3), "Wilton Pereira Sampaio": (0.67, 3),
-        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 1), "Yael Falcon Perez": (1.3, 3),
+        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 2), "Yael Falcon Perez": (1.3, 3),
         "Alireza Faghani": (1.0, 1),
         "Glenn Nyberg": (2.0, 3), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
         "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
-        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.0, 1), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0), "Gustavo Tejera": (3.0, 0),
+        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.5, 2), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0), "Gustavo Tejera": (3.0, 0),
         "Said Martinez": (1.6, 5), "Ivan Barton": (3.0, 3), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
         "Espen Eskas": (3.0, 1), "Gustavo Tejera": (3.0, 0),
