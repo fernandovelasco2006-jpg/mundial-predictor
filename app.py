@@ -522,10 +522,10 @@ PARTIDOS = [
     ("Australia",           "Egipto",             "R32", "Miami",          (1, 1), "Said Martinez"),
     ("Argentina",           "Cabo Verde",         "R32", "Kansas City",    (3, 2), "Katia Garcia"),
     ("Colombia",            "Ghana",              "R32", "Dallas",         (1, 0), "Ivan Barton"),
-    ("Canada",         "Marruecos",   "R16", "Houston",        None, "Michael Oliver"),
-    ("Francia",        "Paraguay",    "R16", "Philadelphia",   None, "Ilgiz Tantashev"),
-    ("Brasil",         "Noruega",     "R16", "Nueva York",     None, None),
-    ("Mexico",         "Inglaterra",  "R16", "Azteca",         None, None),
+    ("Canada",         "Marruecos",   "R16", "Houston",        (0, 3), "Michael Oliver"),
+    ("Francia",        "Paraguay",    "R16", "Philadelphia",   (1, 0), "Ilgiz Tantashev"),
+    ("Brasil",         "Noruega",     "R16", "Nueva York",     None, "Ismail Elfath"),
+    ("Mexico",         "Inglaterra",  "R16", "Azteca",         None, "Alireza Faghani"),
     ("Portugal",       "Espana",      "R16", "Dallas",         None, None),
     ("Estados Unidos", "Belgica",     "R16", "Seattle",        None, None),
     ("Argentina",      "Egipto",       "R16", "Atlanta",        None, None),
@@ -602,6 +602,8 @@ H2H = {
     ("Australia", "Egipto"):            [(2026, 1, 1, 2, 0)],
     ("Argentina", "Cabo Verde"):        [(2026, 3, 2, 2, 0)],
     ("Colombia", "Ghana"):              [(2026, 1, 0, 5, 0)],
+    ("Canada", "Marruecos"):            [(2026, 0, 3, 8, 0)],
+    ("Francia", "Paraguay"):            [(2026, 1, 0, 3, 0)],
 }
 
 def calcular_factor_h2h(ea, eb):
@@ -693,15 +695,15 @@ TARJETAS_MUNDIAL = {
 
 FORMA_MUNDIAL = {
     "Mexico": (8, 0, 4), "Sudafrica": (2, 3, 3), "Corea del Sur": (2, 3, 3), "Chequia": (2, 6, 3),
-    "Canada": (7, 1, 2), "Bosnia y Herzegovina": (2, 7, 3), "Catar": (1, 7, 2), "Suiza": (7, 2, 3),
-    "Brasil": (7, 1, 3), "Marruecos": (6, 3, 3), "Haiti": (2, 8, 3), "Escocia": (1, 4, 3),
-    "Estados Unidos": (10, 4, 4), "Paraguay": (2, 4, 3), "Australia": (3, 5, 3), "Turquia": (2, 3, 2),
+    "Canada": (7, 4, 3), "Bosnia y Herzegovina": (2, 7, 3), "Catar": (1, 7, 2), "Suiza": (7, 2, 3),
+    "Brasil": (7, 1, 3), "Marruecos": (9, 3, 4), "Haiti": (2, 8, 3), "Escocia": (1, 4, 3),
+    "Estados Unidos": (10, 4, 4), "Paraguay": (2, 5, 4), "Australia": (3, 5, 3), "Turquia": (2, 3, 2),
     "Alemania": (10, 4, 3), "Ecuador": (2, 4, 4), "Costa de Marfil": (5, 4, 4), "Curazao": (1, 9, 3),
     "Paises Bajos": (7, 3, 2), "Japon": (6, 2, 2), "Suecia": (6, 6, 3), "Tunez": (1, 9, 2),
     "Belgica": (8, 4, 4), "Egipto": (6, 4, 4), "Iran": (3, 3, 3), "Nueva Zelanda": (3, 5, 2),
     "Espana": (8, 0, 4), "Cabo Verde": (4, 6, 4), "Arabia Saudi": (1, 5, 2),
     "Arabia Saudita": (1, 5, 2), "Uruguay": (3, 3, 2),
-    "Francia": (13, 2, 4), "Senegal": (5, 6, 3), "Irak": (1, 7, 2), "Noruega": (9, 4, 3),
+    "Francia": (14, 2, 5), "Senegal": (5, 6, 3), "Irak": (1, 7, 2), "Noruega": (9, 4, 3),
     "Argentina": (11, 3, 4), "Algeria": (5, 9, 4), "Argelia": (2, 4, 2),
     "Austria": (6, 9, 4), "Jordania": (3, 8, 3),
     "Portugal": (8, 2, 4), "RD Congo": (5, 5, 4), "Uzbekistan": (2, 11, 3), "Colombia": (5, 1, 4),
@@ -954,11 +956,11 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
 
     ARBITROS_MUNDIAL_2026 = {
         "Jalal Jayed": (0.5, 3), "Katia Garcia": (1.0, 3), "Wilton Pereira Sampaio": (0.67, 3),
-        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.0, 2), "Yael Falcon Perez": (1.3, 3),
+        "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.7, 3), "Yael Falcon Perez": (1.3, 3),
         "Alireza Faghani": (1.0, 1),
         "Glenn Nyberg": (2.0, 3), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
         "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
-        "Drew Fischer": (2.0, 1), "Michael Oliver": (2.5, 2), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0), "Gustavo Tejera": (3.0, 0),
+        "Drew Fischer": (2.0, 1), "Michael Oliver": (4.3, 3), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0), "Gustavo Tejera": (3.0, 0),
         "Said Martinez": (1.6, 5), "Ivan Barton": (3.0, 3), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
         "Espen Eskas": (3.0, 1), "Gustavo Tejera": (3.0, 0),
@@ -1371,6 +1373,9 @@ DATOS_REALES = {
     "Australia_Egipto":                  {"am": 2,  "co": 11},  # 0 AUS + 2 EGY | 4 AUS + 7 EGY
     "Argentina_Cabo Verde":              {"am": 2,  "co": 16},  # 1 ARG + 1 CPV | 8 ARG + 8 CPV
     "Colombia_Ghana":                    {"am": 5,  "co": 5},   # 2 COL + 3 GHA | 3 COL + 2 GHA
+    # R16 — 4 julio
+    "Canada_Marruecos":                  {"am": 8,  "co": 12},  # 4 CAN + 4 MAR | 11 CAN + 1 MAR
+    "Francia_Paraguay":                  {"am": 3,  "co": 14},  # 0 PAR + 3 FRA | 2 PAR + 12 FRA
     "Paises Bajos_Marruecos": {"am": 1, "co": 13},  # 0 PB + 1 MAR | 5 PB + 8 MAR (oficial)
     # R32 — 30 junio
     "Costa de Marfil_Noruega":       {"am": 1,  "co": 17},  # 0 CIV + 1 NOR | 14 CIV + 3 NOR
