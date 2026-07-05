@@ -347,6 +347,9 @@ CLIMA_HOY = {
     # 4 julio
     "Houston":     {"lluvia": False, "calor_extremo": True},    # 35°C, 40°C sensación, 40% tormentas tarde
     "Philadelphia":{"lluvia": False, "calor_extremo": True},    # 37°C, 39-40°C sensación, calor extremo
+    # 5 julio — datos Meteored
+    "Nueva York":  {"lluvia": True,  "calor_extremo": False},   # 29°C, lluvia débil tarde (Brasil-Nor 15:00 MX)
+    "Azteca":      {"lluvia": True,  "calor_extremo": False},   # 22°C, lluvia débil tarde (Méx-Ing 19:00 MX)
 }
 
 EQUIPOS_CALOR = {
