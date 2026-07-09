@@ -307,6 +307,7 @@ HORARIOS_PARTIDO = {
     ("Argentina", "Egipto"): "2026-07-06 11:00",
     ("Suiza", "Colombia"): "2026-07-07 15:00",
     ("TBD-QF-1A", "TBD-QF-1B"): "2026-07-09 15:00",
+    ("Francia", "Marruecos"): "2026-07-09 15:00",
     ("TBD-QF-2A", "TBD-QF-2B"): "2026-07-10 14:00",
     ("TBD-QF-3A", "TBD-QF-3B"): "2026-07-11 16:00",
     ("TBD-QF-4A", "TBD-QF-4B"): "2026-07-11 20:00",
@@ -527,13 +528,13 @@ PARTIDOS = [
     ("Colombia",            "Ghana",              "R32", "Dallas",         (1, 0), "Ivan Barton"),
     ("Canada",         "Marruecos",   "R16", "Houston",        (0, 3), "Michael Oliver"),
     ("Francia",        "Paraguay",    "R16", "Philadelphia",   (1, 0), "Ilgiz Tantashev"),
-    ("Brasil",         "Noruega",     "R16", "Nueva York",     None, "Ismail Elfath"),
-    ("Mexico",         "Inglaterra",  "R16", "Azteca",         None, "Alireza Faghani"),
-    ("Portugal",       "Espana",      "R16", "Dallas",         None, None),
-    ("Estados Unidos", "Belgica",     "R16", "Seattle",        None, None),
-    ("Argentina",      "Egipto",       "R16", "Atlanta",        None, None),
-    ("Suiza",          "Colombia",     "R16", "Vancouver",      None, None),
-    ("TBD-QF-1A",   "TBD-QF-1B",   "QF",  "Boston",         None, None),
+    ("Brasil",         "Noruega",     "R16", "Nueva York",     (1, 2), "Ismail Elfath"),
+    ("Mexico",         "Inglaterra",  "R16", "Azteca",         (2, 3), "Alireza Faghani"),
+    ("Portugal",       "Espana",      "R16", "Dallas",         (0, 1), "Anthony Taylor"),
+    ("Estados Unidos", "Belgica",     "R16", "Seattle",        (1, 4), "Adham Makhadmeh"),
+    ("Argentina",      "Egipto",       "R16", "Atlanta",        (3, 2), None),
+    ("Suiza",          "Colombia",     "R16", "Vancouver",      (0, 0), None),
+    ("Francia",     "Marruecos",   "QF",  "Boston",         (2, 0), None),
     ("TBD-QF-2A",   "TBD-QF-2B",   "QF",  "Los Angeles",    None, None),
     ("TBD-QF-3A",   "TBD-QF-3B",   "QF",  "Miami",          None, None),
     ("TBD-QF-4A",   "TBD-QF-4B",   "QF",  "Kansas City",    None, None),
@@ -960,18 +961,18 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
     ARBITROS_MUNDIAL_2026 = {
         "Jalal Jayed": (0.5, 3), "Katia Garcia": (1.0, 3), "Wilton Pereira Sampaio": (0.67, 3),
         "Mustapha Ghorbal": (2.5, 2), "Ilgiz Tantashev": (1.7, 3), "Yael Falcon Perez": (1.3, 3),
-        "Alireza Faghani": (1.0, 1),
+        "Alireza Faghani": (4.0, 2),
         "Glenn Nyberg": (2.0, 3), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
         "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
-        "Drew Fischer": (2.0, 1), "Michael Oliver": (4.3, 3), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (3.0, 0), "Gustavo Tejera": (3.0, 0),
+        "Drew Fischer": (2.0, 1), "Michael Oliver": (4.3, 3), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (2.0, 1), "Gustavo Tejera": (3.0, 0),
         "Said Martinez": (1.6, 5), "Ivan Barton": (3.0, 3), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
         "Espen Eskas": (3.0, 1), "Gustavo Tejera": (3.0, 0),
         "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.5, 2), "Raphael Claus": (1.5, 2),
         "Fernando Rapallini": (3.0, 1), "Campbell-Kirk Kawana-Waugh": (3.0, 1),
         "Maurizio Mariani": (3.0, 3), "Istvan Kovacs": (3.0, 2), "Dahane Beida": (1.0, 1),
-        "Tori Penso": (4.0, 1), "Anthony Taylor": (4.0, 1), "Francois Letexier": (4.0, 2),
-        "Ismail Elfath": (4.0, 1), "Yusuke Araki": (4.0, 1), "Felix Zwayer": (5.0, 1),
+        "Tori Penso": (4.0, 1), "Anthony Taylor": (3.5, 2), "Francois Letexier": (4.0, 2),
+        "Ismail Elfath": (2.5, 2), "Yusuke Araki": (4.0, 1), "Felix Zwayer": (5.0, 1),
         "Szymon Marciniak": (7.0, 1),
     }
     FACTOR_ARB_MUNDIAL = 0.65
@@ -1277,6 +1278,7 @@ RESULTADOS_PENALES = {
     "Paises Bajos_Marruecos": "Marruecos", # 1-1, pen 2-3
     "Belgica_Senegal": "Belgica",          # 2-2 ET, pen (Tielemans 120+5)
     "Australia_Egipto": "Egipto",          # 1-1 ET, pen 2-4
+    "Suiza_Colombia": "Suiza",             # 0-0, pen 4-3
 }
 
 
@@ -1386,6 +1388,15 @@ DATOS_REALES = {
     "Mexico_Ecuador":                {"am": 3,  "co": 11, "ro": 1},  # 0 MEX + 3 ECU | 3 MEX + 8 ECU | 1 roja Hincapié 90+5'
     "Brasil_Japon": {"am": 5, "co": 8},
     "Alemania_Paraguay": {"am": 2, "co": 16},
+    # R16 — 5-7 julio
+    "Brasil_Noruega":        {"am": 1},                    # 1 BRA + 0 NOR (dato parcial, sin corners)
+    "Mexico_Inglaterra":     {"am": 7, "ro": 1},            # 2 MEX + 5 ING | roja Quansah (ING)
+    "Portugal_Espana":       {"am": 3},                     # 2 POR + 1 ESP
+    "Estados Unidos_Belgica":{"am": 2},                     # 2 EEUU + 0 BEL
+    "Argentina_Egipto":      {"am": 5},                     # 0 ARG + 5 EGY
+    "Suiza_Colombia":        {"am": 5},                     # 3 SUI + 2 COL
+    # QF — 9 julio
+    "Francia_Marruecos":     {"am": 1, "co": 10},           # 0 FRA + 1 MAR | 5 FRA + 5 MAR (remates: 22-5, al arco 9-1)
 }
 
 
