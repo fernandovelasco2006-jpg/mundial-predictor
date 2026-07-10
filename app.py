@@ -538,7 +538,7 @@ PARTIDOS = [
     ("Argentina",      "Egipto",       "R16", "Atlanta",        (3, 2), None),
     ("Suiza",          "Colombia",     "R16", "Vancouver",      (0, 0), None),
     ("Francia",     "Marruecos",   "QF",  "Boston",         (2, 0), None),
-    ("Espana",      "Belgica",     "QF",  "Los Angeles",    None, None),
+    ("Espana",      "Belgica",     "QF",  "Los Angeles",    None, "Michael Oliver"),
     ("Noruega",     "Inglaterra",  "QF",  "Miami",          None, None),
     ("Argentina",   "Suiza",       "QF",  "Kansas City",    None, None),
     ("TBD-SF-1A",   "TBD-SF-1B",   "SF",  "Dallas",         None, None),
