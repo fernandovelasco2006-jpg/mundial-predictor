@@ -314,8 +314,10 @@ HORARIOS_PARTIDO = {
     ("Espana", "Belgica"): "2026-07-10 13:00",
     ("Noruega", "Inglaterra"): "2026-07-11 15:00",
     ("Argentina", "Suiza"): "2026-07-11 19:00",
-    ("TBD-SF-1A", "TBD-SF-1B"): "2026-07-14 14:00",
-    ("TBD-SF-2A", "TBD-SF-2B"): "2026-07-15 14:00",
+    ("TBD-SF-1A", "TBD-SF-1B"): "2026-07-14 13:00",
+    ("TBD-SF-2A", "TBD-SF-2B"): "2026-07-15 13:00",
+    ("Francia", "Espana"): "2026-07-14 13:00",
+    ("Inglaterra", "Argentina"): "2026-07-15 13:00",
     ("TBD-3P-1A", "TBD-3P-1B"): "2026-07-18 16:00",
     ("TBD-F-1A", "TBD-F-1B"): "2026-07-19 14:00",
 }
@@ -541,8 +543,8 @@ PARTIDOS = [
     ("Espana",      "Belgica",     "QF",  "Los Angeles",    (2, 1), "Michael Oliver"),
     ("Noruega",     "Inglaterra",  "QF",  "Miami",          (1, 2), None),
     ("Argentina",   "Suiza",       "QF",  "Kansas City",    (3, 1), None),
-    ("TBD-SF-1A",   "TBD-SF-1B",   "SF",  "Dallas",         None, None),
-    ("TBD-SF-2A",   "TBD-SF-2B",   "SF",  "Atlanta",        None, None),
+    ("Francia",     "Espana",      "SF",  "Dallas",         None, "Ivan Barton"),
+    ("Inglaterra",  "Argentina",   "SF",  "Atlanta",        None, "Ismail Elfath"),
     ("TBD-3P-1A",   "TBD-3P-1B",   "3P",  "Miami",          None, None),
     ("TBD-F-1A",    "TBD-F-1B",    "F",   "Nueva York",     None, None),
 ]
