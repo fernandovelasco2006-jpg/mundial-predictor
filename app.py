@@ -538,9 +538,9 @@ PARTIDOS = [
     ("Argentina",      "Egipto",       "R16", "Atlanta",        (3, 2), None),
     ("Suiza",          "Colombia",     "R16", "Vancouver",      (0, 0), None),
     ("Francia",     "Marruecos",   "QF",  "Boston",         (2, 0), None),
-    ("Espana",      "Belgica",     "QF",  "Los Angeles",    None, "Michael Oliver"),
-    ("Noruega",     "Inglaterra",  "QF",  "Miami",          None, None),
-    ("Argentina",   "Suiza",       "QF",  "Kansas City",    None, None),
+    ("Espana",      "Belgica",     "QF",  "Los Angeles",    (2, 1), "Michael Oliver"),
+    ("Noruega",     "Inglaterra",  "QF",  "Miami",          (1, 2), None),
+    ("Argentina",   "Suiza",       "QF",  "Kansas City",    (3, 1), None),
     ("TBD-SF-1A",   "TBD-SF-1B",   "SF",  "Dallas",         None, None),
     ("TBD-SF-2A",   "TBD-SF-2B",   "SF",  "Atlanta",        None, None),
     ("TBD-3P-1A",   "TBD-3P-1B",   "3P",  "Miami",          None, None),
@@ -1400,6 +1400,8 @@ DATOS_REALES = {
     "Suiza_Colombia":        {"am": 5},                     # 3 SUI + 2 COL
     # QF — 9 julio
     "Francia_Marruecos":     {"am": 1, "co": 10},           # 0 FRA + 1 MAR | 5 FRA + 5 MAR (remates: 22-5, al arco 9-1)
+    "Espana_Belgica":        {"am": 1},                     # 1 ESP (Cubarsí) — dato parcial, resto no confirmado
+    "Argentina_Suiza":       {"am": 2, "ro": 1},             # doble amarilla = roja Embolo (SUI), min 70-72 revisado VAR — tras prórroga
 }
 
 
