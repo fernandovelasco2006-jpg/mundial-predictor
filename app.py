@@ -543,7 +543,7 @@ PARTIDOS = [
     ("Espana",      "Belgica",     "QF",  "Los Angeles",    (2, 1), "Michael Oliver"),
     ("Noruega",     "Inglaterra",  "QF",  "Miami",          (1, 2), None),
     ("Argentina",   "Suiza",       "QF",  "Kansas City",    (3, 1), None),
-    ("Francia",     "Espana",      "SF",  "Dallas",         None, "Ivan Barton"),
+    ("Francia",     "Espana",      "SF",  "Dallas",         (0, 2), "Ivan Barton"),
     ("Inglaterra",  "Argentina",   "SF",  "Atlanta",        None, "Ismail Elfath"),
     ("TBD-3P-1A",   "TBD-3P-1B",   "3P",  "Miami",          None, None),
     ("TBD-F-1A",    "TBD-F-1B",    "F",   "Nueva York",     None, None),
@@ -970,7 +970,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "Glenn Nyberg": (2.0, 3), "Slavko Vincic": (2.5, 2), "Danny Makkelie": (1.5, 2),
         "Jesus Valenzuela": (1.3, 3), "Clement Turpin": (2.0, 1), "Facundo Tello": (3.5, 2),
         "Drew Fischer": (2.0, 1), "Michael Oliver": (4.3, 3), "Adham Mohammad": (2.0, 2), "Adham Makhadmeh": (2.0, 1), "Gustavo Tejera": (3.0, 0),
-        "Said Martinez": (1.6, 5), "Ivan Barton": (3.0, 3), "Joao Pedro Pinheiro": (2.0, 1),
+        "Said Martinez": (1.6, 5), "Ivan Barton": (3.0, 4), "Joao Pedro Pinheiro": (2.0, 1),
         "Pierre Ghislain Atcho": (1.5, 2), "Abdulrahman Al-Jassim": (3.0, 2),
         "Espen Eskas": (3.0, 1), "Gustavo Tejera": (3.0, 0),
         "Cesar Ramos Palazuelos": (3.0, 1), "Ramon Abatti Abel": (3.5, 2), "Raphael Claus": (1.5, 2),
@@ -1404,6 +1404,7 @@ DATOS_REALES = {
     "Francia_Marruecos":     {"am": 1, "co": 10},           # 0 FRA + 1 MAR | 5 FRA + 5 MAR (remates: 22-5, al arco 9-1)
     "Espana_Belgica":        {"am": 1},                     # 1 ESP (Cubarsí) — dato parcial, resto no confirmado
     "Argentina_Suiza":       {"am": 2, "ro": 1},             # doble amarilla = roja Embolo (SUI), min 70-72 revisado VAR — tras prórroga
+    "Francia_Espana":        {"am": 3, "co": 8},             # 2 FRA + 1 ESP | 7 FRA + 1 ESP (Sofascore)
 }
 
 
