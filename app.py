@@ -320,6 +320,7 @@ HORARIOS_PARTIDO = {
     ("Inglaterra", "Argentina"): "2026-07-15 13:00",
     ("TBD-3P-1A", "TBD-3P-1B"): "2026-07-18 16:00",
     ("TBD-F-1A", "TBD-F-1B"): "2026-07-19 14:00",
+    ("Espana", "Argentina"): "2026-07-19 14:00",
 }
 
 CLIMA = {
@@ -544,9 +545,9 @@ PARTIDOS = [
     ("Noruega",     "Inglaterra",  "QF",  "Miami",          (1, 2), None),
     ("Argentina",   "Suiza",       "QF",  "Kansas City",    (3, 1), None),
     ("Francia",     "Espana",      "SF",  "Dallas",         (0, 2), "Ivan Barton"),
-    ("Inglaterra",  "Argentina",   "SF",  "Atlanta",        None, "Ismail Elfath"),
+    ("Inglaterra",  "Argentina",   "SF",  "Atlanta",        (1, 2), "Ismail Elfath"),
     ("TBD-3P-1A",   "TBD-3P-1B",   "3P",  "Miami",          None, None),
-    ("TBD-F-1A",    "TBD-F-1B",    "F",   "Nueva York",     None, None),
+    ("Espana",      "Argentina",   "F",   "Nueva York",     None, None),
 ]
 
 
@@ -977,7 +978,7 @@ def simular(ea: str, eb: str, sede: str, arbitro: str = None, n: int = 10_000) -
         "Fernando Rapallini": (3.0, 1), "Campbell-Kirk Kawana-Waugh": (3.0, 1),
         "Maurizio Mariani": (3.0, 3), "Istvan Kovacs": (3.0, 2), "Dahane Beida": (1.0, 1),
         "Tori Penso": (4.0, 1), "Anthony Taylor": (3.5, 2), "Francois Letexier": (4.0, 2),
-        "Ismail Elfath": (2.5, 2), "Yusuke Araki": (4.0, 1), "Felix Zwayer": (5.0, 1),
+        "Ismail Elfath": (3.0, 3), "Yusuke Araki": (4.0, 1), "Felix Zwayer": (5.0, 1),
         "Szymon Marciniak": (7.0, 1),
     }
     FACTOR_ARB_MUNDIAL = 0.65
@@ -1405,6 +1406,7 @@ DATOS_REALES = {
     "Espana_Belgica":        {"am": 1},                     # 1 ESP (Cubarsí) — dato parcial, resto no confirmado
     "Argentina_Suiza":       {"am": 2, "ro": 1},             # doble amarilla = roja Embolo (SUI), min 70-72 revisado VAR — tras prórroga
     "Francia_Espana":        {"am": 3, "co": 8},             # 2 FRA + 1 ESP | 7 FRA + 1 ESP (Sofascore)
+    "Inglaterra_Argentina":  {"am": 4, "co": 7},             # 1 ENG + 3 ARG | 1 ENG + 6 ARG (Sofascore)
 }
 
 
